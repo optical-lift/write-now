@@ -21,5 +21,7 @@ jobs:
         run: npm run typecheck
       - name: Architecture boundaries
         run: npm run check:boundaries
+      - name: Research packet integrity
+        run: npm run check:research-packets
       - name: Build
         run: npm run build
