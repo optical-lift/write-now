@@ -1,0 +1,562 @@
+{
+  "packetVersion": 0,
+  "packetType": "creator_corpus_empirical_schema_test",
+  "status": "research_packet_not_canonical_database_state",
+  "createdAt": "2026-08-25",
+  "purpose": "Stress-test the Creator Corpus Census and Source Transmission architecture against a real fragmented historical corpus before freezing relational tables.",
+  "governingRules": [
+    "A title attestation is not automatically a Historical Work.",
+    "Conflicting title, date, and identity claims remain separate until adjudicated.",
+    "Source-circle association never changes public authorship automatically.",
+    "Documented association may coexist with an unknown historical mechanism.",
+    "Recovery state is multidimensional and does not substitute for a full Recovery Work audit.",
+    "This packet is evidence-bearing research input, not production publication truth."
+  ],
+  "creator": {
+    "provisionalId": "wnph:creator:alice-ross-colver",
+    "idStatus": "provisional_seed",
+    "canonicalName": "Alice Ross Colver",
+    "creatorType": "person",
+    "birthDate": "1892-08-28",
+    "deathDate": "1988-09-01",
+    "identityConfidence": "high",
+    "publicAttribution": "Alice Ross Colver",
+    "nameClaims": [
+      {
+        "displayName": "Alice Ross Colver",
+        "claimType": "canonical_bibliographic_name",
+        "status": "documented",
+        "evidenceSourceIds": ["src_iu_dodd_mead", "src_loc_dewy", "src_loc_jeanne_house", "src_loc_dear_pretender"]
+      },
+      {
+        "displayName": "Alice Mary (Ross) Colver",
+        "claimType": "full_name_form",
+        "status": "documented",
+        "evidenceSourceIds": ["src_copyright_1949_kingsridge"],
+        "notes": "Government copyright catalog heading; do not model Alice Mary Ross as a pseudonym merely because later aggregators do so."
+      }
+    ]
+  },
+  "creatorCorpus": {
+    "provisionalId": "wnph:corpus:alice-ross-colver-known",
+    "scope": "complete_known_corpus",
+    "completeness": "partial",
+    "reason": "The publisher archive alone attests 26 later titles/projects, while surviving digitized early works and other bibliographic sources add titles outside that archive. No exhaustive authority/holdings sweep has yet established COMPLETE_AS_KNOWN.",
+    "minimumDistinctAttestationStringsInThisPacket": 42
+  },
+  "sourceRegistry": [
+    {
+      "sourceId": "src_iu_dodd_mead",
+      "sourceType": "publisher_archive_finding_aid",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "institution": "Lilly Library, Indiana University",
+      "title": "Dodd, Mead mss., 1855-1992",
+      "url": "https://archives.iu.edu/html/InU-Li-VAA8772.html",
+      "notes": "Finding aid describes the underlying primary publisher archive and lists Alice Ross Colver files, 1929-1960, for 26 title/project strings. The archive itself contains agreements, correspondence, copyright statements and related publisher records."
+    },
+    {
+      "sourceId": "src_loc_dewy",
+      "sourceType": "digitized_primary_book_and_catalog_record",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "institution": "Library of Congress",
+      "title": "The Wish fairy and Dewy Dear",
+      "url": "https://www.loc.gov/item/22008427/",
+      "notes": "LOC records Alice Ross Colver, Henry Altemus Company, 1922, LCCN 22008427, 63+[1] pages, color frontispiece/illustrations, complete PDF/text/images and public-domain reuse statement."
+    },
+    {
+      "sourceId": "src_loc_jeanne_house",
+      "sourceType": "digitized_primary_book_and_catalog_record",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "institution": "Library of Congress",
+      "title": "Jeanne's house party",
+      "url": "https://www.loc.gov/item/23017721/",
+      "notes": "LOC records Alice Ross Colver, illustrator J. M. Clifton, Penn Publishing, 1923, LCCN 23017721, OCLC 21382185, complete PDF/text/images and public-domain reuse statement."
+    },
+    {
+      "sourceId": "src_loc_dear_pretender",
+      "sourceType": "digitized_primary_book_and_catalog_record",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "institution": "Library of Congress",
+      "title": "The dear pretender",
+      "url": "https://www.loc.gov/item/24005100/",
+      "notes": "LOC records Alice Ross Colver, Penn Publishing, 1924, LCCN 24005100, OCLC 10445728, complete PDF/text/images and public-domain reuse statement."
+    },
+    {
+      "sourceId": "src_henry_altemus_wish_fairy",
+      "sourceType": "specialist_publisher_bibliography",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "title": "Henry Altemus Company - Wish Fairy Series 190",
+      "url": "https://henryaltemus.com/series/series190.htm",
+      "notes": "Lists four Wish Fairy Series title strings; states the first three were initially in Wee Books for Wee Folks, all four were catalogued in the Wish Fairy Series in 1922, and Mud Wumps has never been seen and may not have been published."
+    },
+    {
+      "sourceId": "src_henry_altemus_wee_books",
+      "sourceType": "specialist_publisher_bibliography",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "title": "Henry Altemus Co - Wee Books for Wee Folks",
+      "url": "https://henryaltemus.com/wee_books/index.htm",
+      "notes": "Documents the movement of Long Ago Years Stories and Wish Fairy titles between the Wee Books for Wee Folks and Wish Fairy series."
+    },
+    {
+      "sourceId": "src_wikimedia_alice_category",
+      "sourceType": "digital_repository_index",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "title": "Category: Alice Ross Colver",
+      "url": "https://commons.wikimedia.org/wiki/Category:Alice_Ross_Colver",
+      "notes": "Indexes six historical scans: Babs at Birchwood, The Dear Pretender, Jeanne, Jeanne's House Party, The Long Ago Years Stories, and The Wish Fairy and Dewy Dear."
+    },
+    {
+      "sourceId": "src_copyright_1949_kingsridge",
+      "sourceType": "government_copyright_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "Catalog of Copyright Entries 1949 Books",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Catalog_of_Copyright_Entries_1949_Books_Jan-Dec_3D_Ser_Vol_3_Pt_1A_%28IA_catalogofcopyrig331lib%29.pdf",
+      "notes": "Uses heading COLVER, ALICE MARY (ROSS) for Kingsridge and credits copyright to Alice Ross Colver."
+    },
+    {
+      "sourceId": "src_copyright_babs_home",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "Catalog of Copyright Entries 1949 Renewal Registrations",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Catalog_of_Copyright_Entries_1949_Renewal_Registrations-Literature%2C_Art%2C_Film_Jan-Dec_3D_Ser_Vol_3_Pt_14A_%28IA_catalogofcopyri3314libr%29.pdf",
+      "notes": "Records Babs at Home by Alice Ross Colver, illustrated by Isabel W. Coley, copyright 15 Sep 1921."
+    },
+    {
+      "sourceId": "src_copyright_jeanne_happy_year",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "U.S. Copyright Renewals, 1953 July-December",
+      "url": "https://www.gutenberg.org/cache/epub/11808/pg11808-images.html",
+      "notes": "Records Jeanne's Happy Year, illustrated by Ralph Dunkelberger, copyright 10 Oct 1925."
+    },
+    {
+      "sourceId": "src_copyright_jeanne_rainbow",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "U.S. Copyright Renewals, 1954 January-June",
+      "url": "https://www.gutenberg.org/cache/epub/11809/pg11809.html",
+      "notes": "Records Jeanne at Rainbow Lodge, illustrated by Ralph Dunkelberger, copyright 1 Nov 1926; same renewal section also records Under the Rainbow Sky."
+    },
+    {
+      "sourceId": "src_copyright_lookout",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "U.S. Copyright Renewals, 1956 January-June",
+      "url": "https://www.gutenberg.org/cache/epub/11813/pg11813-images.html",
+      "notes": "Records The Look-Out Girl, copyright 4 Feb 1928."
+    },
+    {
+      "sourceId": "src_copyright_1929",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "U.S. Copyright Renewals, 1957 January-June",
+      "url": "https://www.gutenberg.org/cache/epub/11815/pg11815-images.html",
+      "notes": "Records The Dimmest Dream, copyright 18 Jan 1929, and The Red-Headed Goddess, copyright 27 Sep 1929."
+    },
+    {
+      "sourceId": "src_copyright_adventure_hilltop",
+      "sourceType": "government_copyright_renewal_catalog",
+      "evidenceTier": "TIER_1_PRIMARY_OBJECT",
+      "title": "U.S. Copyright Renewals, 1967 January-June",
+      "url": "https://www.gutenberg.org/cache/epub/11835/pg11835-images.html",
+      "notes": "Records Adventure on a Hilltop, illustrated by Margaret Fletcher, copyright 3 Oct 1939, and Where the Heart Goes, copyright 17 Oct 1939. This conflicts in wording with Dodd, Mead finding-aid title strings and therefore must not be silently normalized."
+    },
+    {
+      "sourceId": "src_kirkus_adventure_west",
+      "sourceType": "contemporary_review_record",
+      "evidenceTier": "TIER_2_CONTEMPORARY_EXTERNAL",
+      "title": "Adventure in the West",
+      "url": "https://www.kirkusreviews.com/book-reviews/a/alice-ross-colver-10/adventure-in-the-west/",
+      "notes": "Kirkus lists Adventure in the West by Alice Ross Colver, Dodd, Mead, release date 20 May 1941."
+    },
+    {
+      "sourceId": "src_imagecascade_alice",
+      "sourceType": "current_publisher_author_page",
+      "evidenceTier": "CURRENT_MARKET_EVIDENCE",
+      "title": "Alice Ross Colver",
+      "url": "https://imagecascade.com/alice-ross-colver.html",
+      "notes": "Current publisher page identifies Babs, Jeanne, and Joan Foster series relationships."
+    },
+    {
+      "sourceId": "src_imagecascade_books",
+      "sourceType": "current_publisher_catalog",
+      "evidenceTier": "CURRENT_MARKET_EVIDENCE",
+      "title": "Alice Ross Colver Books",
+      "url": "https://imagecascade.com/alice-ross-colver-books.html",
+      "notes": "Current publisher sells all six Joan Foster titles and the six-book set."
+    },
+    {
+      "sourceId": "src_imagecascade_permissions",
+      "sourceType": "current_publisher_statement",
+      "evidenceTier": "CURRENT_MARKET_EVIDENCE",
+      "title": "Author Info",
+      "url": "https://imagecascade.com/aboutauthors1.html",
+      "notes": "Image Cascade states gratitude to authors and authors' families for permitting it to bring works back, making the currently republished Joan Foster line rights-sensitive for Write Now until independently adjudicated."
+    },
+    {
+      "sourceId": "src_furrowed_middlebrow",
+      "sourceType": "secondary_bibliography",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "title": "American Women Writers of Fiction 1910-1960 (C)",
+      "url": "https://furrowedmiddlebrow.blogspot.com/2013/01/american-women-writers-of-fiction-1910_9.html",
+      "notes": "Lists Alice [Mary] Ross Colver, née Ross, aka Mary Randall, and describes her Babs, Jeanne, and Joan Foster series and broader career."
+    },
+    {
+      "sourceId": "src_old_books_authors",
+      "sourceType": "secondary_bibliography",
+      "evidenceTier": "TIER_3_LATER_AUTHORITY",
+      "title": "New General Catalog of Old Books & Authors",
+      "url": "https://www.authorandbookinfo.com/ngcoba/co2.htm",
+      "notes": "Lists Alice (Mary) née Ross Colver and explicitly cross-references pseudonym Mary Randall; also supplies early title strings, some with dates that conflict with stronger sources."
+    },
+    {
+      "sourceId": "src_goodreads_alice",
+      "sourceType": "modern_aggregator",
+      "evidenceTier": "TIER_4_MODERN_AGGREGATOR",
+      "title": "Alice Ross Colver",
+      "url": "https://www.goodreads.com/author/show/128442.Alice_Ross_Colver",
+      "notes": "Useful only as a discovery/series cross-check. It repeats Mary Randall and Alice Mary Ross as pen names, but the government copyright heading shows Alice Mary (Ross) Colver is a documented personal-name form and should not be canonicalized as a pseudonym."
+    }
+  ],
+  "sourceCircleRecords": [
+    {
+      "provisionalId": "wnph:circle:mary-randall",
+      "canonicalLabel": "Mary Randall",
+      "circleType": "unknown",
+      "researchStatus": "documented_association_mechanism_unresolved",
+      "notes": "This packet deliberately does not decide whether the Mary Randall relationship is best modeled as private pseudonym, reusable byline, house identity, source circle, or another transmission mechanism."
+    }
+  ],
+  "sourceCircleMemberships": [
+    {
+      "provisionalId": "wnph:circle-membership:alice-ross-colver:mary-randall",
+      "subjectType": "creator",
+      "subjectId": "wnph:creator:alice-ross-colver",
+      "sourceCircleId": "wnph:circle:mary-randall",
+      "relationshipType": "source_circle_association_with_pseudonym_claim",
+      "evidenceStatus": "documented",
+      "mechanismStatus": "unknown",
+      "evidenceSourceIds": ["src_furrowed_middlebrow", "src_old_books_authors", "src_goodreads_alice"],
+      "publicAttributionEffect": "none",
+      "notes": "Multiple secondary bibliographic sources explicitly associate Mary Randall with Alice Ross Colver. This establishes the association as documented evidence for the research graph without establishing the historical mechanism or changing Alice Ross Colver's public byline."
+    }
+  ],
+  "titleAttestations": [
+    {"attestationId":"att_wish_01","displayedTitle":"The Long Ago Years Stories","attributedCreator":"Alice Ross Colver","sourceId":"src_henry_altemus_wish_fairy","publicationDateClaim":"1919","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_wish_02","displayedTitle":"The Wish Fairy of the Sunshine and Shadow Forest","attributedCreator":"Alice Ross Colver","sourceId":"src_henry_altemus_wish_fairy","publicationDateClaim":"1919","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_wish_03","displayedTitle":"The Wish Fairy and Dewy Dear","attributedCreator":"Alice Ross Colver","sourceId":"src_henry_altemus_wish_fairy","publicationDateClaim":"1922","identityStatus":"linked_to_work"},
+    {"attestationId":"att_wish_04","displayedTitle":"Mud Wumps of the Sunshine and Shadow Forest","attributedCreator":"Alice Ross Colver","sourceId":"src_henry_altemus_wish_fairy","publicationDateClaim":null,"identityStatus":"possibly_unpublished"},
+
+    {"attestationId":"att_babs_01","displayedTitle":"Babs","attributedCreator":"Alice Ross Colver","sourceId":"src_old_books_authors","publicationDateClaim":"1918","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_babs_02","displayedTitle":"Babs at Birchwood","attributedCreator":"Alice Ross Colver","sourceId":"src_wikimedia_alice_category","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_babs_03","displayedTitle":"Babs at College","attributedCreator":"Alice Ross Colver","sourceId":"src_goodreads_alice","publicationDateClaim":"1922","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_babs_04a","displayedTitle":"Babs at Home","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_babs_home","publicationDateClaim":"1921","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_babs_04b","displayedTitle":"Babs at home","attributedCreator":"Alice Ross Colver","sourceId":"src_loc_dewy","publicationDateClaim":"1924","identityStatus":"possible_edition_relationship","notes":"LOC related-item result identifies a 1924 digitized manifestation; do not overwrite the 1921 copyright claim."},
+
+    {"attestationId":"att_jeanne_01","displayedTitle":"Jeanne","attributedCreator":"Alice Ross Colver","sourceId":"src_wikimedia_alice_category","publicationDateClaim":"1922","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_jeanne_02","displayedTitle":"Jeanne's House Party","attributedCreator":"Alice Ross Colver","sourceId":"src_loc_jeanne_house","publicationDateClaim":"1923","identityStatus":"linked_to_work"},
+    {"attestationId":"att_jeanne_03","displayedTitle":"Jeanne's Happy Year","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_jeanne_happy_year","publicationDateClaim":"1925","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_jeanne_04","displayedTitle":"Jeanne at Rainbow Lodge","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_jeanne_rainbow","publicationDateClaim":"1926","identityStatus":"likely_existing_work"},
+
+    {"attestationId":"att_early_01","displayedTitle":"The Dear Pretender","attributedCreator":"Alice Ross Colver","sourceId":"src_loc_dear_pretender","publicationDateClaim":"1924","identityStatus":"linked_to_work"},
+    {"attestationId":"att_early_02","displayedTitle":"Under the Rainbow Sky","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_jeanne_rainbow","publicationDateClaim":"1926","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_early_03","displayedTitle":"The Look-Out Girl","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_lookout","publicationDateClaim":"1928","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_early_04","displayedTitle":"The Dimmest Dream","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_1929","publicationDateClaim":"1929","identityStatus":"likely_existing_work"},
+    {"attestationId":"att_early_05","displayedTitle":"The Red-Headed Goddess","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_1929","publicationDateClaim":"1929","identityStatus":"likely_existing_work"},
+
+    {"attestationId":"att_dodd_01","displayedTitle":"Adventure in the West","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_02","displayedTitle":"Adventures on a Hilltop","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"possible_variant_title"},
+    {"attestationId":"att_dodd_03","displayedTitle":"Hilltop House","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_04","displayedTitle":"I Have Been Little Too Long","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_05","displayedTitle":"If You Should Want To Write","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_06","displayedTitle":"Joan Foster, Bride","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_07","displayedTitle":"Joan Foster, Freshman","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_08","displayedTitle":"Joan Foster, Junior","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_09","displayedTitle":"Joan Foster, Senior","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_10","displayedTitle":"Joan Foster, Sophomore","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_11","displayedTitle":"Joan Foster in Europe","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"likely_existing_work"},
+    {"attestationId":"att_dodd_12","displayedTitle":"The Measure of the Years","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_13","displayedTitle":"A Modern Madonna","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_14","displayedTitle":"One Year of Love","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_15","displayedTitle":"Only Let Me Live","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_16","displayedTitle":"The Passionate Puritan","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_17","displayedTitle":"The Red-Headed Goddess","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"possible_same_work"},
+    {"attestationId":"att_dodd_18","displayedTitle":"Sheila's Adventures Abroad","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_19","displayedTitle":"Strangers At Sea","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_20","displayedTitle":"The Substitute Lover","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_21","displayedTitle":"There is a Season","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_22","displayedTitle":"Three Loves","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_23","displayedTitle":"Where Goes the Heart","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"identity_unresolved"},
+    {"attestationId":"att_dodd_24","displayedTitle":"Where the Heart Goes","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"identity_unresolved"},
+    {"attestationId":"att_dodd_25","displayedTitle":"Wild Song","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+    {"attestationId":"att_dodd_26","displayedTitle":"Windymere","attributedCreator":"Alice Ross Colver","sourceId":"src_iu_dodd_mead","publicationDateClaim":null,"identityStatus":"unattached"},
+
+    {"attestationId":"att_conflict_hilltop_01","displayedTitle":"Adventure on a Hilltop","attributedCreator":"Alice Ross Colver","sourceId":"src_copyright_adventure_hilltop","publicationDateClaim":"1939","identityStatus":"possible_variant_title"}
+  ],
+  "workIdentityAdjudications": [
+    {
+      "provisionalId": "adj_babs_home_date",
+      "attestationIds": ["att_babs_04a", "att_babs_04b"],
+      "result": "edition_relationship_likely",
+      "confidence": "medium",
+      "decisionStatus": "provisional",
+      "notes": "The copyright record supports a 1921 work/publication claim while the LOC related-item result identifies a 1924 digitized manifestation. The work date and edition date must not be flattened into one scalar."
+    },
+    {
+      "provisionalId": "adj_red_headed_goddess",
+      "attestationIds": ["att_early_05", "att_dodd_17"],
+      "result": "same_work",
+      "confidence": "high",
+      "decisionStatus": "provisional",
+      "notes": "Exact distinctive title under same creator, with government copyright evidence and publisher archive attestation."
+    },
+    {
+      "provisionalId": "adj_adventure_hilltop",
+      "attestationIds": ["att_dodd_02", "att_conflict_hilltop_01"],
+      "result": "possible_variant_title",
+      "confidence": "medium",
+      "decisionStatus": "unresolved",
+      "notes": "Dodd, Mead finding aid says Adventures on a Hilltop; government copyright renewal says Adventure on a Hilltop. Do not normalize until the underlying publisher/copyright objects are reconciled."
+    },
+    {
+      "provisionalId": "adj_where_heart",
+      "attestationIds": ["att_dodd_23", "att_dodd_24"],
+      "result": "unresolved",
+      "confidence": "low",
+      "decisionStatus": "unresolved",
+      "notes": "The Dodd, Mead archive independently lists both title strings. A separate copyright renewal supports Where the Heart Goes in 1939, but that does not prove Where Goes the Heart is merely a working title."
+    }
+  ],
+  "historicalWorksEstablishedForSchemaTest": [
+    {
+      "provisionalId": "wnph:work:long-ago-years-stories",
+      "canonicalTitle": "The Long Ago Years Stories",
+      "identityConfidence": "high",
+      "attestationIds": ["att_wish_01"],
+      "witnessState": "witness_found",
+      "digitalState": "scan_exists",
+      "recoveryState": "recovery_profile_incomplete",
+      "evidenceSourceIds": ["src_henry_altemus_wish_fairy", "src_wikimedia_alice_category"]
+    },
+    {
+      "provisionalId": "wnph:work:wish-fairy-sunshine-shadow",
+      "canonicalTitle": "The Wish Fairy of the Sunshine and Shadow Forest",
+      "identityConfidence": "high",
+      "attestationIds": ["att_wish_02"],
+      "witnessState": "witness_found",
+      "digitalState": "not_fully_audited",
+      "recoveryState": "recovery_profile_incomplete",
+      "evidenceSourceIds": ["src_henry_altemus_wish_fairy"]
+    },
+    {
+      "provisionalId": "wnph:work:wish-fairy-dewy-dear",
+      "canonicalTitle": "The Wish Fairy and Dewy Dear",
+      "identityConfidence": "high",
+      "attestationIds": ["att_wish_03"],
+      "witnessState": "witness_found",
+      "publicationState": "published",
+      "rightsState": "strong_public_domain_source_reuse_evidence_but_recovery_case_not_yet_adjudicated",
+      "digitalState": "complete_scan_text_pdf_images",
+      "recoveryState": "candidate_for_full_recovery_audit",
+      "evidenceSourceIds": ["src_loc_dewy", "src_henry_altemus_wish_fairy", "src_wikimedia_alice_category"]
+    },
+    {
+      "provisionalId": "wnph:work:mud-wumps",
+      "canonicalTitle": "Mud Wumps of the Sunshine and Shadow Forest",
+      "identityConfidence": "low",
+      "attestationIds": ["att_wish_04"],
+      "witnessState": "witness_missing",
+      "publicationState": "possibly_unpublished",
+      "digitalState": "not_applicable",
+      "recoveryState": "bibliographic_loss_investigation",
+      "evidenceSourceIds": ["src_henry_altemus_wish_fairy"]
+    },
+    {
+      "provisionalId": "wnph:work:jeannes-house-party",
+      "canonicalTitle": "Jeanne's House Party",
+      "identityConfidence": "high",
+      "attestationIds": ["att_jeanne_02"],
+      "witnessState": "witness_found",
+      "digitalState": "complete_scan_text_pdf_images",
+      "recoveryState": "recovery_profile_incomplete",
+      "evidenceSourceIds": ["src_loc_jeanne_house", "src_wikimedia_alice_category"]
+    },
+    {
+      "provisionalId": "wnph:work:dear-pretender",
+      "canonicalTitle": "The Dear Pretender",
+      "identityConfidence": "high",
+      "attestationIds": ["att_early_01"],
+      "witnessState": "witness_found",
+      "digitalState": "complete_scan_text_pdf_images",
+      "recoveryState": "recovery_profile_incomplete",
+      "evidenceSourceIds": ["src_loc_dear_pretender", "src_wikimedia_alice_category"]
+    },
+    {
+      "provisionalId": "wnph:work:adventure-in-the-west",
+      "canonicalTitle": "Adventure in the West",
+      "identityConfidence": "high",
+      "attestationIds": ["att_dodd_01"],
+      "witnessState": "unknown",
+      "digitalState": "not_audited",
+      "recoveryState": "rights_sensitive_later_work",
+      "evidenceSourceIds": ["src_iu_dodd_mead", "src_kirkus_adventure_west"]
+    }
+  ],
+  "seriesRecords": [
+    {
+      "provisionalId": "wnph:series:wish-fairy",
+      "seriesTitle": "Wish Fairy Series",
+      "seriesIdentityConfidence": "high",
+      "evidenceSourceIds": ["src_henry_altemus_wish_fairy", "src_henry_altemus_wee_books"],
+      "members": [
+        {"attestationId":"att_wish_01","order":1,"membershipStatus":"documented"},
+        {"attestationId":"att_wish_02","order":2,"membershipStatus":"documented"},
+        {"attestationId":"att_wish_03","order":3,"membershipStatus":"documented"},
+        {"attestationId":"att_wish_04","order":4,"membershipStatus":"catalogued_only_witness_missing"}
+      ]
+    },
+    {
+      "provisionalId": "wnph:series:babs",
+      "seriesTitle": "Babs",
+      "seriesIdentityConfidence": "medium",
+      "evidenceSourceIds": ["src_imagecascade_alice", "src_goodreads_alice", "src_copyright_babs_home"],
+      "members": [
+        {"attestationId":"att_babs_01","order":1,"membershipStatus":"supported"},
+        {"attestationId":"att_babs_02","order":2,"membershipStatus":"supported"},
+        {"attestationId":"att_babs_03","order":3,"membershipStatus":"supported"},
+        {"attestationId":"att_babs_04a","order":4,"membershipStatus":"supported"}
+      ],
+      "notes": "Member dates are not yet fully adjudicated; the packet intentionally preserves source conflict rather than treating modern aggregator dates as canonical."
+    },
+    {
+      "provisionalId": "wnph:series:jeanne",
+      "seriesTitle": "Jeanne",
+      "seriesIdentityConfidence": "high",
+      "evidenceSourceIds": ["src_imagecascade_alice", "src_copyright_jeanne_happy_year", "src_copyright_jeanne_rainbow", "src_loc_jeanne_house"],
+      "members": [
+        {"attestationId":"att_jeanne_01","order":1,"membershipStatus":"supported"},
+        {"attestationId":"att_jeanne_02","order":2,"membershipStatus":"documented"},
+        {"attestationId":"att_jeanne_03","order":3,"membershipStatus":"documented"},
+        {"attestationId":"att_jeanne_04","order":4,"membershipStatus":"documented"}
+      ]
+    },
+    {
+      "provisionalId": "wnph:series:joan-foster",
+      "seriesTitle": "Joan Foster",
+      "seriesIdentityConfidence": "high",
+      "evidenceSourceIds": ["src_iu_dodd_mead", "src_imagecascade_books"],
+      "members": [
+        {"attestationId":"att_dodd_07","order":1,"membershipStatus":"documented"},
+        {"attestationId":"att_dodd_10","order":2,"membershipStatus":"documented"},
+        {"attestationId":"att_dodd_08","order":3,"membershipStatus":"documented"},
+        {"attestationId":"att_dodd_09","order":4,"membershipStatus":"documented"},
+        {"attestationId":"att_dodd_11","order":5,"membershipStatus":"documented"},
+        {"attestationId":"att_dodd_06","order":6,"membershipStatus":"documented"}
+      ],
+      "currentRecoveryState": "currently_republished_elsewhere",
+      "rightsSensitivity": "high_until_independently_adjudicated",
+      "notes": "Image Cascade currently sells all six books and states generally that authors/authors' families permit its reissues. This is sufficient to block casual Write Now recovery, not sufficient to determine the exact rights chain."
+    }
+  ],
+  "recoveryClusterCandidates": [
+    {
+      "provisionalId": "wnph:cluster:wish-fairy-surviving-corpus",
+      "clusterTitle": "Surviving Wish Fairy Corpus",
+      "clusterBasis": "historical_series",
+      "memberWorkIds": [
+        "wnph:work:long-ago-years-stories",
+        "wnph:work:wish-fairy-sunshine-shadow",
+        "wnph:work:wish-fairy-dewy-dear"
+      ],
+      "attachedBibliographicLossWorkIds": ["wnph:work:mud-wumps"],
+      "clusterStatus": "proposed_empirical_handoff",
+      "notes": "Books 1-3 are witnessed; Book 4 remains attached as a bibliographic-loss investigation rather than being silently removed or sent to reconstruction."
+    }
+  ],
+  "coverageLedger": [
+    {"sourceFamily":"publisher_archive","status":"searched_bounded","result":"Dodd, Mead finding aid harvested for Alice title/project files"},
+    {"sourceFamily":"national_library","status":"searched_bounded","result":"LOC primary digitizations verified for Dewy Dear, Jeanne's House Party, and The Dear Pretender; related LOC records surfaced additional early works"},
+    {"sourceFamily":"specialist_publisher_bibliography","status":"searched_bounded","result":"Henry Altemus Wish Fairy and Wee Books relationships verified"},
+    {"sourceFamily":"copyright_catalog","status":"searched_bounded","result":"Selected renewals used to verify name form and several title/date claims"},
+    {"sourceFamily":"digital_repository","status":"searched_bounded","result":"Wikimedia category confirms six historical scans"},
+    {"sourceFamily":"current_publisher","status":"searched_bounded","result":"Image Cascade current Joan Foster republication verified"},
+    {"sourceFamily":"secondary_bibliography","status":"searched_bounded","result":"Mary Randall association verified as an explicit secondary bibliographic claim in multiple sources"}
+  ],
+  "coverageLimitations": [
+    "This is not an exhaustive corpus census and must not be labeled COMPLETE_AS_KNOWN.",
+    "No exhaustive WorldCat holdings census was performed in this packet.",
+    "No title-by-title Gutenberg, Standard Ebooks, LibriVox, Hoopla, OverDrive, Palace, or CloudLibrary recovery audit was completed here.",
+    "No full rights determination was performed for later works or current Image Cascade editions.",
+    "Dodd, Mead archive title strings are attestations, not automatic proof that each item was published as a distinct book.",
+    "Modern aggregator dates are discovery aids only where stronger evidence is absent.",
+    "Mary Randall association is documented as a bibliographic relationship; its historical mechanism remains unresolved."
+  ],
+  "schemaObservations": [
+    {
+      "observationId": "obs_01",
+      "finding": "creator_names_cannot_be_a_flat_alias_array",
+      "reason": "Alice Mary (Ross) Colver is a documented personal-name form, while Mary Randall is a relationship claim whose mechanism is unresolved. Both would be damaged by one generic aliases column.",
+      "designPressure": "Model creator name claims separately from source-circle/pseudonym/house-name relationships."
+    },
+    {
+      "observationId": "obs_02",
+      "finding": "publication_dates_are_claims_before_they_are_canonical_fields",
+      "reason": "Babs at Home has a 1921 copyright claim and a 1924 LOC digitized manifestation. A single work.publication_date would silently erase the edition distinction.",
+      "designPressure": "Attestation-level date claims and edition-level dates must precede any governed work-level first-publication field."
+    },
+    {
+      "observationId": "obs_03",
+      "finding": "title_attestations_need_reusable_evidence_objects",
+      "reason": "The same copyright, archive, or catalog source supports creator identity, title identity, dates, contributor roles, and rights questions.",
+      "designPressure": "Do not bury evidence as duplicated JSON arrays on every table; use reusable evidence sources/assertions or equivalent relations."
+    },
+    {
+      "observationId": "obs_04",
+      "finding": "work_identity_adjudication_must_be_append_only_and_many_to_many",
+      "reason": "Adventures on a Hilltop versus Adventure on a Hilltop and the two Heart title strings require clusters that can remain unresolved and later split or merge.",
+      "designPressure": "Do not implement work identity as a mutable foreign key on title_attestation alone."
+    },
+    {
+      "observationId": "obs_05",
+      "finding": "series_membership_is_an_evidence_bearing_relationship",
+      "reason": "Mud Wumps is catalogued as series member four even though a witness has never been seen. Series membership and work/witness existence are separate claims.",
+      "designPressure": "Series membership needs status, order confidence, and evidence rather than a simple series_id column on work."
+    },
+    {
+      "observationId": "obs_06",
+      "finding": "recovery_state_is_multidimensional",
+      "reason": "A title may be witnessed, digitized, public-domain, partially recovered, or currently republished in different combinations.",
+      "designPressure": "Avoid one overloaded work.status enum for identity, witness, rights, digital availability, and recovery state."
+    },
+    {
+      "observationId": "obs_07",
+      "finding": "current_republisher_relationship_is_not_a_rights_determination",
+      "reason": "Image Cascade's current Joan Foster editions are strong evidence that Write Now should treat the series as rights-sensitive, but they do not by themselves establish the complete legal chain.",
+      "designPressure": "Model current manifestation/publisher evidence separately from governed rights determinations."
+    },
+    {
+      "observationId": "obs_08",
+      "finding": "authorship_should_be_claim_based_not_embedded_on_work",
+      "reason": "The architecture must later support attributed, collective, anonymous, translated, and disputed creator relationships without changing work identity.",
+      "designPressure": "Historical Work should not own a simplistic creators array as the final relational model; authorship claims should be first-class."
+    },
+    {
+      "observationId": "obs_09",
+      "finding": "corpus_completeness_requires_coverage_custody",
+      "reason": "The Dodd archive is substantial but begins in 1929 and omits many early works; modern aggregators are noisy. A count without a coverage ledger would create false completeness.",
+      "designPressure": "Corpus completeness must be derived from documented source-family coverage, not title count alone."
+    },
+    {
+      "observationId": "obs_10",
+      "finding": "bibliographic_loss_must_stay_attached_to_the_corpus",
+      "reason": "Mud Wumps matters to recovery of the Wish Fairy corpus even though it cannot enter normal reconstruction without a witness.",
+      "designPressure": "The data model must retain witnessed, unwitnessed, and possibly unpublished corpus members without forcing every title into a production queue."
+    }
+  ],
+  "nextGate": {
+    "readyFor": "first_recovery_work_handoff",
+    "target": "The Wish Fairy and Dewy Dear / surviving Wish Fairy cluster",
+    "notReadyFor": "freeze_creator_corpus_postgres_schema",
+    "reason": "The packet exposed relational corrections that should be adjudicated against one real Recovery Work handoff before SQL tables are locked."
+  }
+}
