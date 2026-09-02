@@ -32,11 +32,13 @@ for(const observation of input.observations){
   const gray=new Uint8Array(w*h);
   for(let y=0;y<h;y+=1)for(let x=0;x<w;x+=1)gray[y*w+x]=image.data[(y0+y)*image.width+x0+x];
   const result=measureObservable(gray,w,h,observation.segmentation);
-  if(!result.eligible){measured.push({id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,eligible:false,qualityWarnings:result.qualityWarnings});continue;}
+  const observationContinuityToken=source.continuityToken?crypto.createHash("sha256").update(`${source.continuityToken}|${observation.proposalKind??"manual"}|${x0},${y0},${w},${h}`).digest("hex"):null;
+  const technical={proposalKind:observation.proposalKind??"manual",proposalScale:observation.proposalScale??"manual",sourceContinuityToken:source.continuityToken??null,observationContinuityToken};
+  if(!result.eligible){measured.push({id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,eligible:false,qualityWarnings:result.qualityWarnings,...technical});continue;}
   const maskToken=crypto.createHash("sha256").update(input.blindInputSha256).update(Buffer.from(result.mask)).digest("hex");
   const{mask,normalizedWidth,normalizedHeight,eligible,...features}=result;
   measured.push({
-    id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,captureToken:source.captureToken,maskToken,
+    id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,captureToken:source.captureToken,maskToken,...technical,
     normalizedWidth,normalizedHeight,...features,
   });
 }
