@@ -8,7 +8,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "check:boundaries": "node scripts/check-boundaries.mjs",
-    "check:research-packets": "node scripts/check-research-packets.mjs"
+    "check:research-packets": "node scripts/check-research-packets.mjs",
+    "check:mark-observables": "node scripts/check-mark-observable-packets.mjs"
   },
   "dependencies": {
     "next": "latest",
@@ -19,6 +20,7 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "sharp": "latest",
     "typescript": "latest"
   }
 }
