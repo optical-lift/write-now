@@ -1,0 +1,89 @@
+name: Mark Universal Observable Discovery v2
+
+on:
+  pull_request:
+    paths:
+      - "scripts/prepare-mark-observables.mjs"
+      - "scripts/mark-observable-discovery.mjs"
+      - "scripts/learn-mark-world.mjs"
+      - "scripts/predict-mark-world-holdout.mjs"
+      - "scripts/assemble-mark-world.mjs"
+      - "scripts/rejoin-mark-world.mjs"
+      - "scripts/check-mark-observable-packets.mjs"
+      - "scripts/lib/mark-image-observable.mjs"
+      - "scripts/lib/mark-world-core.mjs"
+      - "research/mark/observable-corpus/**"
+      - "docs/mark-universal-observable-engine-v2.md"
+      - ".github/workflows/mark-universal-discovery.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ten-boxes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install
+      - name: Validate observable packets
+        run: npm run check:mark-observables
+      - name: Prepare category-blind intake
+        env:
+          MARK_OBSERVABLE_PACKET: research/mark/observable-corpus/ten-boxes-fixture.v1.json
+        run: node scripts/prepare-mark-observables.mjs
+      - name: Measure the mixed observable field
+        run: node scripts/mark-observable-discovery.mjs
+      - name: Learn train-only world
+        run: node scripts/learn-mark-world.mjs
+      - name: Predict unseen source objects
+        run: node scripts/predict-mark-world-holdout.mjs
+      - name: Assemble full blind world after prediction freeze
+        run: node scripts/assemble-mark-world.mjs
+      - name: Rejoin old box labels after world freeze
+        run: node scripts/rejoin-mark-world.mjs
+      - name: Publish blind and rejoin summaries
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for summary in \
+            artifacts/mark-observable-discovery-v1/summary.txt \
+            artifacts/mark-world-train-v1/summary.txt \
+            artifacts/mark-world-prediction-v1/summary.txt \
+            artifacts/mark-world-v1/summary.txt \
+            artifacts/mark-world-rejoin-v1/summary.txt; do
+            if [[ -s "$summary" ]]; then
+              echo "### $summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```text' >> "$GITHUB_STEP_SUMMARY"
+              cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Upload sealed blind world
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-blind-world-v1
+          path: |
+            artifacts/mark-observable-input-v1
+            artifacts/mark-observable-discovery-v1
+            artifacts/mark-world-train-v1
+            artifacts/mark-world-prediction-v1
+            artifacts/mark-world-v1
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload contextual rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-world-context-rejoin-v1
+          path: |
+            artifacts/mark-observable-rejoin-v1
+            artifacts/mark-world-rejoin-v1
+          if-no-files-found: error
+          retention-days: 30

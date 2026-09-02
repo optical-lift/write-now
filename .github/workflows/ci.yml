@@ -23,5 +23,7 @@ jobs:
         run: npm run check:boundaries
       - name: Research packet integrity
         run: npm run check:research-packets
+      - name: Mark observable packet integrity
+        run: npm run check:mark-observables
       - name: Build
         run: npm run build
