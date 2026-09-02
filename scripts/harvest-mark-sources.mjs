@@ -1,11 +1,13 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import sharp from "sharp";
 
 const manifestPath = process.env.MARK_HARVEST_MANIFEST ?? "research/mark/harvest-manifests/ten-boxes-attic-fixture.v1.json";
 const outDir = process.env.MARK_HARVEST_OUT ?? "artifacts/mark-harvest-v1";
 const rejoinOutDir = process.env.MARK_HARVEST_REJOIN_OUT ?? "artifacts/mark-harvest-rejoin-v1";
 const maxBytes = Number(process.env.MARK_HARVEST_MAX_BYTES ?? 25 * 1024 * 1024);
+const nearDuplicateBits = Math.max(0, Number(process.env.MARK_NEAR_DUPLICATE_BITS ?? 2));
 const manifestBytes = await fs.readFile(manifestPath);
 const manifest = JSON.parse(manifestBytes);
 if (manifest.schema !== "mark_harvest_manifest_v1") throw new Error(`unsupported harvest manifest ${manifest.schema}`);
@@ -45,6 +47,17 @@ function syntheticSvg(recipe = {}) {
   const dy = Number(recipe.dy ?? 0);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="100" viewBox="0 0 260 100"><rect width="260" height="100" fill="white"/><g stroke="black" stroke-width="${strokeWidth}" fill="none" stroke-linecap="${linecap}" stroke-linejoin="round"><path d="M ${18+dx} ${78+dy} L ${20+dx} ${18+dy} L ${50+dx} ${62+dy}"/><path d="M ${82+dx} ${78+dy} L ${84+dx} ${18+dy} L ${114+dx} ${62+dy} M ${84+dx} ${46+dy} L ${111+dx} ${32+dy}"/><path d="M ${160+dx} ${16+dy} L ${160+dx} ${80+dy} M ${134+dx} ${47+dy} L ${186+dx} ${47+dy}"/><path d="M ${224+dx} ${16+dy} L ${224+dx} ${80+dy} M ${198+dx} ${47+dy} L ${250+dx} ${47+dy}"/><ellipse cx="${224+dx}" cy="47" rx="13" ry="16"/></g></svg>`;
 }
+async function perceptualHash(bytes) {
+  const { data } = await sharp(bytes).greyscale().resize(9, 8, { fit: "fill" }).raw().toBuffer({ resolveWithObject: true });
+  let hash = 0n;
+  for (let y = 0; y < 8; y += 1) for (let x = 0; x < 8; x += 1) hash = (hash << 1n) | (data[y * 9 + x] > data[y * 9 + x + 1] ? 1n : 0n);
+  return hash;
+}
+function hamming64(a, b) {
+  let x = a ^ b, count = 0;
+  while (x) { count += Number(x & 1n); x >>= 1n; }
+  return count;
+}
 
 async function bytesFor(source) {
   const capture = source.capture ?? {};
@@ -61,7 +74,7 @@ async function bytesFor(source) {
     const type = mimeFromPath(absolute);
     return { bytes: await fs.readFile(absolute), ...type, retrieval: "local_file" };
   }
-  const response = await fetch(capture.assetUrl, { redirect: "follow", headers: { "user-agent": "MarkResearchHarvester/1.0" } });
+  const response = await fetch(capture.assetUrl, { redirect: "follow", headers: { "user-agent": "MarkResearchHarvester/2.0" } });
   if (!response.ok) throw new Error(`harvest failed ${response.status} for ${source.sourceId}`);
   const bytes = Buffer.from(await response.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error(`capture exceeds ${maxBytes} bytes (${source.sourceId})`);
@@ -74,28 +87,47 @@ await fs.mkdir(path.join(outDir, "captures"), { recursive: true });
 await fs.mkdir(rejoinOutDir, { recursive: true });
 const blindSources = [];
 const custodySources = [];
-const exactHashes = new Set();
+const excludedSources = [];
+const exactHashes = new Map();
+const perceptualHashes = [];
 for (const source of manifest.sources) {
   const { bytes, mime, ext, retrieval } = await bytesFor(source);
   const exactSha256 = crypto.createHash("sha256").update(bytes).digest("hex");
-  if (manifest.status === "physical_evidence" && exactHashes.has(exactSha256)) throw new Error(`duplicate physical bytes cannot count as independent source objects (${source.sourceId})`);
-  exactHashes.add(exactSha256);
   const sourceGroupId = opaque(source.sourceId);
-  const stableContinuityToken = continuityToken(exactSha256);
-  const capturePath = path.posix.join("captures", `${sourceGroupId}${ext}`);
-  await fs.writeFile(path.join(outDir, capturePath), bytes);
-  blindSources.push({ sourceGroupId, adapter: "image_2d", capturePath, captureMime: mime, captureToken: token("capture", exactSha256), continuityToken: stableContinuityToken });
   const contextual = structuredClone(source);
   delete contextual.capture?.syntheticRecipe;
   delete contextual.capture?.syntheticSvg;
+  if (manifest.status === "physical_evidence") {
+    const exactMatch = exactHashes.get(exactSha256);
+    if (exactMatch) {
+      excludedSources.push({ sourceGroupId, exactCaptureSha256: exactSha256, retrieval, exclusion: { reason: "exact_duplicate", matchedSourceGroupId: exactMatch }, ...contextual });
+      continue;
+    }
+    const pHash = await perceptualHash(bytes);
+    const nearMatch = perceptualHashes.map(row => ({ ...row, distance: hamming64(pHash, row.hash) })).sort((a,b)=>a.distance-b.distance)[0];
+    if (nearMatch && nearMatch.distance <= nearDuplicateBits) {
+      excludedSources.push({ sourceGroupId, exactCaptureSha256: exactSha256, retrieval, exclusion: { reason: "perceptual_near_duplicate", matchedSourceGroupId: nearMatch.sourceGroupId, hammingDistance: nearMatch.distance, thresholdBits: nearDuplicateBits }, ...contextual });
+      continue;
+    }
+    exactHashes.set(exactSha256, sourceGroupId);
+    perceptualHashes.push({ sourceGroupId, hash: pHash });
+  }
+  const stableContinuityToken = continuityToken(exactSha256);
+  const capturePath = path.posix.join("captures", `${sourceGroupId}${ext}`);
+  await fs.writeFile(path.join(outDir, capturePath), bytes);
+  const lane = source.challengeLane ?? null;
+  if (lane && !new Set(["train", "holdout", "control"]).has(lane)) throw new Error(`invalid challenge lane ${lane} on ${source.sourceId}`);
+  blindSources.push({ sourceGroupId, adapter: "image_2d", capturePath, captureMime: mime, captureToken: token("capture", exactSha256), continuityToken: stableContinuityToken, ...(lane ? { lane } : {}) });
   custodySources.push({ sourceGroupId, exactCaptureSha256: exactSha256, continuityToken: stableContinuityToken, retrieval, ...contextual });
 }
+if (blindSources.length < 2) throw new Error(`harvest retained too few independent sources after deduplication: ${blindSources.length}`);
 const blindCore = {
   schema: "mark_harvested_sources_blind_v1",
   corpusKind: manifest.status === "synthetic_fixture" ? "synthetic_pipeline_fixture_not_evidence" : "physical_observable_evidence",
   generatedAt: new Date().toISOString(),
   sources: blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
-  blindnessContract: { contextualMetadataPresent: false, unit: "source_capture", categoryLabelsAvailable: false, continuityToken: "HMAC-SHA256 over exact source bytes with private MARK_CONTINUITY_KEY" },
+  deduplicationContract: manifest.status === "physical_evidence" ? { exactBytes: true, perceptualDHash64: true, maxHammingDistance: nearDuplicateBits, excludedCount: excludedSources.length } : { exactBytes: false, perceptualDHash64: false, fixtureBypass: true },
+  blindnessContract: { contextualMetadataPresent: false, unit: "source_capture", categoryLabelsAvailable: false, continuityToken: "HMAC-SHA256 over exact source bytes with private MARK_CONTINUITY_KEY", challengeLaneMayBePresent: true },
 };
 const blindSha256 = crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
 const blind = { ...blindCore, blindSha256 };
@@ -107,7 +139,8 @@ const rejoin = {
   harvestId: manifest.harvestId,
   status: manifest.status,
   sources: custodySources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
+  excludedSources: excludedSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
 };
 await fs.writeFile(path.join(rejoinOutDir, "mark-harvest-custody-rejoin-v1.json"), `${JSON.stringify(rejoin, null, 2)}\n`);
-console.log(`Harvested ${blind.sources.length} source objects without exposing source categories to discovery`);
+console.log(`Harvested ${blind.sources.length} independent source objects; excluded ${excludedSources.length} exact/perceptual duplicates`);
 console.log(`Harvest blind SHA-256: ${blindSha256}`);
