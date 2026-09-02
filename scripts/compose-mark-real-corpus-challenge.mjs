@@ -19,7 +19,9 @@ for (const { file, manifest } of manifests) {
     const lane = source.challengeLane;
     if (!laneInstitutions.has(lane)) throw new Error(`${file}: source ${source.sourceId} has invalid/missing challengeLane`);
     laneInstitutions.get(lane).add(source.institution);
-    sources.push(structuredClone(source));
+    const copy=structuredClone(source);
+    if(copy.capture?.imagePath)copy.capture.imagePath=path.resolve(path.dirname(file),copy.capture.imagePath);
+    sources.push(copy);
   }
 }
 for (const lane of ["train", "holdout", "control"]) if (!sources.some(source => source.challengeLane === lane)) throw new Error(`challenge has no ${lane} sources`);
