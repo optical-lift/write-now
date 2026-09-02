@@ -60,12 +60,16 @@ The v5 workflow proceeds in this order:
 5. let Mark propose multiscale observables;
 6. measure train, holdout, and control with the same feature engine;
 7. freeze a world from train only;
-8. compare train structure with feature-shuffled null worlds;
+8. measure train structure against feature-shuffled null worlds;
 9. score the unseen institution with abstention enabled;
 10. score the unrelated control against the same frozen world;
 11. compare accepted whole-object holdouts with an ordinary 64-bit image-similarity baseline;
-12. spatially scramble training captures, rerun proposal and measurement, and compare the resulting structural world with the real one;
-13. only after those blind artifacts are sealed, reopen provenance and rank candidate families for inspection.
+12. preserve the exact sealed training observation identities, dimensions, source groups, and grayscale histograms while independently permuting pixels inside every observation, then remeasure and rebuild a spatial-null world;
+13. compare the real world with that exact-observation spatial-null world;
+14. only after all blind artifacts are sealed, reopen provenance and rank candidate families for inspection;
+15. issue one final PASS/FAIL verdict against the predeclared hostile challenge thresholds.
+
+A failed criterion does not stop the earlier measurements from being written. The verdict is intentionally last so a negative experiment still leaves a complete diagnostic record rather than hiding later controls.
 
 ## Adversarial controls
 
@@ -85,11 +89,27 @@ A 64-bit difference hash is computed for whole captures. An accepted holdout is 
 
 This is deliberately a cheap baseline. It does not establish mechanism; it prevents obvious visual resemblance from being promoted as structural surprise.
 
-### Spatial destruction
+### Exact-observation spatial null
 
-Training captures are converted to grayscale and deterministically divided into a tile grid. Tiles are permuted before Mark is allowed to propose observables again. The retained grid crop contains the same grayscale pixel inventory but its spatial arrangement is destroyed.
+The spatial control operates on the already sealed training observations rather than creating a new set of image fragments. For every train observation it preserves:
 
-The scrambled corpus is measured and modeled with the same Mark code and receives its own shuffled-null evaluation. The real world should show stronger recurrence/tightness than the spatially destroyed world if layout actually carries the signal.
+- the observation ID;
+- the source-group identity;
+- the region width and height;
+- the number of observations in the experiment; and
+- the exact grayscale intensity histogram inside that observation.
+
+It then applies an independent deterministic Fisher-Yates permutation to the pixels within that observation before running the same structural measurement code again. Pixel inventory is therefore unchanged while spatial topology is destroyed.
+
+The spatial-null measurements are learned into a world with the same Mark world builder and receive their own shuffled-null evaluation. Because observation identities and counts are fixed, the real/null comparison is not rewarded merely for generating extra pieces.
+
+#### Rejected first implementation
+
+The first v5 CI attempt used deterministic 4×4 tile permutation at the whole-image level and then allowed Mark to propose new observations. That control was rejected.
+
+It generated artificial tile seams and increased the number of proposed structures. In the fixture, the spatially tiled world became *more* recurrent than the real world: real/scramble cross-source tightness was `0.787345` and real/scramble recurrence was `0.136364`. Those values do not show that spatial order was irrelevant; they show that the negative control manufactured its own repeated geometry.
+
+The tile control therefore cannot be used as evidentiary support and is not part of the v5 verdict. Its failure is retained here as method custody because deleting an unfavorable control result would make the experimental record worse, not cleaner.
 
 ## Post-freeze provenance report
 
@@ -100,24 +120,34 @@ After every blind comparison is sealed, the report rejoins source custody and ra
 - whole-object recurrence in the unseen institution;
 - holdout recurrence not trivially explained by whole-image similarity;
 - false recurrence in the unrelated control institution; and
-- global shuffled-null and spatial-control statistics.
+- global shuffled-null and exact-observation spatial-null statistics.
 
 The report may expose catalog terms after freeze so humans can inspect what Mark connected. Those terms never become features in the frozen world.
 
 Candidate scores are triage. They are not p-values and they are not historical conclusions.
 
+## Final hostile verdict
+
+The workflow writes a final verdict only after the provenance report exists. By default every condition below is required:
+
+- cross-source tightness must beat feature-shuffled nulls at empirical `p <= 0.05`;
+- recurrence score must beat feature-shuffled nulls at empirical `p <= 0.05`;
+- at least one whole object from the unseen institution must be accepted;
+- at least one whole object from the unseen institution must be rejected, proving abstention remains active;
+- unrelated-control whole-object acceptance must be `<= 0.25`;
+- unseen-institution whole-object acceptance must exceed control acceptance by at least `0.10`;
+- at least one accepted holdout whole object must remain visually non-trivial under the cheap dHash baseline;
+- real cross-source tightness must be at least `1.05×` the exact-observation spatial-null value;
+- real recurrence must be at least `1.05×` the exact-observation spatial-null value; and
+- at least one family must span two or more training institutions, recur as a visually non-trivial whole-object match in the unseen institution, and accept zero whole objects from the unrelated control institution.
+
+These are challenge gates, not historical significance thresholds. A PASS establishes that a structural relation survived this particular hostile benchmark. A FAIL is a valid experimental outcome and must not be described as evidence for the historical hypothesis.
+
 ## What can count as a v5 success
 
-A physically interesting result requires, at minimum:
+Passing the final verdict would establish that at least one blind structural relation survived independent training institutions, an unseen institution, abstention, an unrelated control institution, a cheap visual baseline, feature-shuffled nulls, and an exact-observation spatial-topology null.
 
-- a training world stronger than shuffled null worlds;
-- recurrence in an institution unavailable during training;
-- active abstention rather than universal acceptance;
-- materially lower acceptance in the unrelated control lane;
-- at least one accepted holdout relation that is not merely the nearest whole-image lookalike; and
-- real spatial structure stronger than the spatially scrambled negative control.
-
-Passing those conditions would establish that a blind structural relation survived hostile controls. It would still not establish common authorship, cultural transmission, linguistic identity, historical mechanism, or meaning. Those are later hypotheses that must earn separate evidence.
+It would still not establish common authorship, cultural transmission, linguistic identity, historical mechanism, or meaning. Those are later hypotheses that must earn separate evidence.
 
 ## Scaling boundary
 
