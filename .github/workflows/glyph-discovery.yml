@@ -5,6 +5,7 @@ on:
     paths:
       - "app/glyph-atlas/**"
       - "scripts/glyph-discovery.mjs"
+      - "scripts/seal-glyph-discovery.mjs"
       - ".github/workflows/glyph-discovery.yml"
   workflow_dispatch:
 
@@ -58,23 +59,38 @@ jobs:
           GLYPH_DISCOVERY_OUT: artifacts/glyph-discovery-v1
         run: node scripts/glyph-discovery.mjs
 
-      - name: Publish summary
+      - name: Seal blind identities and consensus groups
+        env:
+          GLYPH_DISCOVERY_RAW: artifacts/glyph-discovery-v1/glyph-discovery-blind-v1.json
+          GLYPH_DISCOVERY_SEALED_OUT: artifacts/glyph-discovery-v1-sealed
+          GLYPH_DISCOVERY_REJOIN_OUT: artifacts/glyph-discovery-rejoin-v1
+        run: node scripts/seal-glyph-discovery.mjs
+
+      - name: Publish sealed summary
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -s artifacts/glyph-discovery-v1/summary.txt ]]; then
+          if [[ -s artifacts/glyph-discovery-v1-sealed/summary.txt ]]; then
             echo '```text' >> "$GITHUB_STEP_SUMMARY"
-            cat artifacts/glyph-discovery-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+            cat artifacts/glyph-discovery-v1-sealed/summary.txt >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
           else
-            echo 'Glyph discovery did not produce a summary.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Glyph discovery did not produce a sealed summary.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Upload frozen blind artifact
+      - name: Upload sealed blind artifact
         uses: actions/upload-artifact@v4
         with:
-          name: glyph-discovery-blind-v1
-          path: artifacts/glyph-discovery-v1
+          name: glyph-discovery-blind-v1-1
+          path: artifacts/glyph-discovery-v1-sealed
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload post-freeze rejoin map separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: glyph-discovery-rejoin-map-v1
+          path: artifacts/glyph-discovery-rejoin-v1
           if-no-files-found: error
           retention-days: 30
