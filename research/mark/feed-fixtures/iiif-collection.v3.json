@@ -1,0 +1,33 @@
+{
+  "id": "https://example.org/iiif/collection/root",
+  "type": "Collection",
+  "label": {"en": ["Synthetic IIIF Collection"]},
+  "items": [
+    {
+      "id": "https://example.org/iiif/manifest/1",
+      "type": "Manifest",
+      "label": {"en": ["Object One"]},
+      "items": [
+        {
+          "id": "https://example.org/iiif/canvas/1",
+          "type": "Canvas",
+          "label": {"en": ["View One"]},
+          "items": [{"id":"https://example.org/iiif/page/1","type":"AnnotationPage","items":[{"id":"https://example.org/iiif/annotation/1","type":"Annotation","motivation":"painting","body":{"id":"https://example.org/images/object-1.jpg","type":"Image","format":"image/jpeg"},"target":"https://example.org/iiif/canvas/1"}]}]
+        }
+      ]
+    },
+    {
+      "id": "https://example.org/iiif/manifest/2",
+      "type": "Manifest",
+      "label": {"en": ["Object Two"]},
+      "items": [
+        {
+          "id": "https://example.org/iiif/canvas/2",
+          "type": "Canvas",
+          "label": {"en": ["View Two"]},
+          "items": [{"id":"https://example.org/iiif/page/2","type":"AnnotationPage","items":[{"id":"https://example.org/iiif/annotation/2","type":"Annotation","motivation":"painting","body":{"id":"https://example.org/images/object-2.jpg","type":"Image","format":"image/jpeg"},"target":"https://example.org/iiif/canvas/2"}]}]
+        }
+      ]
+    }
+  ]
+}

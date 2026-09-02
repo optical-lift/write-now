@@ -1,0 +1,8 @@
+{
+  "schema": "mark_iiif_feed_request_v1",
+  "feedId": "fixture-iiif-v3",
+  "fixturePath": "../feed-fixtures/iiif-collection.v3.json",
+  "institution": "Synthetic IIIF Fixture",
+  "rightsBasis": "synthetic fixture only",
+  "maxSources": 20
+}

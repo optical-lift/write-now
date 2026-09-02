@@ -1,0 +1,121 @@
+name: Mark Conveyor Intake v3
+
+on:
+  pull_request:
+    paths:
+      - "scripts/expand-mark-iiif-feed.mjs"
+      - "scripts/harvest-mark-sources.mjs"
+      - "scripts/propose-mark-observables.mjs"
+      - "scripts/finalize-mark-harvest-rejoin.mjs"
+      - "scripts/mark-observable-discovery.mjs"
+      - "scripts/accumulate-mark-observable-ledger.mjs"
+      - "scripts/accumulate-mark-custody-ledger.mjs"
+      - "scripts/build-mark-world-from-ledger.mjs"
+      - "scripts/rejoin-mark-continuous-world.mjs"
+      - "scripts/rank-mark-surprises.mjs"
+      - "scripts/check-mark-harvest-manifests.mjs"
+      - "research/mark/harvest-manifests/**"
+      - "research/mark/harvest-feeds/**"
+      - "research/mark/feed-fixtures/**"
+      - ".github/workflows/mark-conveyor-intake.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conveyor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install
+      - name: Validate harvest manifests
+        run: npm run check:mark-harvests
+      - name: Prove institutional feed enumeration without hand-listed objects
+        run: |
+          node scripts/expand-mark-iiif-feed.mjs
+          MARK_HARVEST_MANIFEST_DIR=artifacts/mark-iiif-feed-v1 npm run check:mark-harvests
+      - name: Harvest unsegmented source captures
+        env:
+          MARK_HARVEST_MANIFEST: research/mark/harvest-manifests/ten-boxes-attic-fixture.v1.json
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Let Mark propose its own multiscale pieces
+        run: node scripts/propose-mark-observables.mjs
+      - name: Bind proposals to separate custody map
+        run: node scripts/finalize-mark-harvest-rejoin.mjs
+      - name: Measure proposed mixed field
+        env:
+          MARK_OBSERVABLE_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json
+        run: node scripts/mark-observable-discovery.mjs
+      - name: Freeze train-only world
+        run: node scripts/learn-mark-world.mjs
+      - name: Predict unseen source objects
+        run: node scripts/predict-mark-world-holdout.mjs
+      - name: Assemble this harvest only after prediction freeze
+        run: node scripts/assemble-mark-world.mjs
+      - name: Append measurements to blind continuity ledger
+        run: node scripts/accumulate-mark-observable-ledger.mjs
+      - name: Append provenance to separate context ledger
+        run: node scripts/accumulate-mark-custody-ledger.mjs
+      - name: Rebuild entire accumulated blind world
+        run: node scripts/build-mark-world-from-ledger.mjs
+      - name: Rejoin accumulated context after world freeze
+        run: node scripts/rejoin-mark-continuous-world.mjs
+      - name: Rank the least human-obvious joins
+        run: node scripts/rank-mark-surprises.mjs
+      - name: Publish conveyor summaries
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for summary in \
+            artifacts/mark-iiif-feed-v1/summary.txt \
+            artifacts/mark-conveyor-input-v1/summary.txt \
+            artifacts/mark-observable-discovery-v1/summary.txt \
+            artifacts/mark-world-train-v1/summary.txt \
+            artifacts/mark-world-prediction-v1/summary.txt \
+            artifacts/mark-observable-ledger-v1/summary.txt \
+            artifacts/mark-ledger-world-v1/summary.txt \
+            artifacts/mark-continuous-rejoin-v1/summary.txt \
+            artifacts/mark-surprises-v1/summary.txt; do
+            if [[ -s "$summary" ]]; then
+              echo "### $summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```text' >> "$GITHUB_STEP_SUMMARY"
+              cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Upload blind conveyor world
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-conveyor-blind-v1
+          path: |
+            artifacts/mark-harvest-v1
+            artifacts/mark-conveyor-input-v1
+            artifacts/mark-observable-discovery-v1
+            artifacts/mark-world-train-v1
+            artifacts/mark-world-prediction-v1
+            artifacts/mark-world-v1
+            artifacts/mark-observable-ledger-v1
+            artifacts/mark-ledger-world-v1
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload custody and surprise lane separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-conveyor-context-v1
+          path: |
+            artifacts/mark-iiif-feed-v1
+            artifacts/mark-harvest-rejoin-v1
+            artifacts/mark-conveyor-rejoin-v1
+            artifacts/mark-context-ledger-v1
+            artifacts/mark-continuous-rejoin-v1
+            artifacts/mark-surprises-v1
+          if-no-files-found: error
+          retention-days: 30

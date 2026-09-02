@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:research-packets": "node scripts/check-research-packets.mjs",
-    "check:mark-observables": "node scripts/check-mark-observable-packets.mjs"
+    "check:mark-observables": "node scripts/check-mark-observable-packets.mjs",
+    "check:mark-harvests": "node scripts/check-mark-harvest-manifests.mjs"
   },
   "dependencies": {
     "next": "latest",
