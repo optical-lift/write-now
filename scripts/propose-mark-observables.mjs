@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 const harvestPath = process.env.MARK_HARVEST_BLIND ?? "artifacts/mark-harvest-v1/mark-harvested-sources-blind-v1.json";
 const outDir = process.env.MARK_PROPOSAL_OUT ?? "artifacts/mark-conveyor-input-v1";
+const maxComponentsPerSource = Math.max(8, Number(process.env.MARK_MAX_COMPONENTS_PER_SOURCE ?? 64));
 const harvest = JSON.parse(await fs.readFile(harvestPath, "utf8"));
 if (harvest.schema !== "mark_harvested_sources_blind_v1") throw new Error(`unsupported harvest schema ${harvest.schema}`);
 const { blindSha256: suppliedHarvestSha, ...harvestCore } = harvest;
@@ -42,7 +43,7 @@ const laneFor=(sourceGroupId)=>explicitLanes.get(sourceGroupId)??(holdoutSources
 const lanePolicy=explicitLanes.size?"presealed_challenge_lanes_with_deterministic_source_fallback":"deterministic_source_level_80_20_holdout_from_private_key_continuity_token";
 
 await fs.mkdir(path.join(outDir,"captures"),{recursive:true});
-const blindSources=[]; const observations=[]; const proposalAudit=[];
+const blindSources=[]; const observations=[]; const proposalAudit=[]; const sourceProposalStats=[];
 for(const source of harvest.sources){
   const absolute=path.resolve(path.dirname(harvestPath),source.capturePath);
   const bytes=await fs.readFile(absolute);
@@ -52,7 +53,8 @@ for(const source of harvest.sources){
   const{data,info}=await sharp(bytes).greyscale().raw().toBuffer({resolveWithObject:true});
   const threshold=otsu(data),mask=new Uint8Array(data.length);for(let i=0;i<data.length;i+=1)mask[i]=data[i]<=threshold?1:0;
   const minPixels=Math.max(12,Math.round(info.width*info.height*0.0005));
-  const found=components(mask,info.width,info.height).filter(c=>c.pixels>=minPixels&&c.width>=2&&c.height>=2).sort((a,b)=>a.x-b.x||a.y-b.y);
+  const eligibleComponents=components(mask,info.width,info.height).filter(c=>c.pixels>=minPixels&&c.width>=2&&c.height>=2);
+  const found=[...eligibleComponents].sort((a,b)=>b.pixels-a.pixels||a.x-b.x||a.y-b.y).slice(0,maxComponentsPerSource).sort((a,b)=>a.x-b.x||a.y-b.y||b.pixels-a.pixels);
   const candidates=[];
   candidates.push({kind:"whole_capture",scale:"object",region:{x:0,y:0,width:info.width,height:info.height}});
   for(const component of found)candidates.push({kind:"connected_component",scale:"local",region:padRegion(component,info.width,info.height)});
@@ -64,19 +66,21 @@ for(const source of harvest.sources){
     observations.push({id,sourceGroupId:source.sourceGroupId,lane:laneFor(source.sourceGroupId),region:candidate.region,segmentation:{polarity:"dark_on_light",threshold:"otsu"},proposalKind:candidate.kind,proposalScale:candidate.scale});
     proposalAudit.push({id,sourceGroupId:source.sourceGroupId,proposalKind:candidate.kind,proposalScale:candidate.scale,region:candidate.region});
   }
+  sourceProposalStats.push({sourceGroupId:source.sourceGroupId,eligibleComponents:eligibleComponents.length,retainedComponents:found.length,componentCapApplied:eligibleComponents.length>found.length,proposedObservations:unique.size});
 }
 if(observations.length<10)throw new Error(`proposer produced too few observations: ${observations.length}`);
 const blindCore={
   schema:"mark_observable_input_blind_v1",corpusKind:harvest.corpusKind,generatedAt:new Date().toISOString(),lanePolicy,sourceHarvestSha256:harvest.blindSha256,
+  proposalBudget:{maxComponentsPerSource,selectionRule:"largest_eligible_connected_components_by_dark_pixel_count_then_restore_spatial_order_for_neighborhoods",humanCategorySelection:false},
   sources:blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),observations:observations.sort((a,b)=>a.id.localeCompare(b.id)),
-  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","keyed_continuity_token","region","segmentation","proposal_scale","proposal_kind","train_holdout_or_control_lane"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
+  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","keyed_continuity_token","region","segmentation","proposal_scale","proposal_kind","train_holdout_or_control_lane","blind_component_salience"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
 };
 const blindInputSha256=crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
 const blind={...blindCore,blindInputSha256};
 await fs.writeFile(path.join(outDir,"mark-observable-input-blind-v1.json"),`${JSON.stringify(blind,null,2)}\n`);
-const auditCore={schema:"mark_observable_proposals_blind_v1",generatedAt:blind.generatedAt,sealedBlindInputSha256:blindInputSha256,sourceHarvestSha256:harvest.blindSha256,proposals:proposalAudit.sort((a,b)=>a.id.localeCompare(b.id))};
+const auditCore={schema:"mark_observable_proposals_blind_v1",generatedAt:blind.generatedAt,sealedBlindInputSha256:blindInputSha256,sourceHarvestSha256:harvest.blindSha256,proposalBudget:blind.proposalBudget,sourceProposalStats:sourceProposalStats.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),proposals:proposalAudit.sort((a,b)=>a.id.localeCompare(b.id))};
 const auditSha256=crypto.createHash("sha256").update(JSON.stringify(auditCore)).digest("hex");
 await fs.writeFile(path.join(outDir,"mark-observable-proposals-blind-v1.json"),`${JSON.stringify({...auditCore,blindSha256:auditSha256},null,2)}\n`);
-await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${blind.schema}`,`source_objects=${blind.sources.length}`,`proposed_observations=${blind.observations.length}`,`train_observations=${blind.observations.filter(o=>o.lane==="train").length}`,`holdout_observations=${blind.observations.filter(o=>o.lane==="holdout").length}`,`control_observations=${blind.observations.filter(o=>o.lane==="control").length}`,`lane_policy=${lanePolicy}`,`blind_sha256=${blindInputSha256}`].join("\n")+"\n");
-console.log(`Proposed ${blind.observations.length} multiscale observables from ${blind.sources.length} anonymous source objects`);
+await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${blind.schema}`,`source_objects=${blind.sources.length}`,`proposed_observations=${blind.observations.length}`,`train_observations=${blind.observations.filter(o=>o.lane==="train").length}`,`holdout_observations=${blind.observations.filter(o=>o.lane==="holdout").length}`,`control_observations=${blind.observations.filter(o=>o.lane==="control").length}`,`max_components_per_source=${maxComponentsPerSource}`,`sources_component_capped=${sourceProposalStats.filter(row=>row.componentCapApplied).length}`,`lane_policy=${lanePolicy}`,`blind_sha256=${blindInputSha256}`].join("\n")+"\n");
+console.log(`Proposed ${blind.observations.length} multiscale observables from ${blind.sources.length} anonymous source objects; ${sourceProposalStats.filter(row=>row.componentCapApplied).length} sources hit the blind component cap`);
 console.log(`Proposal blind SHA-256: ${blindInputSha256}`);
