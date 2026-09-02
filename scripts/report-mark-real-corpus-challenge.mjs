@@ -1,0 +1,31 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const model=JSON.parse(await fs.readFile(process.env.MARK_WORLD_TRAIN??"artifacts/mark-world-train-v1/mark-blind-world-model-train-v1.json","utf8"));
+const train=JSON.parse(await fs.readFile(process.env.MARK_OBSERVABLE_TRAIN??"artifacts/mark-observable-discovery-v1/mark-observable-train-blind-v1.json","utf8"));
+const holdout=JSON.parse(await fs.readFile(process.env.MARK_WORLD_PREDICTION??"artifacts/mark-world-prediction-v1/mark-blind-world-holdout-prediction-v2.json","utf8"));
+const control=JSON.parse(await fs.readFile(process.env.MARK_CONTROL_EVALUATION??"artifacts/mark-control-evaluation-v1/mark-blind-control-evaluation-v1.json","utf8"));
+const visual=JSON.parse(await fs.readFile(process.env.MARK_VISUAL_BASELINE??"artifacts/mark-visual-baseline-v1/mark-blind-visual-baseline-evaluation-v1.json","utf8"));
+const custody=JSON.parse(await fs.readFile(process.env.MARK_OBSERVABLE_REJOIN??"artifacts/mark-conveyor-rejoin-v1/mark-observable-custody-rejoin-v1.json","utf8"));
+const nullEval=JSON.parse(await fs.readFile(process.env.MARK_NULL_EVALUATION??"artifacts/mark-null-worlds-v1/mark-blind-null-world-evaluation-v1.json","utf8"));
+const spatial=JSON.parse(await fs.readFile(process.env.MARK_SPATIAL_CONTROL??"artifacts/mark-spatial-control-comparison-v1/mark-blind-spatial-control-comparison-v1.json","utf8"));
+const outDir=process.env.MARK_REAL_CORPUS_REPORT_OUT??"artifacts/mark-real-corpus-report-v1";
+if(model.schema!=="mark_blind_world_model_v1"||train.partition!=="train"||holdout.schema!=="mark_blind_world_holdout_prediction_v2"||control.schema!=="mark_blind_control_evaluation_v1"||visual.schema!=="mark_blind_visual_baseline_evaluation_v1"||custody.schema!=="mark_observable_custody_rejoin_v1")throw new Error("real-corpus report received incompatible artifacts");
+const recordById=new Map(train.records.map(row=>[row.id,row])),sourceById=new Map(custody.sources.map(row=>[row.sourceGroupId,row]));
+const holdoutWhole=holdout.familyPredictions.filter(row=>row.proposalKind==="whole_capture"&&row.status==="accepted");
+const controlWhole=control.wholeObjectPredictions.filter(row=>row.status==="accepted");
+const visualBySource=new Map(visual.holdout.map(row=>[row.sourceGroupId,row]));
+const contextTerms=(source)=>{const c=source?.context??{};return[c.classification,c.type,c.objectName,c.medium,c.technique,c.originalFormat,c.department,c.culture,c.period].flatMap(v=>Array.isArray(v)?v:[v]).filter(v=>typeof v==="string"&&v.trim()).map(v=>v.trim());};
+const candidates=model.families.map(family=>{
+  const trainSources=[...new Set(family.ids.map(id=>recordById.get(id)?.sourceGroupId).filter(Boolean))];
+  const trainCustody=trainSources.map(id=>sourceById.get(id)).filter(Boolean),institutions=[...new Set(trainCustody.map(row=>row.institution))].sort();
+  const holdoutMatches=holdoutWhole.filter(row=>row.acceptedFamilyId===family.familyId),controlMatches=controlWhole.filter(row=>row.acceptedFamilyId===family.familyId);
+  const visuallyNontrivial=holdoutMatches.filter(row=>visualBySource.get(row.sourceGroupId)?.visualExplanation==="visually_nontrivial");
+  const terms=[...new Set(trainCustody.flatMap(contextTerms))].slice(0,24);
+  const score=institutions.length*2+Math.log1p(trainSources.length)+holdoutMatches.length*4+visuallyNontrivial.length*3-controlMatches.length*5;
+  return{familyId:family.familyId,familySize:family.size,trainSourceObjects:trainSources.length,trainInstitutions:institutions,trainContextTerms:terms,holdoutWholeAccepted:holdoutMatches.length,holdoutSourceObjects:holdoutMatches.map(row=>row.sourceGroupId),holdoutVisuallyNontrivial:visuallyNontrivial.length,controlWholeAccepted:controlMatches.length,controlSourceObjects:controlMatches.map(row=>row.sourceGroupId),candidateScore:+score.toFixed(6)};
+}).sort((a,b)=>b.candidateScore-a.candidateScore||b.holdoutWholeAccepted-a.holdoutWholeAccepted||b.trainInstitutions.length-a.trainInstitutions.length||a.familyId.localeCompare(b.familyId));
+const report={schema:"mark_real_corpus_challenge_report_v1",generatedAt:new Date().toISOString(),evidenceBoundary:"Post-freeze provenance report. Candidate rank is triage, not historical proof.",globalValidation:{nullTightnessP:nullEval.statistics.crossSourceTightness.empiricalP,nullRecurrenceP:nullEval.statistics.recurrenceScore.empiricalP,spatialTightnessRatio:spatial.statistics.crossSourceTightness.effectRatio,spatialRecurrenceRatio:spatial.statistics.recurrenceScore.effectRatio,holdoutWholeObjects:visual.summary.holdoutWholeObjects,holdoutAccepted:visual.summary.holdoutAccepted,holdoutAcceptedVisuallyNontrivial:visual.summary.holdoutAcceptedVisuallyNontrivial,controlWholeObjects:visual.summary.controlWholeObjects,controlAccepted:visual.summary.controlAccepted},candidates};
+await fs.mkdir(outDir,{recursive:true});await fs.writeFile(path.join(outDir,"mark-real-corpus-challenge-report-v1.json"),`${JSON.stringify(report,null,2)}\n`);
+const top=candidates.slice(0,20);await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${report.schema}`,`families=${candidates.length}`,`null_tightness_p=${report.globalValidation.nullTightnessP}`,`spatial_tightness_ratio=${report.globalValidation.spatialTightnessRatio}`,`holdout_whole=${report.globalValidation.holdoutWholeObjects}`,`holdout_accepted=${report.globalValidation.holdoutAccepted}`,`holdout_visually_nontrivial=${report.globalValidation.holdoutAcceptedVisuallyNontrivial}`,`control_accepted=${report.globalValidation.controlAccepted}`,"top_candidates:",...top.map(row=>`${row.familyId} score=${row.candidateScore} train_sources=${row.trainSourceObjects} train_institutions=${row.trainInstitutions.length} holdout=${row.holdoutWholeAccepted} nontrivial=${row.holdoutVisuallyNontrivial} control=${row.controlWholeAccepted}`)].join("\n")+"\n");
+console.log(`Ranked ${candidates.length} post-freeze real-corpus candidate families; top=${candidates[0]?.familyId??"none"}`);
