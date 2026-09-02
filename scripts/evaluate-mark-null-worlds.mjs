@@ -1,0 +1,30 @@
+import crypto from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { buildWorldModel } from "./lib/mark-world-core.mjs";
+
+const trainPath=process.env.MARK_OBSERVABLE_TRAIN ?? "artifacts/mark-observable-discovery-v1/mark-observable-train-blind-v1.json";
+const outDir=process.env.MARK_NULL_WORLD_OUT ?? "artifacts/mark-null-worlds-v1";
+const iterations=Math.max(20,Number(process.env.MARK_NULL_ITERATIONS??100));
+const train=JSON.parse(await fs.readFile(trainPath,"utf8"));
+if(train.schema!=="mark_observable_feature_partition_blind_v1"||train.partition!=="train")throw new Error(`null evaluation requires sealed train partition; got ${train.schema}/${train.partition}`);
+const{blindSha256:suppliedSha,...trainCore}=train;const computedSha=crypto.createHash("sha256").update(JSON.stringify(trainCore)).digest("hex");if(!suppliedSha||suppliedSha!==computedSha)throw new Error("train partition SHA-256 verification failed");
+
+const RAW_FEATURES=["components","holes","endpoints","junctions","aspect","orientation","verticalSymmetry","horizontalSymmetry","inkDensity","componentSizeEntropy","repeatX","repeatY","boundaryComplexity","centroidX","centroidY"];
+function seeded(seedText){let state=Number.parseInt(crypto.createHash("sha256").update(seedText).digest("hex").slice(0,8),16)>>>0;return()=>{state=(state+0x6D2B79F5)>>>0;let t=state;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+function shuffled(values,rng){const out=[...values];for(let i=out.length-1;i>0;i-=1){const j=Math.floor(rng()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
+function columnNull(records,iteration){const rng=seeded(`${train.blindSha256}|null|${iteration}`),out=records.map(record=>({...record}));for(const feature of RAW_FEATURES){const values=shuffled(records.map(record=>record[feature]),rng);for(let i=0;i<out.length;i+=1)out[i][feature]=values[i];}return out;}
+function tightness(model){const edges=model.graph.similarityEdges.filter(edge=>edge.crossSource&&edge.mutual).sort((a,b)=>a.distance-b.distance);const selected=edges.slice(0,Math.min(100,edges.length));if(!selected.length)return 0;return selected.reduce((sum,edge)=>sum+1/(1+edge.distance),0)/selected.length;}
+function recurrence(model){return model.primitives.reduce((sum,p)=>sum+p.count*Math.log1p(p.distinctSourceObjects),0)+model.operations.reduce((sum,o)=>sum+o.edgeCount*Math.log1p(o.distinctSourceObjects),0);}
+const observedWorld=buildWorldModel(train.records),observed={crossSourceTightness:tightness(observedWorld),recurrenceScore:recurrence(observedWorld),families:observedWorld.families.length,primitives:observedWorld.primitives.length,operations:observedWorld.operations.length};
+const nulls=[];for(let i=0;i<iterations;i+=1){const world=buildWorldModel(columnNull(train.records,i));nulls.push({iteration:i,crossSourceTightness:tightness(world),recurrenceScore:recurrence(world),families:world.families.length,primitives:world.primitives.length,operations:world.operations.length});}
+const mean=values=>values.reduce((a,b)=>a+b,0)/Math.max(1,values.length);
+const pValue=(field,value)=>(1+nulls.filter(row=>row[field]>=value).length)/(nulls.length+1);
+const nullTightnessMean=mean(nulls.map(x=>x.crossSourceTightness)),nullRecurrenceMean=mean(nulls.map(x=>x.recurrenceScore));
+const statistics={crossSourceTightness:{observed:+observed.crossSourceTightness.toFixed(6),nullMean:+nullTightnessMean.toFixed(6),effectRatio:+(observed.crossSourceTightness/Math.max(1e-9,nullTightnessMean)).toFixed(6),empiricalP:+pValue("crossSourceTightness",observed.crossSourceTightness).toFixed(6)},recurrenceScore:{observed:+observed.recurrenceScore.toFixed(6),nullMean:+nullRecurrenceMean.toFixed(6),effectRatio:+(observed.recurrenceScore/Math.max(1e-9,nullRecurrenceMean)).toFixed(6),empiricalP:+pValue("recurrenceScore",observed.recurrenceScore).toFixed(6)}};
+const core={schema:"mark_blind_null_world_evaluation_v1",generatedAt:new Date().toISOString(),sealedTrainSha256:train.blindSha256,nullContract:{iterations,method:"independently permute each measured structural feature column across fixed observation/source identities",preserves:["observation_count","source_group_sizes","per_feature_marginal_distributions"],destroys:["joint_feature_configuration","real_cross_feature_covariance"],contextLabelsAvailable:false},observed,statistics,nulls};
+const blindSha256=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex"),artifact={...core,blindSha256};
+await fs.mkdir(outDir,{recursive:true});await fs.writeFile(path.join(outDir,"mark-blind-null-world-evaluation-v1.json"),`${JSON.stringify(artifact,null,2)}\n`);
+await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${artifact.schema}`,`iterations=${iterations}`,`observed_cross_source_tightness=${statistics.crossSourceTightness.observed}`,`null_mean_cross_source_tightness=${statistics.crossSourceTightness.nullMean}`,`tightness_effect_ratio=${statistics.crossSourceTightness.effectRatio}`,`tightness_empirical_p=${statistics.crossSourceTightness.empiricalP}`,`observed_recurrence_score=${statistics.recurrenceScore.observed}`,`null_mean_recurrence_score=${statistics.recurrenceScore.nullMean}`,`recurrence_effect_ratio=${statistics.recurrenceScore.effectRatio}`,`recurrence_empirical_p=${statistics.recurrenceScore.empiricalP}`,`blind_sha256=${blindSha256}`].join("\n")+"\n");
+const requireGate=(process.env.MARK_REQUIRE_NULL_GATE??"0")==="1";if(requireGate){const pFloor=Number(process.env.MARK_NULL_P_MAX??0.25);if(statistics.crossSourceTightness.empiricalP>pFloor)throw new Error(`real cross-source tightness did not beat shuffled null worlds: p=${statistics.crossSourceTightness.empiricalP} > ${pFloor}`);if(statistics.crossSourceTightness.effectRatio<=1)throw new Error(`real cross-source tightness is not stronger than null mean: ratio=${statistics.crossSourceTightness.effectRatio}`);}
+console.log(`Null worlds=${iterations}; cross-source tightness observed=${statistics.crossSourceTightness.observed} nullMean=${statistics.crossSourceTightness.nullMean} p=${statistics.crossSourceTightness.empiricalP}`);
