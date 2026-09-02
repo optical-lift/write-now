@@ -11,8 +11,11 @@ const manifest = JSON.parse(manifestBytes);
 if (manifest.schema !== "mark_harvest_manifest_v1") throw new Error(`unsupported harvest manifest ${manifest.schema}`);
 
 const salt = process.env.MARK_BLIND_SALT ?? crypto.randomBytes(32).toString("hex");
+const continuityKey = process.env.MARK_CONTINUITY_KEY ?? (manifest.status === "synthetic_fixture" ? "mark-synthetic-continuity-fixture-v1" : null);
+if (!continuityKey) throw new Error("physical harvesting requires MARK_CONTINUITY_KEY so repeated source bytes can be deduplicated without exposing their public hash");
 const opaque = (value) => `S${crypto.createHash("sha256").update(`${salt}|${value}`).digest("hex").slice(0, 16).toUpperCase()}`;
 const token = (kind, value) => crypto.createHash("sha256").update(`${salt}|${kind}|${value}`).digest("hex");
+const continuityToken = (exactSha256) => crypto.createHmac("sha256", continuityKey).update(exactSha256).digest("hex");
 
 function mimeFromPath(filePath) {
   const ext = path.extname(filePath).toLowerCase();
@@ -72,20 +75,21 @@ for (const source of manifest.sources) {
   if (manifest.status === "physical_evidence" && exactHashes.has(exactSha256)) throw new Error(`duplicate physical bytes cannot count as independent source objects (${source.sourceId})`);
   exactHashes.add(exactSha256);
   const sourceGroupId = opaque(source.sourceId);
+  const stableContinuityToken = continuityToken(exactSha256);
   const capturePath = path.posix.join("captures", `${sourceGroupId}${ext}`);
   await fs.writeFile(path.join(outDir, capturePath), bytes);
-  blindSources.push({ sourceGroupId, adapter: "image_2d", capturePath, captureMime: mime, captureToken: token("capture", exactSha256) });
+  blindSources.push({ sourceGroupId, adapter: "image_2d", capturePath, captureMime: mime, captureToken: token("capture", exactSha256), continuityToken: stableContinuityToken });
   const contextual = structuredClone(source);
   delete contextual.capture?.syntheticRecipe;
   delete contextual.capture?.syntheticSvg;
-  custodySources.push({ sourceGroupId, exactCaptureSha256: exactSha256, retrieval, ...contextual });
+  custodySources.push({ sourceGroupId, exactCaptureSha256: exactSha256, continuityToken: stableContinuityToken, retrieval, ...contextual });
 }
 const blindCore = {
   schema: "mark_harvested_sources_blind_v1",
   corpusKind: manifest.status === "synthetic_fixture" ? "synthetic_pipeline_fixture_not_evidence" : "physical_observable_evidence",
   generatedAt: new Date().toISOString(),
   sources: blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
-  blindnessContract: { contextualMetadataPresent: false, unit: "source_capture", categoryLabelsAvailable: false },
+  blindnessContract: { contextualMetadataPresent: false, unit: "source_capture", categoryLabelsAvailable: false, continuityToken: "HMAC-SHA256 over exact source bytes with private MARK_CONTINUITY_KEY" },
 };
 const blindSha256 = crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
 const blind = { ...blindCore, blindSha256 };
