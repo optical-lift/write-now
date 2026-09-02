@@ -1,12 +1,10 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createRequire } from "node:module";
 import sharp from "sharp";
 import { measureObservable } from "./lib/mark-image-observable.mjs";
 
-const require=createRequire(import.meta.url);
-const sharpVersion=require("sharp/package.json").version;
+const sharpVersion=sharp.versions?.sharp ?? "unknown";
 const inputPath=process.env.MARK_OBSERVABLE_INPUT ?? "artifacts/mark-observable-input-v1/mark-observable-input-blind-v1.json";
 const outDir=process.env.MARK_OBSERVABLE_OUT ?? "artifacts/mark-observable-discovery-v1";
 const input=JSON.parse(await fs.readFile(inputPath,"utf8"));
