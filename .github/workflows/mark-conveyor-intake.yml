@@ -12,6 +12,7 @@ on:
       - "scripts/predict-mark-world-holdout.mjs"
       - "scripts/evaluate-mark-holdout.mjs"
       - "scripts/evaluate-mark-null-worlds.mjs"
+      - "scripts/assemble-mark-world.mjs"
       - "scripts/lib/mark-world-core.mjs"
       - "scripts/accumulate-mark-observable-ledger.mjs"
       - "scripts/accumulate-mark-custody-ledger.mjs"
