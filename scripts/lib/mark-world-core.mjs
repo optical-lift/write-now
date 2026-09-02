@@ -159,22 +159,23 @@ export function buildWorldModel(records,{neighborK=10,minDistinctSources=3}={}){
   };
 }
 
-export function predictAgainstWorld(model,holdoutRecords){
+export function predictAgainstWorld(model,holdoutRecords,{includeOperationPredictions=true,operationRecordLimit=240}={}){
   const scaled=applyScaling(holdoutRecords,model.scaling);
   const familyPredictions=holdoutRecords.map((record,index)=>{
     const ranked=model.families.map(family=>({familyId:family.familyId,distance:+euclidean(scaled[index],family.prototypeScaled).toFixed(6),acceptanceRadius:family.acceptanceRadius??0})).sort((a,b)=>a.distance-b.distance||a.familyId.localeCompare(b.familyId));
     const nearest=ranked[0]??null,accepted=Boolean(nearest&&nearest.distance<=nearest.acceptanceRadius);
     return {id:record.id,sourceGroupId:record.sourceGroupId,proposalKind:record.proposalKind??null,proposalScale:record.proposalScale??null,status:accepted?"accepted":"abstain",acceptedFamilyId:accepted?nearest.familyId:null,nearestFamily:nearest,predictedFamilies:ranked.slice(0,5)};
   });
-  const operationPredictions=model.operations.slice(0,100).map(operation=>{
+  const operationPool=includeOperationPredictions?[...holdoutRecords].sort((a,b)=>a.id.localeCompare(b.id)).slice(0,Math.max(0,operationRecordLimit)):[];
+  const operationPredictions=includeOperationPredictions?model.operations.slice(0,100).map(operation=>{
     const candidates=[];
-    for(let i=0;i<holdoutRecords.length;i+=1)for(let j=i+1;j<holdoutRecords.length;j+=1){
-      if(holdoutRecords[i].sourceGroupId===holdoutRecords[j].sourceGroupId)continue;
-      const[from,to]=orderedPair(holdoutRecords[i],holdoutRecords[j]),delta=operationDelta(from,to);
+    for(let i=0;i<operationPool.length;i+=1)for(let j=i+1;j<operationPool.length;j+=1){
+      if(operationPool[i].sourceGroupId===operationPool[j].sourceGroupId)continue;
+      const[from,to]=orderedPair(operationPool[i],operationPool[j]),delta=operationDelta(from,to);
       candidates.push({from:from.id,to:to.id,sourceGroups:[from.sourceGroupId,to.sourceGroupId].sort(),distance:+deltaDistance(delta,operation.meanDelta).toFixed(6)});
     }
     candidates.sort((a,b)=>a.distance-b.distance||a.from.localeCompare(b.from)||a.to.localeCompare(b.to));
     return {operationId:operation.operationId,signature:operation.signature,predictedPairs:candidates.slice(0,12)};
-  });
-  return {familyPredictions,operationPredictions};
+  }):[];
+  return {familyPredictions,operationPredictions,operationPredictionRecordsConsidered:operationPool.length};
 }
