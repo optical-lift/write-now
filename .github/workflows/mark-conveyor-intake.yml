@@ -1,4 +1,4 @@
-name: Mark Conveyor Intake v3
+name: Mark Conveyor Intake v4
 
 on:
   pull_request:
@@ -8,6 +8,11 @@ on:
       - "scripts/propose-mark-observables.mjs"
       - "scripts/finalize-mark-harvest-rejoin.mjs"
       - "scripts/mark-observable-discovery.mjs"
+      - "scripts/learn-mark-world.mjs"
+      - "scripts/predict-mark-world-holdout.mjs"
+      - "scripts/evaluate-mark-holdout.mjs"
+      - "scripts/evaluate-mark-null-worlds.mjs"
+      - "scripts/lib/mark-world-core.mjs"
       - "scripts/accumulate-mark-observable-ledger.mjs"
       - "scripts/accumulate-mark-custody-ledger.mjs"
       - "scripts/build-mark-world-from-ledger.mjs"
@@ -17,6 +22,7 @@ on:
       - "research/mark/harvest-manifests/**"
       - "research/mark/harvest-feeds/**"
       - "research/mark/feed-fixtures/**"
+      - "docs/mark-falsifiability-v4.md"
       - ".github/workflows/mark-conveyor-intake.yml"
       - "package.json"
   workflow_dispatch:
@@ -55,8 +61,19 @@ jobs:
         run: node scripts/mark-observable-discovery.mjs
       - name: Freeze train-only world
         run: node scripts/learn-mark-world.mjs
-      - name: Predict unseen source objects
+      - name: Require the real train world to beat shuffled null worlds
+        env:
+          MARK_NULL_ITERATIONS: 64
+          MARK_REQUIRE_NULL_GATE: 1
+          MARK_NULL_P_MAX: 0.25
+        run: node scripts/evaluate-mark-null-worlds.mjs
+      - name: Evaluate unseen source objects with abstention
         run: node scripts/predict-mark-world-holdout.mjs
+      - name: Open private fixture truth only after prediction freeze
+        env:
+          MARK_REQUIRE_OPEN_SET_GATE: 1
+          MARK_OPEN_SET_PRECISION_FLOOR: 0.8
+        run: node scripts/evaluate-mark-holdout.mjs
       - name: Assemble this harvest only after prediction freeze
         run: node scripts/assemble-mark-world.mjs
       - name: Append measurements to blind continuity ledger
@@ -79,7 +96,9 @@ jobs:
             artifacts/mark-conveyor-input-v1/summary.txt \
             artifacts/mark-observable-discovery-v1/summary.txt \
             artifacts/mark-world-train-v1/summary.txt \
+            artifacts/mark-null-worlds-v1/summary.txt \
             artifacts/mark-world-prediction-v1/summary.txt \
+            artifacts/mark-holdout-evaluation-v1/summary.txt \
             artifacts/mark-observable-ledger-v1/summary.txt \
             artifacts/mark-ledger-world-v1/summary.txt \
             artifacts/mark-continuous-rejoin-v1/summary.txt \
@@ -100,13 +119,14 @@ jobs:
             artifacts/mark-conveyor-input-v1
             artifacts/mark-observable-discovery-v1
             artifacts/mark-world-train-v1
+            artifacts/mark-null-worlds-v1
             artifacts/mark-world-prediction-v1
             artifacts/mark-world-v1
             artifacts/mark-observable-ledger-v1
             artifacts/mark-ledger-world-v1
           if-no-files-found: error
           retention-days: 30
-      - name: Upload custody and surprise lane separately
+      - name: Upload custody, evaluation, and surprise lane separately
         uses: actions/upload-artifact@v4
         with:
           name: mark-conveyor-context-v1
@@ -114,6 +134,7 @@ jobs:
             artifacts/mark-iiif-feed-v1
             artifacts/mark-harvest-rejoin-v1
             artifacts/mark-conveyor-rejoin-v1
+            artifacts/mark-holdout-evaluation-v1
             artifacts/mark-context-ledger-v1
             artifacts/mark-continuous-rejoin-v1
             artifacts/mark-surprises-v1
