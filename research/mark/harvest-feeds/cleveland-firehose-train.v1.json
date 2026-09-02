@@ -1,0 +1,10 @@
+{
+  "schema": "mark_open_access_feed_request_v1",
+  "feedId": "cleveland-firehose-train-v1",
+  "provider": "cleveland",
+  "institution": "Cleveland Museum of Art",
+  "lane": "train",
+  "rightsBasis": "cc0_open_access_image",
+  "seed": "mark-v5-cleveland-whole-collection-spread-v1",
+  "maxSources": 24
+}
