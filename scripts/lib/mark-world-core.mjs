@@ -1,4 +1,4 @@
-const FEATURE_NAMES = [
+export const FEATURE_NAMES = [
   "components","holes","endpoints","junctions","logAspect","orientationCos2","orientationSin2",
   "verticalSymmetry","horizontalSymmetry","inkDensity","componentSizeEntropy","repeatX","repeatY",
   "boundaryComplexity","centroidX","centroidY",
@@ -6,6 +6,7 @@ const FEATURE_NAMES = [
 
 const mean = (values) => values.reduce((a,b)=>a+b,0)/Math.max(1,values.length);
 const median = (values) => { const s=[...values].sort((a,b)=>a-b),m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+const quantile = (values,q) => { const s=[...values].sort((a,b)=>a-b); if(!s.length)return 0; const p=(s.length-1)*q,lo=Math.floor(p),hi=Math.ceil(p); return lo===hi?s[lo]:s[lo]+(s[hi]-s[lo])*(p-lo); };
 const euclidean = (a,b) => Math.sqrt(a.reduce((sum,value,index)=>sum+(value-b[index])**2,0));
 
 export function worldVector(record) {
@@ -99,6 +100,13 @@ function labelPropagation(records,edges){
 
 function meanDelta(edges){const keys=Object.keys(edges[0].delta);return Object.fromEntries(keys.map(key=>[key,+mean(edges.map(edge=>edge.delta[key])).toFixed(6)]));}
 function averageVector(vectors){return vectors[0].map((_,index)=>+mean(vectors.map(v=>v[index])).toFixed(6));}
+function acceptanceEnvelope(vectors,prototype){
+  const distances=vectors.map(vector=>euclidean(vector,prototype));
+  const med=median(distances),mad=median(distances.map(d=>Math.abs(d-med))),q90=quantile(distances,.9),max=Math.max(...distances,0);
+  const robust=med+3*Math.max(mad*1.4826,.15);
+  const radius=Math.max(.75,q90*1.35,robust,Math.min(max*1.15,12));
+  return {acceptanceRadius:+radius.toFixed(6),memberDistanceMedian:+med.toFixed(6),memberDistanceQ90:+q90.toFixed(6),memberDistanceMax:+max.toFixed(6)};
+}
 
 export function buildWorldModel(records,{neighborK=10,minDistinctSources=3}={}){
   if(records.length<4)throw new Error(`world model requires at least 4 observations; got ${records.length}`);
@@ -136,14 +144,14 @@ export function buildWorldModel(records,{neighborK=10,minDistinctSources=3}={}){
   primitives.forEach((p,index)=>{p.primitiveId=`P${String(index+1).padStart(4,"0")}`;});
 
   const families=communities.map(family=>{
-    const vectors=family.ids.map(id=>scaled[indexById.get(id)]);
-    return {...family,prototypeScaled:averageVector(vectors)};
+    const vectors=family.ids.map(id=>scaled[indexById.get(id)]),prototypeScaled=averageVector(vectors);
+    return {...family,prototypeScaled,...acceptanceEnvelope(vectors,prototypeScaled)};
   });
   const reusedAssignments=primitives.reduce((sum,p)=>sum+p.count,0)+operations.reduce((sum,o)=>sum+o.edgeCount*2,0);
   return {
     schema:"mark_blind_world_model_v1",
     scaling,
-    discoveryContract:{unit:"observable_configuration",categoryLabelsAvailable:false,neighborK,minDistinctSources,communityRule:"deterministic weighted label propagation over mutual structural-neighbor graph",operationRule:"recurrent quantized deltas among cross-source local neighbors",primitiveRule:"recurrent coarse structural states across independent source objects"},
+    discoveryContract:{unit:"observable_configuration",categoryLabelsAvailable:false,neighborK,minDistinctSources,communityRule:"deterministic weighted label propagation over mutual structural-neighbor graph",operationRule:"recurrent quantized deltas among cross-source local neighbors",primitiveRule:"recurrent coarse structural states across independent source objects",abstentionRule:"nearest family is accepted only inside that family's training-derived robust distance envelope"},
     corpus:{observations:records.length,sourceObjects:new Set(records.map(r=>r.sourceGroupId)).size},
     families,primitives,operations,
     graph:{similarityEdges:similarity.slice(0,Math.min(5000,similarity.length))},
@@ -154,8 +162,9 @@ export function buildWorldModel(records,{neighborK=10,minDistinctSources=3}={}){
 export function predictAgainstWorld(model,holdoutRecords){
   const scaled=applyScaling(holdoutRecords,model.scaling);
   const familyPredictions=holdoutRecords.map((record,index)=>{
-    const ranked=model.families.map(family=>({familyId:family.familyId,distance:+euclidean(scaled[index],family.prototypeScaled).toFixed(6)})).sort((a,b)=>a.distance-b.distance||a.familyId.localeCompare(b.familyId));
-    return {id:record.id,sourceGroupId:record.sourceGroupId,predictedFamilies:ranked.slice(0,5)};
+    const ranked=model.families.map(family=>({familyId:family.familyId,distance:+euclidean(scaled[index],family.prototypeScaled).toFixed(6),acceptanceRadius:family.acceptanceRadius??0})).sort((a,b)=>a.distance-b.distance||a.familyId.localeCompare(b.familyId));
+    const nearest=ranked[0]??null,accepted=Boolean(nearest&&nearest.distance<=nearest.acceptanceRadius);
+    return {id:record.id,sourceGroupId:record.sourceGroupId,proposalKind:record.proposalKind??null,proposalScale:record.proposalScale??null,status:accepted?"accepted":"abstain",acceptedFamilyId:accepted?nearest.familyId:null,nearestFamily:nearest,predictedFamilies:ranked.slice(0,5)};
   });
   const operationPredictions=model.operations.slice(0,100).map(operation=>{
     const candidates=[];

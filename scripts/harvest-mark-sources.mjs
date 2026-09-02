@@ -33,6 +33,12 @@ function extForMime(mime) {
   throw new Error(`unsupported image MIME ${mime}`);
 }
 function syntheticSvg(recipe = {}) {
+  if (recipe.template === "nine_dots") {
+    const nonce=String(recipe.nonce ?? "0");
+    const circles=[];
+    for(const y of [25,50,75])for(const x of [40,80,120,160,200])circles.push(`<circle cx="${x}" cy="${y}" r="7"/>`);
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="100" viewBox="0 0 260 100" data-fixture-nonce="${nonce}"><rect width="260" height="100" fill="white"/><g fill="black" stroke="none">${circles.join("")}</g></svg>`;
+  }
   const strokeWidth = Number(recipe.strokeWidth ?? 4);
   const dx = Number(recipe.dx ?? 0);
   const linecap = recipe.linecap === "square" ? "square" : "round";

@@ -12,12 +12,14 @@ if(holdout.schema!=="mark_observable_feature_partition_blind_v1"||holdout.partit
 for(const [name,value] of [["model",model],["holdout",holdout]]){const{blindSha256,...rest}=value;const computed=crypto.createHash("sha256").update(JSON.stringify(rest)).digest("hex");if(!blindSha256||blindSha256!==computed)throw new Error(`${name} SHA-256 verification failed`);}
 if(holdout.records.some(record=>record.lane!=="holdout"))throw new Error("holdout partition contains non-holdout record");
 const predictions=predictAgainstWorld(model,holdout.records);
+const accepted=predictions.familyPredictions.filter(row=>row.status==="accepted").length;
+const abstained=predictions.familyPredictions.filter(row=>row.status==="abstain").length;
 const core={
-  schema:"mark_blind_world_holdout_prediction_v1",generatedAt:new Date().toISOString(),sealedTrainingWorldSha256:model.blindSha256,sealedHoldoutSha256:holdout.blindSha256,
-  predictionContract:{trainingWorldWasSealedFirst:true,holdoutUnavailableToLearner:true,unit:"observable_configuration",categoryLabelsAvailable:false},
-  corpus:{holdoutObservations:holdout.records.length,holdoutSourceObjects:new Set(holdout.records.map(r=>r.sourceGroupId)).size},...predictions,
+  schema:"mark_blind_world_holdout_prediction_v2",generatedAt:new Date().toISOString(),sealedTrainingWorldSha256:model.blindSha256,sealedHoldoutSha256:holdout.blindSha256,
+  predictionContract:{trainingWorldWasSealedFirst:true,holdoutUnavailableToLearner:true,unit:"observable_configuration",categoryLabelsAvailable:false,forcedAssignment:false,abstentionEnabled:true,acceptanceEnvelopeSource:"training_family_member_distances_only"},
+  corpus:{holdoutObservations:holdout.records.length,holdoutSourceObjects:new Set(holdout.records.map(r=>r.sourceGroupId)).size,acceptedObservations:accepted,abstainedObservations:abstained},...predictions,
 };
 const blindSha256=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex"),artifact={...core,blindSha256};
-await fs.mkdir(outDir,{recursive:true});await fs.writeFile(path.join(outDir,"mark-blind-world-holdout-prediction-v1.json"),`${JSON.stringify(artifact,null,2)}\n`);
-await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${artifact.schema}`,`holdout_observations=${artifact.corpus.holdoutObservations}`,`family_predictions=${artifact.familyPredictions.length}`,`operation_prediction_sets=${artifact.operationPredictions.length}`,`training_world_sha256=${artifact.sealedTrainingWorldSha256}`,`blind_sha256=${blindSha256}`].join("\n")+"\n");
-console.log(`Predicted ${artifact.familyPredictions.length} unseen observables against frozen world`);console.log(`Prediction SHA-256: ${blindSha256}`);
+await fs.mkdir(outDir,{recursive:true});await fs.writeFile(path.join(outDir,"mark-blind-world-holdout-prediction-v2.json"),`${JSON.stringify(artifact,null,2)}\n`);
+await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${artifact.schema}`,`holdout_observations=${artifact.corpus.holdoutObservations}`,`accepted_observations=${accepted}`,`abstained_observations=${abstained}`,`acceptance_rate=${(accepted/Math.max(1,artifact.corpus.holdoutObservations)).toFixed(6)}`,`operation_prediction_sets=${artifact.operationPredictions.length}`,`training_world_sha256=${artifact.sealedTrainingWorldSha256}`,`blind_sha256=${blindSha256}`].join("\n")+"\n");
+console.log(`Evaluated ${artifact.familyPredictions.length} unseen observables: ${accepted} accepted, ${abstained} abstained`);console.log(`Prediction SHA-256: ${blindSha256}`);
