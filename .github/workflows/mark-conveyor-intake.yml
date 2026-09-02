@@ -3,6 +3,7 @@ name: Mark Conveyor Intake v3
 on:
   pull_request:
     paths:
+      - "scripts/expand-mark-iiif-feed.mjs"
       - "scripts/harvest-mark-sources.mjs"
       - "scripts/propose-mark-observables.mjs"
       - "scripts/finalize-mark-harvest-rejoin.mjs"
@@ -14,6 +15,8 @@ on:
       - "scripts/rank-mark-surprises.mjs"
       - "scripts/check-mark-harvest-manifests.mjs"
       - "research/mark/harvest-manifests/**"
+      - "research/mark/harvest-feeds/**"
+      - "research/mark/feed-fixtures/**"
       - ".github/workflows/mark-conveyor-intake.yml"
       - "package.json"
   workflow_dispatch:
@@ -34,6 +37,10 @@ jobs:
         run: npm install
       - name: Validate harvest manifests
         run: npm run check:mark-harvests
+      - name: Prove institutional feed enumeration without hand-listed objects
+        run: |
+          node scripts/expand-mark-iiif-feed.mjs
+          MARK_HARVEST_MANIFEST_DIR=artifacts/mark-iiif-feed-v1 npm run check:mark-harvests
       - name: Harvest unsegmented source captures
         env:
           MARK_HARVEST_MANIFEST: research/mark/harvest-manifests/ten-boxes-attic-fixture.v1.json
@@ -68,6 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           for summary in \
+            artifacts/mark-iiif-feed-v1/summary.txt \
             artifacts/mark-conveyor-input-v1/summary.txt \
             artifacts/mark-observable-discovery-v1/summary.txt \
             artifacts/mark-world-train-v1/summary.txt \
@@ -103,6 +111,7 @@ jobs:
         with:
           name: mark-conveyor-context-v1
           path: |
+            artifacts/mark-iiif-feed-v1
             artifacts/mark-harvest-rejoin-v1
             artifacts/mark-conveyor-rejoin-v1
             artifacts/mark-context-ledger-v1
