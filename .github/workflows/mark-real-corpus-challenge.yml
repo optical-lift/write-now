@@ -14,9 +14,11 @@ on:
       - "scripts/predict-mark-world-holdout.mjs"
       - "scripts/evaluate-mark-control-corpus.mjs"
       - "scripts/evaluate-mark-visual-baseline.mjs"
-      - "scripts/scramble-mark-harvest.mjs"
+      - "scripts/build-mark-spatial-null-measurements.mjs"
       - "scripts/compare-mark-spatial-control.mjs"
       - "scripts/report-mark-real-corpus-challenge.mjs"
+      - "scripts/assert-mark-real-corpus-challenge.mjs"
+      - "scripts/lib/mark-world-core.mjs"
       - "research/mark/harvest-feeds/**"
       - "research/mark/harvest-manifests/v5-fixture-**"
       - "research/mark/feed-fixtures/v5/**"
@@ -45,9 +47,10 @@ jobs:
           node --check scripts/compose-mark-real-corpus-challenge.mjs
           node --check scripts/evaluate-mark-control-corpus.mjs
           node --check scripts/evaluate-mark-visual-baseline.mjs
-          node --check scripts/scramble-mark-harvest.mjs
+          node --check scripts/build-mark-spatial-null-measurements.mjs
           node --check scripts/compare-mark-spatial-control.mjs
           node --check scripts/report-mark-real-corpus-challenge.mjs
+          node --check scripts/assert-mark-real-corpus-challenge.mjs
       - name: Expand live whole-collection feeds
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -74,6 +77,8 @@ jobs:
           MARK_NEAR_DUPLICATE_BITS: 2
         run: node scripts/harvest-mark-sources.mjs
       - name: Let Mark invent multiscale pieces across every lane
+        env:
+          MARK_MAX_COMPONENTS_PER_SOURCE: 64
         run: node scripts/propose-mark-observables.mjs
       - name: Seal custody map before measurement
         run: node scripts/finalize-mark-harvest-rejoin.mjs
@@ -83,11 +88,9 @@ jobs:
         run: node scripts/mark-observable-discovery.mjs
       - name: Freeze training world only
         run: node scripts/learn-mark-world.mjs
-      - name: Require training structure to beat feature-shuffled nulls
+      - name: Measure training structure against feature-shuffled nulls
         env:
           MARK_NULL_ITERATIONS: 64
-          MARK_REQUIRE_NULL_GATE: 1
-          MARK_NULL_P_MAX: 0.25
         run: node scripts/evaluate-mark-null-worlds.mjs
       - name: Evaluate the unseen institution with abstention
         run: node scripts/predict-mark-world-holdout.mjs
@@ -97,33 +100,30 @@ jobs:
         env:
           MARK_VISUAL_TRIVIAL_DHASH_BITS: 8
         run: node scripts/evaluate-mark-visual-baseline.mjs
-      - name: Destroy spatial arrangement without changing source pixel inventory
-        run: node scripts/scramble-mark-harvest.mjs
-      - name: Let Mark rediscover pieces in spatially scrambled train sources
+      - name: Destroy spatial topology inside the exact same sealed train observations
+        run: node scripts/build-mark-spatial-null-measurements.mjs
+      - name: Freeze exact-observation spatial-null world
         env:
-          MARK_HARVEST_BLIND: artifacts/mark-spatial-scramble-harvest-v1/mark-harvested-sources-blind-v1.json
-          MARK_PROPOSAL_OUT: artifacts/mark-spatial-scramble-input-v1
-        run: node scripts/propose-mark-observables.mjs
-      - name: Measure the spatial negative control
-        env:
-          MARK_OBSERVABLE_INPUT: artifacts/mark-spatial-scramble-input-v1/mark-observable-input-blind-v1.json
-          MARK_OBSERVABLE_OUT: artifacts/mark-spatial-scramble-discovery-v1
-        run: node scripts/mark-observable-discovery.mjs
-      - name: Freeze spatial-scramble training world
-        env:
-          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-scramble-discovery-v1/mark-observable-train-blind-v1.json
-          MARK_WORLD_TRAIN_OUT: artifacts/mark-spatial-scramble-world-train-v1
+          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-null-discovery-v1/mark-observable-train-blind-v1.json
+          MARK_WORLD_TRAIN_OUT: artifacts/mark-spatial-null-world-train-v1
         run: node scripts/learn-mark-world.mjs
-      - name: Score spatial-scramble world against its own shuffled nulls
+      - name: Score spatial-null world against its own shuffled nulls
         env:
-          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-scramble-discovery-v1/mark-observable-train-blind-v1.json
-          MARK_NULL_WORLD_OUT: artifacts/mark-spatial-scramble-null-worlds-v1
+          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-null-discovery-v1/mark-observable-train-blind-v1.json
+          MARK_NULL_WORLD_OUT: artifacts/mark-spatial-null-worlds-v1
           MARK_NULL_ITERATIONS: 32
         run: node scripts/evaluate-mark-null-worlds.mjs
-      - name: Compare real structure with spatial destruction
+      - name: Compare real structure with within-observation spatial destruction
         run: node scripts/compare-mark-spatial-control.mjs
       - name: Reopen provenance only after every blind challenge is sealed
         run: node scripts/report-mark-real-corpus-challenge.mjs
+      - name: Issue one final hostile challenge verdict
+        env:
+          MARK_V5_NULL_P_MAX: 0.05
+          MARK_V5_CONTROL_MAX_WHOLE_ACCEPTANCE: 0.25
+          MARK_V5_HOLDOUT_CONTROL_MARGIN_MIN: 0.10
+          MARK_V5_SPATIAL_RATIO_MIN: 1.05
+        run: node scripts/assert-mark-real-corpus-challenge.mjs
       - name: Publish challenge summaries
         if: always()
         shell: bash
@@ -138,10 +138,11 @@ jobs:
             artifacts/mark-world-prediction-v1/summary.txt \
             artifacts/mark-control-evaluation-v1/summary.txt \
             artifacts/mark-visual-baseline-v1/summary.txt \
-            artifacts/mark-spatial-scramble-harvest-v1/summary.txt \
-            artifacts/mark-spatial-scramble-null-worlds-v1/summary.txt \
+            artifacts/mark-spatial-null-discovery-v1/summary.txt \
+            artifacts/mark-spatial-null-worlds-v1/summary.txt \
             artifacts/mark-spatial-control-comparison-v1/summary.txt \
-            artifacts/mark-real-corpus-report-v1/summary.txt; do
+            artifacts/mark-real-corpus-report-v1/summary.txt \
+            artifacts/mark-real-corpus-verdict-v1/summary.txt; do
             if [[ -s "$summary" ]]; then
               echo "### $summary" >> "$GITHUB_STEP_SUMMARY"
               echo '```text' >> "$GITHUB_STEP_SUMMARY"
@@ -163,10 +164,13 @@ jobs:
             artifacts/mark-world-prediction-v1/*.json
             artifacts/mark-control-evaluation-v1/*.json
             artifacts/mark-visual-baseline-v1/*.json
+            artifacts/mark-spatial-null-discovery-v1/*.json
+            artifacts/mark-spatial-null-world-train-v1/*.json
+            artifacts/mark-spatial-null-worlds-v1/*.json
             artifacts/mark-spatial-control-comparison-v1/*.json
           if-no-files-found: warn
           retention-days: 30
-      - name: Upload post-freeze custody and candidate report
+      - name: Upload post-freeze custody candidate report and verdict
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -176,5 +180,6 @@ jobs:
             artifacts/mark-harvest-rejoin-v1/*.json
             artifacts/mark-conveyor-rejoin-v1/*.json
             artifacts/mark-real-corpus-report-v1/*
+            artifacts/mark-real-corpus-verdict-v1/*
           if-no-files-found: warn
           retention-days: 30
