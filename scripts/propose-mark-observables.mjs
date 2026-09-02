@@ -32,10 +32,14 @@ function union(a,b){const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),right=Math.max
 const keyOf=(r)=>`${r.x},${r.y},${r.width},${r.height}`;
 const observationId=(sourceGroupId,kind,region)=>`O${crypto.createHash("sha256").update(`${sourceGroupId}|${kind}|${keyOf(region)}`).digest("hex").slice(0,16).toUpperCase()}`;
 
-const scoredSources = harvest.sources.map(source=>({sourceGroupId:source.sourceGroupId,score:crypto.createHash("sha256").update(`mark-conveyor-holdout-v1|${source.continuityToken}`).digest("hex")})).sort((a,b)=>a.score.localeCompare(b.score));
-const holdoutCount = harvest.sources.length >= 5 ? Math.max(1, Math.round(harvest.sources.length*0.2)) : 0;
+const allowedLanes=new Set(["train","holdout","control"]);
+const explicitLanes=new Map(harvest.sources.filter(source=>allowedLanes.has(source.lane)).map(source=>[source.sourceGroupId,source.lane]));
+const unassignedSources=harvest.sources.filter(source=>!explicitLanes.has(source.sourceGroupId));
+const scoredSources = unassignedSources.map(source=>({sourceGroupId:source.sourceGroupId,score:crypto.createHash("sha256").update(`mark-conveyor-holdout-v1|${source.continuityToken}`).digest("hex")})).sort((a,b)=>a.score.localeCompare(b.score));
+const holdoutCount = unassignedSources.length >= 5 ? Math.max(1, Math.round(unassignedSources.length*0.2)) : 0;
 const holdoutSources = new Set(scoredSources.slice(0,holdoutCount).map(x=>x.sourceGroupId));
-const laneFor=(sourceGroupId)=>holdoutSources.has(sourceGroupId)?"holdout":"train";
+const laneFor=(sourceGroupId)=>explicitLanes.get(sourceGroupId)??(holdoutSources.has(sourceGroupId)?"holdout":"train");
+const lanePolicy=explicitLanes.size?"presealed_challenge_lanes_with_deterministic_source_fallback":"deterministic_source_level_80_20_holdout_from_private_key_continuity_token";
 
 await fs.mkdir(path.join(outDir,"captures"),{recursive:true});
 const blindSources=[]; const observations=[]; const proposalAudit=[];
@@ -63,9 +67,9 @@ for(const source of harvest.sources){
 }
 if(observations.length<10)throw new Error(`proposer produced too few observations: ${observations.length}`);
 const blindCore={
-  schema:"mark_observable_input_blind_v1",corpusKind:harvest.corpusKind,generatedAt:new Date().toISOString(),lanePolicy:"deterministic_source_level_80_20_holdout_from_private_key_continuity_token",sourceHarvestSha256:harvest.blindSha256,
+  schema:"mark_observable_input_blind_v1",corpusKind:harvest.corpusKind,generatedAt:new Date().toISOString(),lanePolicy,sourceHarvestSha256:harvest.blindSha256,
   sources:blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),observations:observations.sort((a,b)=>a.id.localeCompare(b.id)),
-  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","keyed_continuity_token","region","segmentation","proposal_scale","proposal_kind","train_or_holdout_lane"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
+  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","keyed_continuity_token","region","segmentation","proposal_scale","proposal_kind","train_holdout_or_control_lane"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
 };
 const blindInputSha256=crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
 const blind={...blindCore,blindInputSha256};
@@ -73,6 +77,6 @@ await fs.writeFile(path.join(outDir,"mark-observable-input-blind-v1.json"),`${JS
 const auditCore={schema:"mark_observable_proposals_blind_v1",generatedAt:blind.generatedAt,sealedBlindInputSha256:blindInputSha256,sourceHarvestSha256:harvest.blindSha256,proposals:proposalAudit.sort((a,b)=>a.id.localeCompare(b.id))};
 const auditSha256=crypto.createHash("sha256").update(JSON.stringify(auditCore)).digest("hex");
 await fs.writeFile(path.join(outDir,"mark-observable-proposals-blind-v1.json"),`${JSON.stringify({...auditCore,blindSha256:auditSha256},null,2)}\n`);
-await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${blind.schema}`,`source_objects=${blind.sources.length}`,`proposed_observations=${blind.observations.length}`,`train_observations=${blind.observations.filter(o=>o.lane==="train").length}`,`holdout_observations=${blind.observations.filter(o=>o.lane==="holdout").length}`,`blind_sha256=${blindInputSha256}`].join("\n")+"\n");
+await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${blind.schema}`,`source_objects=${blind.sources.length}`,`proposed_observations=${blind.observations.length}`,`train_observations=${blind.observations.filter(o=>o.lane==="train").length}`,`holdout_observations=${blind.observations.filter(o=>o.lane==="holdout").length}`,`control_observations=${blind.observations.filter(o=>o.lane==="control").length}`,`lane_policy=${lanePolicy}`,`blind_sha256=${blindInputSha256}`].join("\n")+"\n");
 console.log(`Proposed ${blind.observations.length} multiscale observables from ${blind.sources.length} anonymous source objects`);
 console.log(`Proposal blind SHA-256: ${blindInputSha256}`);
