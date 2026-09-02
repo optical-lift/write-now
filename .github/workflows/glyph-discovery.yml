@@ -1,0 +1,96 @@
+name: Glyph Discovery Blind v1
+
+on:
+  pull_request:
+    paths:
+      - "app/glyph-atlas/**"
+      - "scripts/glyph-discovery.mjs"
+      - "scripts/seal-glyph-discovery.mjs"
+      - ".github/workflows/glyph-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install application dependencies
+        run: npm install
+
+      - name: Install discovery browser and glyph fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core fonts-noto-extra
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          fc-cache -f
+
+      - name: Start Glyph Atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run dev -- --hostname 127.0.0.1 > "$RUNNER_TEMP/glyph-atlas.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/glyph-atlas.pid"
+          for attempt in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/glyph-atlas >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/glyph-atlas.log"
+          exit 1
+
+      - name: Run blind discovery
+        env:
+          GLYPH_ATLAS_URL: http://127.0.0.1:3000/glyph-atlas
+          GLYPH_DISCOVERY_OUT: artifacts/glyph-discovery-v1
+        run: node scripts/glyph-discovery.mjs
+
+      - name: Seal blind identities and consensus groups
+        env:
+          GLYPH_DISCOVERY_RAW: artifacts/glyph-discovery-v1/glyph-discovery-blind-v1.json
+          GLYPH_DISCOVERY_SEALED_OUT: artifacts/glyph-discovery-v1-sealed
+          GLYPH_DISCOVERY_REJOIN_OUT: artifacts/glyph-discovery-rejoin-v1
+        run: node scripts/seal-glyph-discovery.mjs
+
+      - name: Publish sealed summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -s artifacts/glyph-discovery-v1-sealed/summary.txt ]]; then
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat artifacts/glyph-discovery-v1-sealed/summary.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Glyph discovery did not produce a sealed summary.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload sealed blind artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: glyph-discovery-blind-v1-1
+          path: artifacts/glyph-discovery-v1-sealed
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload post-freeze rejoin map separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: glyph-discovery-rejoin-map-v1
+          path: artifacts/glyph-discovery-rejoin-v1
+          if-no-files-found: error
+          retention-days: 30
