@@ -1,18 +1,18 @@
 {
   "schema": "mark_harvest_manifest_v1",
-  "harvestId": "mark:fixture:ten-boxes-attic-conveyor-v1",
+  "harvestId": "mark:fixture:ten-boxes-attic-conveyor-v2",
   "status": "synthetic_fixture",
-  "purpose": "CI fixture for an uncurated conveyor: ten contextually different source objects enter only as captures; no observation regions are supplied by a human.",
+  "purpose": "CI fixture for an uncurated conveyor with an open-set falsifiability check: nine contextually different renderings share one underlying structure; one genuinely novel source is withheld by the deterministic source-level holdout. No observation regions are supplied by a human.",
   "sources": [
-    {"sourceId":"SRC0001","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":3,"dx":0,"dy":0,"linecap":"round"}},"context":{"boxLabel":"script","fixtureOnly":true}},
-    {"sourceId":"SRC0002","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":1,"dy":0,"linecap":"square"}},"context":{"boxLabel":"knot","fixtureOnly":true}},
-    {"sourceId":"SRC0003","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":5,"dx":-1,"dy":1,"linecap":"round"}},"context":{"boxLabel":"beadwork","fixtureOnly":true}},
-    {"sourceId":"SRC0004","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":6,"dx":0,"dy":-1,"linecap":"square"}},"context":{"boxLabel":"map","fixtureOnly":true}},
-    {"sourceId":"SRC0005","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":3,"dx":2,"dy":1,"linecap":"round"}},"context":{"boxLabel":"textile","fixtureOnly":true}},
-    {"sourceId":"SRC0006","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":-2,"dy":-1,"linecap":"square"}},"context":{"boxLabel":"seal","fixtureOnly":true}},
-    {"sourceId":"SRC0007","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":5,"dx":1,"dy":2,"linecap":"round"}},"context":{"boxLabel":"game","fixtureOnly":true}},
-    {"sourceId":"SRC0008","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":6,"dx":-1,"dy":-2,"linecap":"square"}},"context":{"boxLabel":"astronomical","fixtureOnly":true}},
-    {"sourceId":"SRC0009","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":2,"dy":-1,"linecap":"round"}},"context":{"boxLabel":"mathematical","fixtureOnly":true}},
-    {"sourceId":"SRC0010","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":5,"dx":-2,"dy":1,"linecap":"square"}},"context":{"boxLabel":"interface","fixtureOnly":true}}
+    {"sourceId":"SRC0001","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":3,"dx":0,"dy":0,"linecap":"round"}},"context":{"boxLabel":"script","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0002","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":1,"dy":0,"linecap":"square"}},"context":{"boxLabel":"knot","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0003","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":5,"dx":-1,"dy":1,"linecap":"round"}},"context":{"boxLabel":"beadwork","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0004","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":6,"dx":0,"dy":-1,"linecap":"square"}},"context":{"boxLabel":"map","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0005","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":3,"dx":2,"dy":1,"linecap":"round"}},"context":{"boxLabel":"textile","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0006","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":-2,"dy":-1,"linecap":"square"}},"context":{"boxLabel":"seal","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0007","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":5,"dx":1,"dy":2,"linecap":"round"}},"context":{"boxLabel":"game","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0008","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":6,"dx":-1,"dy":-2,"linecap":"square"}},"context":{"boxLabel":"astronomical","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0009","capture":{"adapter":"image_2d","syntheticRecipe":{"strokeWidth":4,"dx":2,"dy":-1,"linecap":"round"}},"context":{"boxLabel":"mathematical","fixtureOnly":true,"validationTruth":{"openSetRelation":"known"}}},
+    {"sourceId":"SRC0010","capture":{"adapter":"image_2d","syntheticRecipe":{"template":"nine_dots","nonce":9}},"context":{"boxLabel":"interface","fixtureOnly":true,"validationTruth":{"openSetRelation":"novel"}}}
   ]
 }
