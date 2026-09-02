@@ -12,7 +12,7 @@ if(model.schema!=="mark_blind_world_model_v1")throw new Error(`unsupported world
 if(control.schema!=="mark_observable_feature_partition_blind_v1"||control.partition!=="control")throw new Error(`control evaluation requires sealed control partition; got ${control.schema}/${control.partition}`);
 for(const[name,value]of[["model",model],["control",control]]){const{blindSha256,...rest}=value;const computed=crypto.createHash("sha256").update(JSON.stringify(rest)).digest("hex");if(!blindSha256||blindSha256!==computed)throw new Error(`${name} SHA-256 verification failed`);}
 if(!control.records.length)throw new Error("control lane is empty");
-const predictions=predictAgainstWorld(model,control.records);
+const predictions=predictAgainstWorld(model,control.records,{includeOperationPredictions:false});
 const familyById=new Map(predictions.familyPredictions.map(row=>[row.id,row]));
 const whole=control.records.filter(record=>record.proposalKind==="whole_capture").map(record=>familyById.get(record.id)).filter(Boolean);
 const acceptedAll=predictions.familyPredictions.filter(row=>row.status==="accepted").length;
@@ -23,7 +23,7 @@ const rates={
 };
 const core={
   schema:"mark_blind_control_evaluation_v1",generatedAt:new Date().toISOString(),sealedTrainingWorldSha256:model.blindSha256,sealedControlSha256:control.blindSha256,
-  controlContract:{controlNeverContributedToTraining:true,contextLabelsAvailable:false,unitOfPrimaryRate:"whole_source_object"},
+  controlContract:{controlNeverContributedToTraining:true,contextLabelsAvailable:false,unitOfPrimaryRate:"whole_source_object",operationPredictionSkipped:true},
   corpus:{observations:control.records.length,sourceObjects:new Set(control.records.map(r=>r.sourceGroupId)).size,wholeObjects:whole.length},
   accepted:{observations:acceptedAll,wholeObjects:acceptedWhole},rates,
   wholeObjectPredictions:whole,
