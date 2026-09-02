@@ -20,16 +20,18 @@ async function scramble(bytes,seed){
   return sharp(out,{raw:{width,height,channels:1}}).png().toBuffer();
 }
 await fs.mkdir(path.join(outDir,"captures"),{recursive:true});
+const trainSources=input.sources.filter(row=>row.lane==="train"),holdoutSentinel=input.sources.find(row=>row.lane==="holdout")??null;
+const selected=holdoutSentinel?[...trainSources,holdoutSentinel]:trainSources;
 const sources=[];
-for(const source of input.sources.filter(row=>row.lane==="train")){
+for(const source of selected){
   const absolute=path.resolve(path.dirname(inputPath),source.capturePath),bytes=await fs.readFile(absolute),scrambled=await scramble(bytes,`${input.blindSha256}|${source.continuityToken}|spatial-scramble-v1`);
   const capturePath=path.posix.join("captures",`${source.sourceGroupId}.png`);await fs.writeFile(path.join(outDir,capturePath),scrambled);
   const captureToken=crypto.createHash("sha256").update("mark-spatial-scramble-v1|").update(scrambled).digest("hex");
-  sources.push({...source,lane:"train",capturePath,captureMime:"image/png",captureToken});
+  sources.push({...source,lane:source.sourceGroupId===holdoutSentinel?.sourceGroupId?"holdout":"train",capturePath,captureMime:"image/png",captureToken});
 }
-if(sources.length<4)throw new Error(`spatial scramble needs at least four train sources; got ${sources.length}`);
+if(trainSources.length<4)throw new Error(`spatial scramble needs at least four train sources; got ${trainSources.length}`);
 const core={schema:"mark_harvested_sources_blind_v1",corpusKind:"spatial_scramble_negative_control",generatedAt:new Date().toISOString(),sources:sources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),deduplicationContract:input.deduplicationContract,blindnessContract:{...input.blindnessContract,negativeControl:true,spatialScramble:`deterministic_${grid}x${grid}_tile_permutation`,contextLabelsAvailable:false}};
 const outSha=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex"),artifact={...core,blindSha256:outSha};
 await fs.writeFile(path.join(outDir,"mark-harvested-sources-blind-v1.json"),`${JSON.stringify(artifact,null,2)}\n`);
-await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${artifact.schema}`,`source_objects=${sources.length}`,`grid=${grid}`,`blind_sha256=${outSha}`].join("\n")+"\n");
-console.log(`Built ${grid}x${grid} spatial-scramble negative control for ${sources.length} train sources`);
+await fs.writeFile(path.join(outDir,"summary.txt"),[`schema=${artifact.schema}`,`train_source_objects=${trainSources.length}`,`holdout_sentinel=${holdoutSentinel?1:0}`,`grid=${grid}`,`blind_sha256=${outSha}`].join("\n")+"\n");
+console.log(`Built ${grid}x${grid} spatial-scramble negative control for ${trainSources.length} train sources${holdoutSentinel?" plus one holdout sentinel":""}`);
