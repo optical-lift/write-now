@@ -32,7 +32,7 @@ function union(a,b){const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),right=Math.max
 const keyOf=(r)=>`${r.x},${r.y},${r.width},${r.height}`;
 const observationId=(sourceGroupId,kind,region)=>`O${crypto.createHash("sha256").update(`${sourceGroupId}|${kind}|${keyOf(region)}`).digest("hex").slice(0,16).toUpperCase()}`;
 
-const scoredSources = harvest.sources.map(source=>({sourceGroupId:source.sourceGroupId,score:crypto.createHash("sha256").update(`mark-conveyor-holdout-v1|${source.captureToken}`).digest("hex")})).sort((a,b)=>a.score.localeCompare(b.score));
+const scoredSources = harvest.sources.map(source=>({sourceGroupId:source.sourceGroupId,score:crypto.createHash("sha256").update(`mark-conveyor-holdout-v1|${source.continuityToken}`).digest("hex")})).sort((a,b)=>a.score.localeCompare(b.score));
 const holdoutCount = harvest.sources.length >= 5 ? Math.max(1, Math.round(harvest.sources.length*0.2)) : 0;
 const holdoutSources = new Set(scoredSources.slice(0,holdoutCount).map(x=>x.sourceGroupId));
 const laneFor=(sourceGroupId)=>holdoutSources.has(sourceGroupId)?"holdout":"train";
@@ -63,9 +63,9 @@ for(const source of harvest.sources){
 }
 if(observations.length<10)throw new Error(`proposer produced too few observations: ${observations.length}`);
 const blindCore={
-  schema:"mark_observable_input_blind_v1",corpusKind:harvest.corpusKind,generatedAt:new Date().toISOString(),lanePolicy:"deterministic_source_level_80_20_holdout_from_blind_capture_token",sourceHarvestSha256:harvest.blindSha256,
+  schema:"mark_observable_input_blind_v1",corpusKind:harvest.corpusKind,generatedAt:new Date().toISOString(),lanePolicy:"deterministic_source_level_80_20_holdout_from_private_key_continuity_token",sourceHarvestSha256:harvest.blindSha256,
   sources:blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),observations:observations.sort((a,b)=>a.id.localeCompare(b.id)),
-  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","region","segmentation","proposal_scale","proposal_kind","train_or_holdout_lane"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
+  blindnessContract:{unit:"machine_proposed_observable_configuration",permitted:["opaque_ids","source_independence","capture_adapter","local_capture_path","salted_capture_token","keyed_continuity_token","region","segmentation","proposal_scale","proposal_kind","train_or_holdout_lane"],forbidden:["object_category","culture","language","sign_name","reading","meaning","chronology","geography","institution","catalog_identity","scholarly_interpretation"]},
 };
 const blindInputSha256=crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
 const blind={...blindCore,blindInputSha256};
