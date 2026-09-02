@@ -14,6 +14,21 @@ export default function Home() {
         <p style={{ fontSize: 16, lineHeight: 1.6, opacity: 0.72 }}>
           This deployment is the research surface for the publishing system. Catalog, corpus, reconstruction, and library-delivery interfaces will be added only as their underlying custody models become operational.
         </p>
+        <p style={{ marginTop: 32 }}>
+          <a
+            href="/glyph-atlas"
+            style={{
+              display: "inline-block",
+              color: "inherit",
+              textDecoration: "none",
+              borderBottom: "1px solid currentColor",
+              paddingBottom: 4,
+              fontSize: 15,
+            }}
+          >
+            Open Glyph Atlas v0 →
+          </a>
+        </p>
       </section>
     </main>
   );
