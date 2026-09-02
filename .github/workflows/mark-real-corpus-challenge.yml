@@ -1,0 +1,180 @@
+name: Mark Real Corpus Challenge v5
+
+on:
+  pull_request:
+    paths:
+      - "scripts/expand-mark-open-access-feed.mjs"
+      - "scripts/compose-mark-real-corpus-challenge.mjs"
+      - "scripts/harvest-mark-sources.mjs"
+      - "scripts/propose-mark-observables.mjs"
+      - "scripts/finalize-mark-harvest-rejoin.mjs"
+      - "scripts/mark-observable-discovery.mjs"
+      - "scripts/learn-mark-world.mjs"
+      - "scripts/evaluate-mark-null-worlds.mjs"
+      - "scripts/predict-mark-world-holdout.mjs"
+      - "scripts/evaluate-mark-control-corpus.mjs"
+      - "scripts/evaluate-mark-visual-baseline.mjs"
+      - "scripts/scramble-mark-harvest.mjs"
+      - "scripts/compare-mark-spatial-control.mjs"
+      - "scripts/report-mark-real-corpus-challenge.mjs"
+      - "research/mark/harvest-feeds/**"
+      - "research/mark/harvest-manifests/v5-fixture-**"
+      - "research/mark/feed-fixtures/v5/**"
+      - "docs/mark-real-corpus-challenge-v5.md"
+      - ".github/workflows/mark-real-corpus-challenge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  challenge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install
+      - name: Validate repository manifests and v5 syntax
+        run: |
+          npm run check:mark-harvests
+          node --check scripts/expand-mark-open-access-feed.mjs
+          node --check scripts/compose-mark-real-corpus-challenge.mjs
+          node --check scripts/evaluate-mark-control-corpus.mjs
+          node --check scripts/evaluate-mark-visual-baseline.mjs
+          node --check scripts/scramble-mark-harvest.mjs
+          node --check scripts/compare-mark-spatial-control.mjs
+          node --check scripts/report-mark-real-corpus-challenge.mjs
+      - name: Expand live whole-collection feeds
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/aic-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v5-feed-aic node scripts/expand-mark-open-access-feed.mjs
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/cleveland-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v5-feed-cleveland node scripts/expand-mark-open-access-feed.mjs
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/met-firehose-holdout.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v5-feed-met node scripts/expand-mark-open-access-feed.mjs
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v5-feed-loc node scripts/expand-mark-open-access-feed.mjs
+      - name: Compose local institution-separated CI challenge
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_CHALLENGE_ID: mark:v5-fixture:institution-separated-ci
+          MARK_CHALLENGE_MANIFESTS: research/mark/harvest-manifests/v5-fixture-train-a.v1.json,research/mark/harvest-manifests/v5-fixture-train-b.v1.json,research/mark/harvest-manifests/v5-fixture-holdout.v1.json,research/mark/harvest-manifests/v5-fixture-control.v1.json
+        run: node scripts/compose-mark-real-corpus-challenge.mjs
+      - name: Compose live institution-separated challenge
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          MARK_CHALLENGE_ID: mark:real-corpus:open-access-firehose-v1
+          MARK_CHALLENGE_MANIFESTS: artifacts/v5-feed-aic/generated-harvest-manifest.v1.json,artifacts/v5-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v5-feed-met/generated-harvest-manifest.v1.json,artifacts/v5-feed-loc/generated-harvest-manifest.v1.json
+        run: node scripts/compose-mark-real-corpus-challenge.mjs
+      - name: Harvest and reject duplicate evidence
+        env:
+          MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
+          MARK_CONTINUITY_KEY: mark-v5-${{ github.run_id }}-${{ github.sha }}
+          MARK_NEAR_DUPLICATE_BITS: 2
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Let Mark invent multiscale pieces across every lane
+        run: node scripts/propose-mark-observables.mjs
+      - name: Seal custody map before measurement
+        run: node scripts/finalize-mark-harvest-rejoin.mjs
+      - name: Measure train holdout and control blindly
+        env:
+          MARK_OBSERVABLE_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json
+        run: node scripts/mark-observable-discovery.mjs
+      - name: Freeze training world only
+        run: node scripts/learn-mark-world.mjs
+      - name: Require training structure to beat feature-shuffled nulls
+        env:
+          MARK_NULL_ITERATIONS: 64
+          MARK_REQUIRE_NULL_GATE: 1
+          MARK_NULL_P_MAX: 0.25
+        run: node scripts/evaluate-mark-null-worlds.mjs
+      - name: Evaluate the unseen institution with abstention
+        run: node scripts/predict-mark-world-holdout.mjs
+      - name: Ask whether unrelated control objects fool the world
+        run: node scripts/evaluate-mark-control-corpus.mjs
+      - name: Ask whether ordinary whole-image similarity explains accepted holdouts
+        env:
+          MARK_VISUAL_TRIVIAL_DHASH_BITS: 8
+        run: node scripts/evaluate-mark-visual-baseline.mjs
+      - name: Destroy spatial arrangement without changing source pixel inventory
+        run: node scripts/scramble-mark-harvest.mjs
+      - name: Let Mark rediscover pieces in spatially scrambled train sources
+        env:
+          MARK_HARVEST_BLIND: artifacts/mark-spatial-scramble-harvest-v1/mark-harvested-sources-blind-v1.json
+          MARK_PROPOSAL_OUT: artifacts/mark-spatial-scramble-input-v1
+        run: node scripts/propose-mark-observables.mjs
+      - name: Measure the spatial negative control
+        env:
+          MARK_OBSERVABLE_INPUT: artifacts/mark-spatial-scramble-input-v1/mark-observable-input-blind-v1.json
+          MARK_OBSERVABLE_OUT: artifacts/mark-spatial-scramble-discovery-v1
+        run: node scripts/mark-observable-discovery.mjs
+      - name: Freeze spatial-scramble training world
+        env:
+          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-scramble-discovery-v1/mark-observable-train-blind-v1.json
+          MARK_WORLD_TRAIN_OUT: artifacts/mark-spatial-scramble-world-train-v1
+        run: node scripts/learn-mark-world.mjs
+      - name: Score spatial-scramble world against its own shuffled nulls
+        env:
+          MARK_OBSERVABLE_TRAIN: artifacts/mark-spatial-scramble-discovery-v1/mark-observable-train-blind-v1.json
+          MARK_NULL_WORLD_OUT: artifacts/mark-spatial-scramble-null-worlds-v1
+          MARK_NULL_ITERATIONS: 32
+        run: node scripts/evaluate-mark-null-worlds.mjs
+      - name: Compare real structure with spatial destruction
+        run: node scripts/compare-mark-spatial-control.mjs
+      - name: Reopen provenance only after every blind challenge is sealed
+        run: node scripts/report-mark-real-corpus-challenge.mjs
+      - name: Publish challenge summaries
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for summary in \
+            artifacts/mark-real-corpus-challenge-v1/summary.txt \
+            artifacts/mark-conveyor-input-v1/summary.txt \
+            artifacts/mark-observable-discovery-v1/summary.txt \
+            artifacts/mark-world-train-v1/summary.txt \
+            artifacts/mark-null-worlds-v1/summary.txt \
+            artifacts/mark-world-prediction-v1/summary.txt \
+            artifacts/mark-control-evaluation-v1/summary.txt \
+            artifacts/mark-visual-baseline-v1/summary.txt \
+            artifacts/mark-spatial-scramble-harvest-v1/summary.txt \
+            artifacts/mark-spatial-scramble-null-worlds-v1/summary.txt \
+            artifacts/mark-spatial-control-comparison-v1/summary.txt \
+            artifacts/mark-real-corpus-report-v1/summary.txt; do
+            if [[ -s "$summary" ]]; then
+              echo "### $summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```text' >> "$GITHUB_STEP_SUMMARY"
+              cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Upload blind challenge evidence without source pixels
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v5-blind-challenge
+          path: |
+            artifacts/mark-harvest-v1/mark-harvested-sources-blind-v1.json
+            artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json
+            artifacts/mark-observable-discovery-v1/*.json
+            artifacts/mark-world-train-v1/*.json
+            artifacts/mark-null-worlds-v1/*.json
+            artifacts/mark-world-prediction-v1/*.json
+            artifacts/mark-control-evaluation-v1/*.json
+            artifacts/mark-visual-baseline-v1/*.json
+            artifacts/mark-spatial-control-comparison-v1/*.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload post-freeze custody and candidate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v5-context-report
+          path: |
+            artifacts/mark-real-corpus-challenge-v1/*.json
+            artifacts/mark-harvest-rejoin-v1/*.json
+            artifacts/mark-conveyor-rejoin-v1/*.json
+            artifacts/mark-real-corpus-report-v1/*
+          if-no-files-found: warn
+          retention-days: 30
