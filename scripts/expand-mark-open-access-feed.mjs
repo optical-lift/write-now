@@ -24,6 +24,12 @@ function deterministicSpread(total, count, salt) {
   for (let i = 0; i < Math.min(count, total); i += 1) out.push((start + i * step) % total);
   return out;
 }
+function normalizeHttpsUrl(value) {
+  if (typeof value !== "string") return null;
+  if (/^https:\/\//i.test(value)) return value;
+  if (/^\/\//.test(value)) return `https:${value}`;
+  return null;
+}
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function fetchJson(url, { attempts = 3 } = {}) {
   let lastError;
@@ -151,8 +157,9 @@ async function locItems() {
   for (let pageOrdinal = 1; pageOrdinal <= maxPages && nextUrl && items.length < maxSources; pageOrdinal += 1) {
     const payload = await fetchJson(nextUrl);
     for (const row of locRows(payload, pageOrdinal)) {
-      const urls = Array.isArray(row?.image_url) ? row.image_url : [];
-      const assetUrl = [...urls].reverse().find(url => /^https:\/\//i.test(url) && /\.(jpe?g|png)(\?|$)/i.test(url)) ?? urls.find(url => /^https:\/\//i.test(url));
+      const rawUrls = Array.isArray(row?.image_url) ? row.image_url : typeof row?.image_url === "string" ? [row.image_url] : [];
+      const urls = rawUrls.map(normalizeHttpsUrl).filter(Boolean);
+      const assetUrl = [...urls].reverse().find(url => /\.(jpe?g|png)(\?|$)/i.test(url)) ?? urls[0];
       if (!assetUrl || !row?.id || seenIds.has(row.id)) continue;
       seenIds.add(row.id);
       items.push({
