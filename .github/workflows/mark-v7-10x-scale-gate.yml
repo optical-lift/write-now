@@ -75,7 +75,7 @@ jobs:
           if(value.observations.length<Number(process.env.MARK_V7_MIN_OBSERVATIONS)) throw new Error(`10x observation gate failed: ${value.observations.length}`);
           console.log(`sealed 10x input ${blindInputSha256}; lanes=${JSON.stringify(lanes)} observations=${value.observations.length}`);
           NODE
-      - name: Build compacted sparse compiler
+      - name: Build rowless sparse compiler
         run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
       - name: Compile 10x relational world under hard 512 MB ceiling
         shell: bash
@@ -92,10 +92,11 @@ jobs:
               --null-iterations 16 \
               --min-sources 3
           ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
-      - name: Assert 10x sparse architecture gate
+      - name: Assert 10x rowless architecture gate
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
+          import crypto from "node:crypto";
           import { execFileSync } from "node:child_process";
           const out=process.env.MARK_V7_OUT;
           const summary=JSON.parse(fs.readFileSync(`${out}/summary.json`,"utf8"));
@@ -108,18 +109,28 @@ jobs:
           const fsOutputs=Number(runtime.match(/File system outputs:\s*(\d+)/)?.[1] ?? NaN);
           const wall=runtime.match(/Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s*([^\n]+)/)?.[1]?.trim() ?? null;
           const outputKb=Number(execFileSync("du",["-sk",out],{encoding:"utf8"}).trim().split(/\s+/)[0]);
+          if(summary.schema!=="mark_sparse_compiler_summary_v2" || custody.schema!=="mark_sparse_ledger_custody_v2") throw new Error("10x rowless schema mismatch");
           if(summary.sources!==blind.sources.length || summary.observations!==blind.observations.length) throw new Error("10x compiler input/output count mismatch");
           if(summary.sources<Number(process.env.MARK_V7_MIN_LANE_SOURCES)*3) throw new Error(`10x source gate failed: ${summary.sources}`);
           if(summary.observations<Number(process.env.MARK_V7_MIN_OBSERVATIONS)) throw new Error(`10x observation gate failed: ${summary.observations}`);
           if(!Number.isFinite(rss)||rss>Number(process.env.MARK_V7_MAX_RSS_KB)) throw new Error(`10x memory gate failed: ${rss}`);
-          if(!custody.contract?.appendOnlyEventLedger || custody.contract?.wholeWorldGraphMaterialized || custody.contract?.wholeWorldJsonMaterialized || custody.contract?.grammarPairsMaterialized) throw new Error("10x sparse custody contract violated");
-          if(BigInt(summary.observedPairWeight)<1n || summary.grammarRows<1 || summary.events<1 || summary.centers<1) throw new Error("10x compiler emitted no relational evidence");
-          const assertion={schema:"mark_v7_10x_scale_assertion_v1",status:"passed",scaleGateOnly:true,scientificInterpretationAuthorized:false,sourceBlindInputSha256:summary.sourceBlindInputSha256,lanes,sources:summary.sources,observations:summary.observations,tiles:summary.tiles,centers:summary.centers,events:summary.events,grammarRows:summary.grammarRows,observedPairWeight:summary.observedPairWeight,rules:evaluation.rules,maxRssKb:rss,memoryGateKb:Number(process.env.MARK_V7_MAX_RSS_KB),wallTime:wall,fileSystemOutputs:fsOutputs,outputDirectoryKb:outputKb,ledgerMerkleRoot:custody.merkleRoot};
+          const contract=custody.contract ?? {};
+          if(!contract.appendOnlyPhysicalEventLedger || contract.wholeWorldGraphMaterialized || contract.wholeWorldJsonMaterialized || contract.grammarPairsMaterialized || contract.grammarRowsMaterialized) throw new Error("10x sparse custody contract violated");
+          if(!contract.grammarSufficientStatisticsDiskBacked || !contract.distinctSourceSupportCommittedAtSourceBoundary || !contract.perObservationContributionHashes) throw new Error("10x sufficient-statistics contract incomplete");
+          if(summary.grammarRowsMaterialized!==0) throw new Error(`10x materialized ${summary.grammarRowsMaterialized} grammar rows`);
+          if(summary.grammarStatRows<1 || summary.contextStatRows<1 || summary.sourceStatCommits<1) throw new Error("10x sufficient-statistics store is empty");
+          if(summary.grammarContributions!==summary.observations*(summary.nullIterations+1)) throw new Error("10x contribution ledger is incomplete");
+          if(BigInt(summary.observedPairWeight)<1n || summary.events<1 || summary.centers<1) throw new Error("10x compiler emitted no relational evidence");
+          if(summary.physicalLedgerMerkleRoot!==custody.physicalLedger?.merkleRoot || summary.grammarContributionMerkleRoot!==custody.grammarStatistics?.contributionMerkleRoot) throw new Error("10x custody roots disagree with summary");
+          const db=fs.readFileSync(`${out}/grammar-stats.sqlite`);
+          const dbSha=crypto.createHash("sha256").update(db).digest("hex");
+          if(dbSha!==custody.grammarStatistics?.databaseSha256) throw new Error("10x sufficient-statistics database hash mismatch");
+          const assertion={schema:"mark_v7_10x_scale_assertion_v2",status:"passed",scaleGateOnly:true,scientificInterpretationAuthorized:false,sourceBlindInputSha256:summary.sourceBlindInputSha256,lanes,sources:summary.sources,observations:summary.observations,tiles:summary.tiles,centers:summary.centers,events:summary.events,grammarRowsMaterialized:summary.grammarRowsMaterialized,grammarStatRows:summary.grammarStatRows,contextStatRows:summary.contextStatRows,sourceStatCommits:summary.sourceStatCommits,grammarContributions:summary.grammarContributions,observedPairWeight:summary.observedPairWeight,rules:evaluation.rules,maxRssKb:rss,memoryGateKb:Number(process.env.MARK_V7_MAX_RSS_KB),wallTime:wall,fileSystemOutputs:fsOutputs,outputDirectoryKb:outputKb,physicalLedgerMerkleRoot:custody.physicalLedger.merkleRoot,grammarContributionMerkleRoot:custody.grammarStatistics.contributionMerkleRoot,grammarStatisticsDatabaseSha256:dbSha,grammarStatisticsDatabaseBytes:custody.grammarStatistics.databaseBytes};
           fs.writeFileSync(`${out}/scale-assertion.json`,`${JSON.stringify(assertion,null,2)}\n`);
           console.log(JSON.stringify(assertion,null,2));
           NODE
-      - name: Free bulky world rows after custody metrics
-        run: rm -rf "$MARK_V7_OUT/events.jsonl" "$MARK_V7_OUT/grammar-shards"
+      - name: Free bulky ledgers after custody metrics
+        run: rm -f "$MARK_V7_OUT/events.jsonl" "$MARK_V7_OUT/grammar-contributions.jsonl"
       - name: Publish 10x architecture summary
         run: |
           echo '### Mark v7 10x scale gate' >> "$GITHUB_STEP_SUMMARY"
@@ -133,6 +144,7 @@ jobs:
             artifacts/mark-v7-10x/custody.json
             artifacts/mark-v7-10x/evaluation.json
             artifacts/mark-v7-10x/rules.jsonl
+            artifacts/mark-v7-10x/grammar-stats.sqlite
             artifacts/mark-v7-10x/runtime.txt
             artifacts/mark-v7-10x/scale-assertion.json
           if-no-files-found: error
