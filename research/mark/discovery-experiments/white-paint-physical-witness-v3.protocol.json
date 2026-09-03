@@ -1,0 +1,116 @@
+{
+  "schema": "mark_white_paint_physical_witness_protocol_v3",
+  "experimentId": "mark:white-paint-physical-witness:v3",
+  "parent": {
+    "proxyExperiment": "mark:white-paint-glyph-transfer:v2",
+    "proxyBlindTransferSha256": "2c9cf12dcdb6141bdd8ca76fb38fea17c1cbb9d36dbb187965f6ef6ab260417b",
+    "proxyContextSha256": "97b279e48aadc72b07da14b1e66234854e99dda17cf9cfc99b28341396c1de39",
+    "result": "mixed_3_of_5"
+  },
+  "question": "Do the three white-paint predictions that survived standardized glyph proxies remain observable when the input is museum photography of physical historical writing surfaces, while the two failed predictions remain unresolved diagnostics rather than being retuned?",
+  "confirmatoryPredictions": {
+    "P3_REPETITION_PHYSICAL": {
+      "prediction": "Ordered repetition-like degree structure recurs across independent physical source objects rather than being supplied by one display font or one object.",
+      "gate": "At least 3 of 4 systems have at least 4 independent accepted objects whose eligible local regions collectively express at least 3 distinct positive repetition degrees; within every passing system, no one source object supplies more than 50% of positive-degree regions."
+    },
+    "P4_CLOSURE_PHYSICAL": {
+      "prediction": "Open and literally closed local mark structures both recur across physical writing systems.",
+      "gate": "All 4 systems contain both open and closed eligible local regions; each state is supported by at least 3 independent objects per system; no one source object supplies more than 50% of a system's closed regions."
+    },
+    "P5_SUBSTRATE_BEATS_STYLE_PHYSICAL": {
+      "prediction": "Object-level white-paint structural summaries retain less writing-system identity than object-level photographic appearance summaries.",
+      "gate": "Leave-one-object-out nearest-centroid system accuracy from appearance exceeds white-paint structural accuracy by at least 0.05 and the observed gap is above at least 95% of 512 object-label shuffle null worlds."
+    }
+  },
+  "unresolvedDiagnostics": {
+    "P1_OPERATION_RECURRENCE": "Report strict persist, turn, branch, cross, close and loop_continue support by system/object under the unchanged v2 classifier; no pass/fail promotion in v3.",
+    "P2_RELATION_PORTABILITY": "Report near-terminal/interior support and cross-system mixing under the unchanged v2 relation threshold; no pass/fail promotion in v3."
+  },
+  "blindBoundary": {
+    "contextForbiddenDuringExtraction": [
+      "writing system",
+      "object ID",
+      "title",
+      "culture",
+      "date",
+      "medium",
+      "department",
+      "catalog transcription",
+      "translation",
+      "historical meaning",
+      "museum URL"
+    ],
+    "allowedDuringAcquisitionOnly": [
+      "provider object ID required to fetch the preregistered source",
+      "public-domain flag",
+      "primary image URL"
+    ],
+    "custody": "Acquisition writes a randomly salted opaque source ID, hashes exact downloaded image bytes, freezes the blind source packet, and writes contextual mappings to a separate staging directory. Context may open only after the blind physical-feature SHA exists."
+  },
+  "physicalNormalization": {
+    "autorotate": true,
+    "grayscale": true,
+    "maxDimension": 1024,
+    "backgroundTrim": "deterministic corner-background trim before context is opened",
+    "interiorInsetFraction": 0.08,
+    "tileSize": 128,
+    "tileStride": 96,
+    "reason": "Keep the physical inscription surface while suppressing museum background and the outer object silhouette so a tablet or seal boundary cannot masquerade as glyph closure."
+  },
+  "localMask": {
+    "primary": "local dark-deviation mask from grayscale intensity",
+    "fallback": "Sobel edge mask only when the primary foreground density is below 0.015",
+    "smallComponentRemovalPixels": 6,
+    "eligibleForegroundDensity": [0.015, 0.35],
+    "minimumSkeletonPixels": 20,
+    "maximumSkeletonFraction": 0.18
+  },
+  "whitePaintClassifier": {
+    "inheritFromV2": true,
+    "operationOrder": ["multi", "loop_continue", "close", "cross", "branch", "turn", "persist", "other"],
+    "turnRateThreshold": 0.08,
+    "relationNearTerminalThreshold": 0.22,
+    "repetitionDegree": "min(5, degree-3 junction-cluster count)",
+    "closure": "literal enclosed background component within the local binary mask"
+  },
+  "objectAggregation": {
+    "unitOfReplication": "physical museum object",
+    "minimumEligibleRegionsPerObject": 8,
+    "whitePaintFeatures": [
+      "operation frequency vector",
+      "closure rate",
+      "near-terminal and interior relation rates",
+      "mean and standard deviation of repetition degree",
+      "positive repetition-degree fraction",
+      "mean turn rate",
+      "mean endpoint count",
+      "mean junction-cluster count"
+    ],
+    "appearanceFeatures": [
+      "global grayscale mean",
+      "global grayscale standard deviation",
+      "global gradient mean",
+      "global gradient standard deviation",
+      "gradient orientation histogram",
+      "local contrast mean",
+      "local contrast standard deviation"
+    ]
+  },
+  "nullModel": {
+    "iterations": 512,
+    "seed": 309032026,
+    "method": "Shuffle system labels only across accepted physical objects while preserving the exact four-system object-count multiset. Never alter image bytes, local regions, white-paint features, appearance features, or blind source identity."
+  },
+  "scientificFailureIsGreen": true,
+  "claimBoundary": {
+    "allowed": "The three proxy-surviving structural predictions do or do not replicate in this preregistered physical museum-witness roster under local interior mark extraction.",
+    "forbidden": [
+      "historical semantic decoding",
+      "proof of universal human grammar",
+      "Atlas meaning assigned to a historical sign",
+      "writing-specificity without matched uninscribed controls",
+      "cross-institution replication",
+      "rescuing failed v2 turn/persistence or attachment-locus predictions by changing their definitions"
+    ]
+  }
+}
