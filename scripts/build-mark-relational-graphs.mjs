@@ -13,29 +13,36 @@ const{blindInputSha256:suppliedSha,...inputCore}=input;
 const computedSha=crypto.createHash("sha256").update(JSON.stringify(inputCore)).digest("hex");
 if(!suppliedSha||suppliedSha!==computedSha)throw new Error("blind observable input SHA-256 verification failed");
 
-const sourceById=new Map(input.sources.map(source=>[source.sourceGroupId,source])),decoded=new Map();
+const sourceById=new Map(input.sources.map(source=>[source.sourceGroupId,source]));
+const observationsBySource=new Map(input.sources.map(source=>[source.sourceGroupId,[]]));
+for(const observation of input.observations){
+  const bucket=observationsBySource.get(observation.sourceGroupId);
+  if(!bucket)throw new Error(`unknown source ${observation.sourceGroupId}`);
+  bucket.push(observation);
+}
+
+const records=[],exclusions=[];
+let processedSources=0;
 for(const source of input.sources){
   if(source.adapter!=="image_2d")throw new Error(`unsupported adapter ${source.adapter}`);
   const absolute=path.resolve(path.dirname(inputPath),source.capturePath);
   const{data,info}=await sharp(await fs.readFile(absolute)).greyscale().raw().toBuffer({resolveWithObject:true});
-  decoded.set(source.sourceGroupId,{data,width:info.width,height:info.height});
-}
-
-const records=[],exclusions=[];
-for(const observation of input.observations){
-  const source=sourceById.get(observation.sourceGroupId),image=decoded.get(observation.sourceGroupId);
-  if(!source||!image)throw new Error(`unknown source ${observation.sourceGroupId}`);
-  const r=observation.region??{x:0,y:0,width:image.width,height:image.height};
-  const x0=Math.max(0,Math.round(r.x)),y0=Math.max(0,Math.round(r.y)),w=Math.min(image.width-x0,Math.round(r.width)),h=Math.min(image.height-y0,Math.round(r.height));
-  if(w<=0||h<=0){exclusions.push({id:observation.id,sourceGroupId:observation.sourceGroupId,reason:"invalid_region"});continue;}
-  const gray=new Uint8Array(w*h);for(let y=0;y<h;y+=1)for(let x=0;x<w;x+=1)gray[y*w+x]=image.data[(y0+y)*image.width+x0+x];
-  const measured=measureObservable(gray,w,h,observation.segmentation);
-  if(!measured.eligible){exclusions.push({id:observation.id,sourceGroupId:observation.sourceGroupId,reason:"measurement_ineligible",qualityWarnings:measured.qualityWarnings});continue;}
-  const graph=buildRelationalGraph(measured.mask,measured.normalizedWidth,measured.normalizedHeight,{observationId:observation.id,sourceGroupId:observation.sourceGroupId});
-  records.push({
-    id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,proposalKind:observation.proposalKind??"manual",proposalScale:observation.proposalScale??"manual",
-    region:{x:x0,y:y0,width:w,height:h},captureToken:source.captureToken,maskToken:crypto.createHash("sha256").update(input.blindInputSha256).update(Buffer.from(measured.mask)).digest("hex"),graph,
-  });
+  const image={data,width:info.width,height:info.height};
+  for(const observation of observationsBySource.get(source.sourceGroupId)??[]){
+    const r=observation.region??{x:0,y:0,width:image.width,height:image.height};
+    const x0=Math.max(0,Math.round(r.x)),y0=Math.max(0,Math.round(r.y)),w=Math.min(image.width-x0,Math.round(r.width)),h=Math.min(image.height-y0,Math.round(r.height));
+    if(w<=0||h<=0){exclusions.push({id:observation.id,sourceGroupId:observation.sourceGroupId,reason:"invalid_region"});continue;}
+    const gray=new Uint8Array(w*h);for(let y=0;y<h;y+=1)for(let x=0;x<w;x+=1)gray[y*w+x]=image.data[(y0+y)*image.width+x0+x];
+    const measured=measureObservable(gray,w,h,observation.segmentation);
+    if(!measured.eligible){exclusions.push({id:observation.id,sourceGroupId:observation.sourceGroupId,reason:"measurement_ineligible",qualityWarnings:measured.qualityWarnings});continue;}
+    const graph=buildRelationalGraph(measured.mask,measured.normalizedWidth,measured.normalizedHeight,{observationId:observation.id,sourceGroupId:observation.sourceGroupId});
+    records.push({
+      id:observation.id,sourceGroupId:observation.sourceGroupId,lane:observation.lane,proposalKind:observation.proposalKind??"manual",proposalScale:observation.proposalScale??"manual",
+      region:{x:x0,y:y0,width:w,height:h},captureToken:source.captureToken,maskToken:crypto.createHash("sha256").update(input.blindInputSha256).update(Buffer.from(measured.mask)).digest("hex"),graph,
+    });
+  }
+  processedSources+=1;
+  if(processedSources%8===0||processedSources===input.sources.length)console.log(`Relational extraction progress: ${processedSources}/${input.sources.length} source objects, ${records.length} eligible graphs`);
 }
 records.sort((a,b)=>a.id.localeCompare(b.id));
 if(records.length<4)throw new Error(`too few eligible relational observations: ${records.length}`);
@@ -43,7 +50,7 @@ const core={
   schema:"mark_relational_graph_corpus_blind_v1",generatedAt:new Date().toISOString(),sourceBlindInputSha256:input.blindInputSha256,
   corpus:{observations:records.length,sourceObjects:new Set(records.map(r=>r.sourceGroupId)).size,train:records.filter(r=>r.lane==="train").length,holdout:records.filter(r=>r.lane==="holdout").length,control:records.filter(r=>r.lane==="control").length},
   records,exclusions,
-  blindnessContract:{...input.blindnessContract,relationalExtraction:"program discovery receives topology graph only; source provenance and semantic labels remain sealed"},
+  blindnessContract:{...input.blindnessContract,relationalExtraction:"program discovery receives topology graph only; source provenance and semantic labels remain sealed",memoryContract:"physical source pixels are decoded one source at a time; graph semantics are unchanged"},
 };
 const blindSha256=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex"),artifact={...core,blindSha256};
 function partition(name,subset){
