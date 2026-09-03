@@ -1,0 +1,55 @@
+name: Mark White Paint Candidate Mark Projector v4
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/white-paint-candidate-mark-projector-v4.*"
+      - "scripts/mark-white-paint-candidate-projector-v4.mjs"
+      - "scripts/freeze-v3-primary-image-fetch.mjs"
+      - ".github/workflows/mark-white-paint-candidate-mark-projector-v4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MARK_CANDIDATE_MANIFEST: research/mark/discovery-experiments/white-paint-candidate-mark-projector-v4.images.json
+  MARK_CANDIDATE_PROTOCOL: research/mark/discovery-experiments/white-paint-candidate-mark-projector-v4.protocol.json
+  MARK_CANDIDATE_OUT: artifacts/mark-white-paint-candidate-mark-projector-v4
+
+jobs:
+  blind-projector-feasibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate frozen projector contract
+        run: |
+          python3 -m json.tool "$MARK_CANDIDATE_MANIFEST" >/dev/null
+          python3 -m json.tool "$MARK_CANDIDATE_PROTOCOL" >/dev/null
+          node --check scripts/mark-white-paint-candidate-projector-v4.mjs
+          node --check scripts/freeze-v3-primary-image-fetch.mjs
+      - name: Install image decoder
+        run: npm install --no-save sharp
+      - name: Reacquire exact v3 images and run blind candidate projector
+        run: node --import ./scripts/freeze-v3-primary-image-fetch.mjs scripts/mark-white-paint-candidate-projector-v4.mjs
+      - name: Publish blind feasibility result
+        if: always()
+        run: |
+          if [[ -s "$MARK_CANDIDATE_OUT/summary.txt" ]]; then
+            echo '### Candidate-mark projector v4 — no system context used' >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat "$MARK_CANDIDATE_OUT/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload blind projector artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-candidate-mark-projector-v4
+          path: artifacts/mark-white-paint-candidate-mark-projector-v4/**
+          if-no-files-found: warn
+          retention-days: 30

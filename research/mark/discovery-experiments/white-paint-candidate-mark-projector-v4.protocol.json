@@ -1,0 +1,84 @@
+{
+  "schema": "mark_white_paint_candidate_mark_projector_protocol_v4",
+  "experimentId": "mark:white-paint-candidate-mark-projector:v4",
+  "parent": {
+    "physicalWitnessRunId": 33811822722,
+    "physicalWitnessBlindCorpusSha256": "8fa562c5327833af7972df53fd56a8f6587f0a6421a44a4fe021ddee58e896b0",
+    "physicalWitnessBlindFeatureSha256": "3f7743f447f5b8f10ff05f7954bca17f5f2525c12aafe97d196bad43c7f6c593",
+    "physicalWitnessContextSha256": "7ab13a64b995d27288959014920a067fc19b147758b1f80cee8552a9c0fc9079",
+    "v3Result": "mixed_2_of_3",
+    "v3RepresentationWarning": {
+      "regions": 1222,
+      "multi": 1075,
+      "closed": 1202,
+      "open": 20
+    }
+  },
+  "question": "Can the exact v3 physical image world be reprojected into local connected candidate-mark carriers whose frozen white-paint topology is non-degenerate, without using writing-system context or changing the v2 operation classifier?",
+  "phase": "blind_measurement_repair_only",
+  "scientificPredictionsAllowed": false,
+  "inputContract": {
+    "acceptedImageHashManifest": "research/mark/discovery-experiments/white-paint-candidate-mark-projector-v4.images.json",
+    "reacquireExactBytes": true,
+    "imageHashMustMatchV3": true,
+    "writingSystemLabelsAllowed": false,
+    "historicalMetadataAllowed": false
+  },
+  "projection": {
+    "maxDimension": 1024,
+    "autorotate": true,
+    "grayscale": true,
+    "reuseV3CornerBackgroundTrim": true,
+    "interiorInsetFraction": 0.08,
+    "adaptiveBlockSize": 64,
+    "adaptiveDarkDeviationSd": 0.65,
+    "adaptiveDarkDeviationFloor": 10,
+    "smallComponentRemovalPixels": 6,
+    "atomicCandidate": "each surviving 8-connected foreground component after adaptive local thresholding",
+    "candidateAreaPixels": [12, 6000],
+    "candidateBoundingBoxPixels": [10, 180],
+    "candidateForegroundDensity": [0.025, 0.60],
+    "candidateSkeletonPixels": [8, 900],
+    "candidatePaddingFraction": 0.15,
+    "candidateTouchesInteriorBoundaryAllowed": false,
+    "maxCandidatesPerObject": 160,
+    "candidateCapRule": "deterministic spatially balanced selection by 4x4 grid, then descending skeleton pixels, then x/y order",
+    "classifier": {
+      "inheritV2OperationOrder": true,
+      "operations": ["persist", "turn", "branch", "cross", "close", "loop_continue", "other"],
+      "turnRateThreshold": 0.08,
+      "relationNearTerminalThreshold": 0.22,
+      "repetitionDegree": "min(5, degree-3 junction-cluster count)",
+      "closure": "literal enclosed background component within candidate mask"
+    }
+  },
+  "nuisanceStability": {
+    "darkDeviationSdVariants": [0.60, 0.65, 0.70],
+    "primary": 0.65,
+    "comparison": "candidate-level class distributions are compared at object level after exact image-hash verification; no system labels are used"
+  },
+  "successGates": {
+    "sourceCoverage": "at least 30 of 37 exact v3 objects yield at least 8 accepted candidate marks",
+    "candidateCount": "at least 500 primary-threshold candidates after per-object cap",
+    "operationBreadth": "at least 4 of persist/turn/branch/cross/close/loop_continue each occur in at least 25 candidates across at least 12 independent source objects",
+    "dominance": "no single operation supplies more than 70% of non-other primary candidates",
+    "closureBalance": "both open and closed candidates each supply at least 5% of primary candidates and occur in at least 12 source objects",
+    "relationBalance": "among relation-eligible primary candidates, near-terminal and interior each supply at least 5% and occur in at least 8 source objects",
+    "thresholdStability": "mean object-level Jensen-Shannon divergence of the seven-operation distribution between primary 0.65 and each nuisance variant is <=0.20"
+  },
+  "interpretation": {
+    "pass": "The physical representation is sufficiently non-degenerate and threshold-stable to justify rerunning white-paint transfer hypotheses on candidate-mark carriers in a separate experiment.",
+    "fail": "The candidate-mark representation remains collapsed or unstable; no white-paint historical inference is authorized and a new representation must be preregistered."
+  },
+  "claimBoundary": {
+    "allowed": "A purely blind measurement statement about whether the same exact physical images can be projected into non-degenerate connected candidate-mark carriers.",
+    "forbidden": [
+      "historical semantics",
+      "universal human grammar",
+      "writing-system transfer",
+      "Atlas meanings in historical signs",
+      "treating v3 P3/P5 as confirmed because v4 passes",
+      "changing the v2 classifier after viewing system context"
+    ]
+  }
+}
