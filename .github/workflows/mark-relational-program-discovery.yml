@@ -73,6 +73,7 @@ jobs:
           MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
           MARK_CONTINUITY_KEY: mark-v6-${{ github.run_id }}-${{ github.sha }}
           MARK_NEAR_DUPLICATE_BITS: 2
+          MARK_HARVEST_MIN_PER_LANE: 12
         run: node scripts/harvest-mark-sources.mjs
       - name: Let Mark propose multiscale physical units without semantic boundaries
         env:
