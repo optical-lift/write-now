@@ -1,0 +1,93 @@
+{
+  "schema": "mark_typed_construction_grammar_protocol_v1",
+  "experimentId": "mark:typed-construction-grammar:v1",
+  "phase": "retrospective_cross_experiment_synthesis_of_already_frozen_blind_results",
+  "question": "Do independently frozen Mark results fit a typed construction grammar better than a flat shape-feature model, with distinct evidence behavior for edge scaffold, junction/vertex, boundary/cycle, relation, degree, state/program, and realization/style layers?",
+  "importantStatus": "This is a retrospective synthesis of experiments whose source outcomes already exist. The type map and adjudication rules are frozen before the synthesis script runs, but this is not a prospective confirmation of the underlying source data.",
+  "sourceLineages": {
+    "role_preservation": {
+      "note": "Topology v3, critical-center edit v4, and matched-edge geometry v6 share ancestry and must be treated as one evidence lineage rather than three independent replications.",
+      "inputs": [
+        {"runId": 33800387594, "artifact": "mark-topology-edit-invariance-v3-frozen", "expectedShaField": "topologyEditInvarianceSha256", "expectedSha": "850f540f2b834f600e6c74cda21610b629886096f5c349d5b09d767242844eab"},
+        {"runId": 33804063784, "artifact": "mark-critical-center-correspondence-v4-frozen", "expectedShaField": "criticalCenterEditGrammarSha256", "expectedSha": "fe85f9015c4c74bd43c8c16a47b8507c0655c9099a0fa83122086236450ebcf5"},
+        {"runId": 33812383388, "artifact": "mark-matched-edge-geometry-v6-frozen", "expectedShaField": "matchedEdgeGeometrySha256", "expectedSha": "cd5faad6b928614daf17b87711f2f411ca8402d1152dd13969186cca414b9e47"}
+      ]
+    },
+    "white_paint_transfer": {
+      "note": "Standardized proxy v2 and physical museum-witness v3 form one cross-representation lineage; physical v3 has a known local-tile unit mismatch and is not treated as isolated-glyph evidence.",
+      "inputs": [
+        {"runId": 33810144498, "artifact": "mark-white-paint-glyph-transfer-v2-blind", "expectedShaField": "blindTransferSha256", "expectedSha": "2c9cf12dcdb6141bdd8ca76fb38fea17c1cbb9d36dbb187965f6ef6ab260417b"},
+        {"runId": 33810144498, "artifact": "mark-white-paint-glyph-transfer-v2-context", "expectedShaField": "contextSha256", "expectedSha": "97b279e48aadc72b07da14b1e66234854e99dda17cf9cfc99b28341396c1de39"},
+        {"runId": 33811822722, "artifact": "mark-white-paint-physical-witness-v3-blind", "expectedShaField": "blindFeatureSha256", "expectedSha": "3f7743f447f5b8f10ff05f7954bca17f5f2525c12aafe97d196bad43c7f6c593"},
+        {"runId": 33811822722, "artifact": "mark-white-paint-physical-witness-v3-context", "expectedShaField": "contextResultSha256", "expectedSha": "7ab13a64b995d27288959014920a067fc19b147758b1f80cee8552a9c0fc9079"}
+      ]
+    },
+    "state_program": {
+      "note": "The state-transition grammar is a separate higher-order analysis over frozen anonymous nested regions. It is not counted as independent historical semantics.",
+      "inputs": [
+        {"runId": 33773740050, "artifact": "mark-state-transition-grammar-v1-frozen", "expectedShaField": "stateTransitionGrammarDiscoverySha256", "expectedSha": "979d097dcdfc8df8007f6c3b4ef7d1b16950c56cb2287a46ff77b480cd2635d8"}
+      ]
+    }
+  },
+  "typeMap": {
+    "EDGE_SCAFFOLD": "connection existence/adjacency/multiplicity between critical structures; represented here by transferred junction-to-junction arm-rate constraint",
+    "JUNCTION_VERTEX": "critical centers, endpoint/junction inventory, degrees, and junction-local arm-class edits",
+    "BOUNDARY_CYCLE": "literal enclosure/open-vs-closed relation of a carrier; expected to be carrier/unit sensitive",
+    "RELATION": "attachment position between an identified modifier/junction and carrier terminal/interior; expected to require carrier segmentation",
+    "DEGREE": "ordered multiplicity/repetition of equivalent structural units",
+    "STATE_PROGRAM": "ordered transition and persistence constraints over nested physical states",
+    "REALIZATION_GEOMETRY": "residual turn/tortuosity after scaffold is matched; comparator layer rather than presumed protected grammar",
+    "STYLE_REALIZATION": "surface/appearance features that may carry system identity without being the structural instruction set"
+  },
+  "predictions": {
+    "P1_TYPED_SEPARATION": {
+      "prediction": "The evidence will not behave like one flat shape-feature layer: scaffold/junction, degree, and state/program evidence will remain supported while residual path geometry is unprotected and boundary/relation evidence shows unit dependence.",
+      "gate": "P2, P3, and P6 pass; at least one of P4/P5 passes; REALIZATION_GEOMETRY is demoted by P2."
+    },
+    "P2_SCAFFOLD_OVER_RESIDUAL_GEOMETRY": {
+      "prediction": "Role preservation constrains graph scaffold and critical vertices more strongly than detailed residual path shape once structure is matched.",
+      "gate": "The topology junction-to-junction arm-rate atom has same-direction transfer in all lanes; critical-center insertion/deletion is a strong-transfer atom with positive effect in all lanes; both train and holdout turn-rate/tortuosity matched effects have absolute magnitude <0.08."
+    },
+    "P3_DEGREE_CROSS_REPRESENTATION": {
+      "prediction": "Degree/multiplicity behaves as a robust operator across isolated standardized glyphs and physical witness surfaces.",
+      "gate": "Proxy repetition prediction passes and physical repetition prediction passes under their frozen source protocols."
+    },
+    "P4_BOUNDARY_IS_CARRIER_RELATIVE": {
+      "prediction": "Closure is a meaningful structural distinction only relative to the correct carrier/unit, so isolated-glyph closure should be diverse while coarse physical patches should collapse toward artificial closure.",
+      "gate": "Proxy closure prediction passes; proxy closed share is between 0.10 and 0.70; physical closed share exceeds 0.95; physical closure prediction fails."
+    },
+    "P5_RELATION_REQUIRES_CARRIER_SEGMENTATION": {
+      "prediction": "Attachment relation is not a free-standing shape property; it requires identified carrier/modifier units and should collapse under coarse multi-mark physical patches.",
+      "gate": "Proxy has both near-terminal and interior relation classes with interior >=10% of relation-eligible glyphs and support in >=8 script systems; physical interior relation share is <1% while near-terminal exceeds 95%."
+    },
+    "P6_STATE_PROGRAM_IS_HIGHER_ORDER": {
+      "prediction": "Ordered state programs form a higher-order grammar layer distinct from local shape, with strong directional constraints across all three lanes.",
+      "gate": ">=75% of all nine edges and >=75% of all 27 programs are both beyond all primary nulls and same-direction across train/holdout/control; observed commitment:return ratio is >=5x the null mean ratio."
+    },
+    "P7_STYLE_AND_STRUCTURE_DIVIDE_LABOR": {
+      "prediction": "System identity is carried more strongly by appearance than by white-paint structure, and that separation should remain in physical witnesses.",
+      "gate": "Both proxy and physical substrate-vs-style predictions pass, and the physical appearance advantage is greater than the proxy appearance advantage."
+    }
+  },
+  "adjudication": {
+    "typedGrammarSupportedAsWorkingArchitecture": "P1, P2, P3, P6, and P7 pass. P4/P5 are allowed to be unit-sensitive rather than universal; their role is to classify boundary/relation as carrier-dependent types.",
+    "flatShapeModelRejected": "P2 passes: protected structural scaffold/vertex behavior coexists with collapsed residual geometry after matching.",
+    "doNotAggregatePValuesAcrossLineages": true,
+    "doNotCountSharedAncestryAsIndependentReplication": true
+  },
+  "claimBoundary": {
+    "allowed": [
+      "the already-frozen experiments exhibit evidence signatures consistent or inconsistent with a typed construction-grammar architecture",
+      "some feature classes can be demoted, promoted, or marked carrier-dependent for future Mark and Atlas tests",
+      "the synthesis can generate a concrete instruction-set hypothesis for prospective testing"
+    ],
+    "forbidden": [
+      "universal human grammar is proven",
+      "historical glyph semantics are decoded",
+      "Atlas meanings are present in ancient signs",
+      "the three source lineages are statistically independent replications",
+      "physical v3 patch closure or attachment is valid isolated-glyph measurement",
+      "retrospective synthesis thresholds are prospective confirmation of source outcomes"
+    ]
+  }
+}
