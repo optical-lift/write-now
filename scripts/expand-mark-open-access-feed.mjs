@@ -52,13 +52,13 @@ async function fixtureItems() {
 async function articItems() {
   const fields = "id,title,image_id,is_public_domain,classification_titles,department_title,date_display,place_of_origin,medium_display,main_reference_number";
   const base = "https://api.artic.edu/api/v1/artworks";
-  const first = await fetchJson(`${base}?page=1&limit=1&fields=${encodeURIComponent(fields)}`);
-  const totalPages = Math.max(1, Number(first.pagination?.total_pages ?? 1));
   const pageSize = 100;
+  const first = await fetchJson(`${base}?page=1&limit=${pageSize}&fields=${encodeURIComponent(fields)}`);
+  const totalPages = Math.max(1, Number(first.pagination?.total_pages ?? Math.ceil(Number(first.pagination?.total ?? 0) / pageSize) ?? 1));
   const pages = deterministicSpread(totalPages, Math.min(totalPages, Math.ceil(maxSources / 20) + 8), "artic-pages").map(x => x + 1);
   const items = [];
   for (const page of pages) {
-    const payload = await fetchJson(`${base}?page=${page}&limit=${pageSize}&fields=${encodeURIComponent(fields)}`);
+    const payload = page === 1 ? first : await fetchJson(`${base}?page=${page}&limit=${pageSize}&fields=${encodeURIComponent(fields)}`);
     const iiif = payload.config?.iiif_url ?? "https://www.artic.edu/iiif/2";
     for (const row of payload.data ?? []) {
       if (!row?.image_id || row.is_public_domain !== true) continue;
