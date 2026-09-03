@@ -1,0 +1,15 @@
+{
+  "schema": "mark_blind_discovery_feed_plan_v1",
+  "experimentId": "mark:blind-discovery:v1",
+  "policy": {
+    "individualObjectsHandSelected": false,
+    "wholeInstitutionsRemainLaneIsolated": true,
+    "feedExpansionMustBeMachineEnumerated": true,
+    "addingAnotherBoxRequiresOnlyAnotherFeedRequestEntry": true
+  },
+  "feedRequests": [
+    "research/mark/harvest-feeds/cleveland-firehose-train-10x.v1.json",
+    "research/mark/harvest-feeds/bsb-iiif-holdout-10x.v1.json",
+    "research/mark/harvest-feeds/loc-photos-control-10x.v1.json"
+  ]
+}
