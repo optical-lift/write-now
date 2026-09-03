@@ -1,0 +1,153 @@
+name: Mark Critical Center Correspondence v4
+
+on:
+  pull_request:
+    paths:
+      - "scripts/freeze-mark-vertex-pair-manifest.py"
+      - "scripts/build-mark-vertex-subset-input.py"
+      - "scripts/extract-mark-critical-center-world.py"
+      - "scripts/discover-mark-critical-center-edit-grammar.py"
+      - "scripts/evaluate-mark-critical-center-correspondence.py"
+      - "research/mark/discovery-experiments/critical-center-correspondence-v4.protocol.json"
+      - ".github/workflows/mark-critical-center-correspondence-v4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_V3_RUN_ID: 33800387594
+  MARK_SEALED_EVIDENCE_RUN_ID: 33755743472
+  MARK_TOPOLOGY_CACHE_RUN_ID: 33791958187
+  MARK_VERTEX_PROTOCOL: research/mark/discovery-experiments/critical-center-correspondence-v4.protocol.json
+  MARK_VERTEX_PAIR_MANIFEST: artifacts/mark-vertex-pair-manifest-v4
+  MARK_VERTEX_SUBSET_CUSTODY: artifacts/mark-vertex-subset-custody-v4/subset-custody.json
+  MARK_VERTEX_COMPILER_OUT: artifacts/mark-vertex-selected-compiler-v4
+  MARK_VERTEX_WORLD_OUT: artifacts/mark-critical-center-world-v4
+  MARK_VERTEX_GRAMMAR_OUT: artifacts/mark-critical-center-edit-grammar-v4
+  MARK_VERTEX_TRANSFER_OUT: artifacts/mark-critical-center-correspondence-v4
+  MARK_V7_MAX_RSS_KB: 524288
+
+jobs:
+  blind-critical-center-correspondence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate v4 protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_VERTEX_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/freeze-mark-vertex-pair-manifest.py \
+            scripts/build-mark-vertex-subset-input.py \
+            scripts/extract-mark-critical-center-world.py \
+            scripts/discover-mark-critical-center-edit-grammar.py \
+            scripts/evaluate-mark-critical-center-correspondence.py
+
+      - name: Install scalable spatial correspondence dependency
+        run: python3 -m pip install --disable-pip-version-check scipy
+
+      - name: Download frozen v3 role labels before any physical geometry
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-topology-edit-invariance-v3-frozen
+          path: artifact-staging/v3
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V3_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Freeze exact observation pairs before sealed evidence exists
+        env:
+          MARK_V3_PACKET: artifact-staging/v3
+          MARK_VERTEX_PAIR_OUT: artifacts/mark-vertex-pair-manifest-v4
+        run: python3 scripts/freeze-mark-vertex-pair-manifest.py
+
+      - name: Download original sealed blind source pixels only after pair freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/sealed-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_SEALED_EVIDENCE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Build exact selected-observation compiler world
+        env:
+          MARK_FULL_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_VERTEX_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.vertex-v4.compiler.json
+        run: python3 scripts/build-mark-vertex-subset-input.py
+
+      - name: Build unchanged sparse physical compiler
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Replay only the frozen 435 observations from exact sealed pixels
+        shell: bash
+        env:
+          MARK_VERTEX_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.vertex-v4.compiler.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_VERTEX_COMPILER_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$MARK_VERTEX_COMPILER_INPUT" \
+              --out "$MARK_VERTEX_COMPILER_OUT" \
+              --tile 512 \
+              --overlap 32 \
+              --null-iterations 1 \
+              --min-sources 1
+          ) 2> >(tee "$MARK_VERTEX_COMPILER_OUT/runtime.txt" >&2)
+
+      - name: Download frozen full-world topology for exact replay equivalence
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/topology-cache
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_TOPOLOGY_CACHE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Extract literal critical centers and prove exact full-world equivalence
+        env:
+          MARK_VERTEX_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.vertex-v4.compiler.json
+          MARK_TOPOLOGY_ATLAS: artifact-staging/topology-cache/topology-atlas
+        run: python3 scripts/extract-mark-critical-center-world.py
+
+      - name: Discover Cleveland literal center-edit grammar without provenance
+        run: python3 scripts/discover-mark-critical-center-edit-grammar.py
+
+      - name: Transfer frozen center-edit atoms to Bavaria and LOC unchanged
+        run: python3 scripts/evaluate-mark-critical-center-correspondence.py
+
+      - name: Publish blind v4 result
+        run: |
+          echo '### Mark critical-center correspondence v4 — provenance sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-center-world-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-center-edit-grammar-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-center-correspondence-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove source pixels and bulky replay ledgers before publication
+        shell: bash
+        run: |
+          rm -rf artifact-staging/sealed-evidence
+          rm -f "$MARK_VERTEX_COMPILER_OUT/events.jsonl" "$MARK_VERTEX_COMPILER_OUT/grammar-contributions.jsonl" "$MARK_VERTEX_COMPILER_OUT/grammar-stats.sqlite"
+
+      - name: Upload frozen blind critical-center packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-critical-center-correspondence-v4-frozen
+          path: |
+            artifacts/mark-vertex-pair-manifest-v4/**
+            artifacts/mark-vertex-subset-custody-v4/**
+            artifacts/mark-critical-center-world-v4/**
+            artifacts/mark-critical-center-edit-grammar-v4/**
+            artifacts/mark-critical-center-correspondence-v4/**
+            artifacts/mark-vertex-selected-compiler-v4/custody.json
+            artifacts/mark-vertex-selected-compiler-v4/summary.json
+            artifacts/mark-vertex-selected-compiler-v4/runtime.txt
+          if-no-files-found: error
+          retention-days: 30
