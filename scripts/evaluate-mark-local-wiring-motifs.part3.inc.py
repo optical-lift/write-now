@@ -115,10 +115,12 @@ for lane in sorted(results):
         result = results[lane]["features"][feature_id]
         effect = result["balancedEffect"]
         null = result.get("null")
+        effect_text = "NA" if effect is None else f"{effect:.6f}"
+        null_count = -1 if not null else null["absoluteNullAtLeastObserved"]
         summary_lines.append(
             f"lane={lane};feature={feature_id};primary={str(bool(item.get('primary'))).lower()};"
-            f"effect={'NA' if effect is None else f'{effect:.6f}'};families={result['supportedFamilies']};"
-            f"pairs={result['pairsWithValue']};null_abs_at_least_observed={-1 if not null else null['absoluteNullAtLeastObserved']}"
+            f"effect={effect_text};families={result['supportedFamilies']};"
+            f"pairs={result['pairsWithValue']};null_abs_at_least_observed={null_count}"
         )
 for key, record in sorted(inventory.items()):
     summary_lines.append(
@@ -144,10 +146,12 @@ for lane in sorted(results):
         result = results[lane]["features"][feature_id]
         effect = result["balancedEffect"]
         null = result.get("null")
+        effect_text = "NA" if effect is None else f"{effect:.6f}"
+        null_text = "—" if not null else f"{null['absoluteNullAtLeastObserved']} / {iterations}"
+        star = " ★" if item.get("primary") else ""
         md.append(
-            f"| {lane} | {feature_id}{' ★' if item.get('primary') else ''} | "
-            f"{'NA' if effect is None else f'{effect:.6f}'} | {result['supportedFamilies']} | "
-            f"{result['pairsWithValue']} | {'—' if not null else f\"{null['absoluteNullAtLeastObserved']} / {iterations}\"} |"
+            f"| {lane} | {feature_id}{star} | {effect_text} | {result['supportedFamilies']} | "
+            f"{result['pairsWithValue']} | {null_text} |"
         )
 md += [
     "",
