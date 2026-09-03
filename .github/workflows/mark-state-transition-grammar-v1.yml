@@ -1,0 +1,99 @@
+name: Mark State Transition Grammar v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/state-transition-grammar-v1.protocol.json"
+      - "scripts/discover-mark-state-transition-grammar.py"
+      - "scripts/rejoin-mark-state-transition-grammar.py"
+      - ".github/workflows/mark-state-transition-grammar-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blind-transition-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MARK_LOCAL_STATE_RUN_ID: 33767475851
+      MARK_PARENT_STATE_RUN_ID: 33763572040
+      MARK_TRANSITION_PROTOCOL: research/mark/discovery-experiments/state-transition-grammar-v1.protocol.json
+      MARK_LOCAL_STATE_FIELD: artifact-staging/local-state-field
+      MARK_PARENT_RELATIONAL_STATE: artifact-staging/parent-state
+      MARK_TRANSITION_OUT: artifacts/mark-state-transition-grammar-v1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate transition protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_TRANSITION_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-state-transition-grammar.py scripts/rejoin-mark-state-transition-grammar.py
+      - name: Download the already-frozen local-state field only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-local-state-field-v1-frozen
+          path: artifact-staging/local-state-field
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_LOCAL_STATE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download the previously frozen anonymous source regimes and twins
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-relational-state-discovery-v1-frozen
+          path: artifact-staging/parent-state
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_STATE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Discover directed state transitions and programs with provenance sealed
+        run: python3 scripts/discover-mark-state-transition-grammar.py
+      - name: Publish blind transition summary
+        run: |
+          echo '### Mark state transition grammar v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-state-transition-grammar-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind transition grammar
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-frozen
+          path: artifacts/mark-state-transition-grammar-v1/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: blind-transition-discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      MARK_CONTEXT_RUN_ID: 33755743472
+      MARK_TRANSITION_PACKET: artifact-staging/transition
+      MARK_SOURCE_CONTEXT: artifact-staging/context
+      MARK_TRANSITION_REJOIN_OUT: artifacts/mark-state-transition-grammar-v1-context
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen transition grammar first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-frozen
+          path: artifact-staging/transition
+      - name: Download source provenance only after transition grammar is frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-rejoin
+          path: artifact-staging/context
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_CONTEXT_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Rejoin provenance without changing transition ranks or statistics
+        run: python3 scripts/rejoin-mark-state-transition-grammar.py
+      - name: Publish transition provenance summary
+        run: cat artifacts/mark-state-transition-grammar-v1-context/summary.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload contextual transition rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-context-rejoin
+          path: artifacts/mark-state-transition-grammar-v1-context/**
+          if-no-files-found: error
+          retention-days: 30
