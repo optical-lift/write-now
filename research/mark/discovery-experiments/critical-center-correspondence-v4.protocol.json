@@ -1,0 +1,140 @@
+{
+  "schema": "mark_critical_center_correspondence_protocol_v4",
+  "experimentId": "mark:critical-center-correspondence:v4",
+  "question": "After role-preserved and matched role-broken observation pairs are frozen without physical vertex geometry, which literal critical-center correspondence edits distinguish preserved roles, and do those edit constraints transfer unchanged to Bavaria and LOC?",
+  "parentEvidence": {
+    "v3RunId": 33800387594,
+    "v3Artifact": "mark-topology-edit-invariance-v3-frozen",
+    "sealedEvidenceRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "topologyCacheRunId": 33791958187,
+    "topologyCacheArtifact": "mark-state-operator-discovery-v1-frozen"
+  },
+  "pairFreeze": {
+    "rolePairLabelsMustBeFrozenBeforeSealedEvidenceDownload": true,
+    "expectedParentRolePairFreezeSha256": "b09e9e4c51cbe5e7692eba627c8afcda46395c441876eee2592db0c58c98c8e7",
+    "expectedRolePairRowsSha256": "3dcad71b767f9e69bcf07b7f93c7e4ff4be3efd83a500c93c9a152bd05822296",
+    "expectedPairs": 484,
+    "expectedUniqueObservations": 435
+  },
+  "selectedReplay": {
+    "exactObservationSubsetOnly": true,
+    "preserveOriginalSourceObjects": true,
+    "preserveOriginalObservationObjects": true,
+    "compilerTile": 512,
+    "compilerOverlap": 32,
+    "compilerNullIterations": 1,
+    "compilerMinSources": 1,
+    "requireExactAggregateEquivalenceToFrozenFullWorldTopology": true
+  },
+  "correspondence": {
+    "coordinateSystem": "center x/y normalized inside each frozen observation region",
+    "vertexKinds": [
+      "ENDPOINT",
+      "JUNCTION"
+    ],
+    "matching": "minimum-total-spatial-distance one-to-one assignment performed independently within vertex kind; smaller kind-set is matched completely and surplus vertices remain unmatched",
+    "transformSearch": [
+      "IDENTITY",
+      "ROT90",
+      "ROT180",
+      "ROT270",
+      "MIRROR_X",
+      "MIRROR_Y",
+      "MIRROR_DIAGONAL",
+      "MIRROR_ANTIDIAGONAL"
+    ],
+    "transformSelection": "lowest mean matched spatial displacement across both kinds, ties by listed order; no role label used",
+    "reportIdentityAndBestD4": true,
+    "forbiddenClaims": [
+      "explicit center-to-center graph edge correspondence",
+      "literal loop opening or closure",
+      "stroke-path insertion identity",
+      "semantic glyph identity"
+    ],
+    "reason": "sealed CENTER events retain center coordinates, kind and arm histogram but not target center IDs for each arm"
+  },
+  "editObservables": [
+    {
+      "id": "criticalCenterBirthDeathFraction",
+      "label": "fractional surplus critical centers after same-kind correspondence"
+    },
+    {
+      "id": "endpointBirthDeathFraction",
+      "label": "fractional unmatched endpoint centers"
+    },
+    {
+      "id": "junctionBirthDeathFraction",
+      "label": "fractional unmatched junction centers"
+    },
+    {
+      "id": "identityMeanMatchedDisplacement",
+      "label": "mean matched-center displacement without orientation normalization"
+    },
+    {
+      "id": "bestD4MeanMatchedDisplacement",
+      "label": "mean matched-center displacement after blind D4 transform selection"
+    },
+    {
+      "id": "orientationNormalizationGain",
+      "label": "identity displacement minus best-D4 displacement"
+    },
+    {
+      "id": "nonIdentityTransform",
+      "label": "whether best blind D4 alignment is non-identity"
+    },
+    {
+      "id": "reflectionTransform",
+      "label": "whether best blind D4 alignment uses a reflection"
+    },
+    {
+      "id": "endpointMeanDegreeMutation",
+      "label": "mean absolute degree change among matched endpoints"
+    },
+    {
+      "id": "junctionMeanDegreeMutation",
+      "label": "mean absolute degree change among matched junctions"
+    },
+    {
+      "id": "endpointMeanArmMutation",
+      "label": "mean normalized arm-histogram L1 change among matched endpoints"
+    },
+    {
+      "id": "junctionMeanArmMutation",
+      "label": "mean normalized arm-histogram L1 change among matched junctions"
+    },
+    {
+      "id": "allMatchedMeanArmMutation",
+      "label": "mean normalized arm-histogram L1 change among all matched critical centers"
+    }
+  ],
+  "trainDiscovery": {
+    "lane": "train",
+    "nullIterations": 128,
+    "nullShuffle": "preserved/broken labels within each physical occupant-family pair preserving positive count",
+    "maximumSelectedEditAtoms": 8,
+    "selection": "largest absolute family-pair-balanced rank effect in Cleveland only",
+    "minimumPairCoveragePerEditAtom": 0.75
+  },
+  "transfer": {
+    "lanes": [
+      "holdout",
+      "control"
+    ],
+    "reselectNothing": true,
+    "descriptivePass": "same balanced-effect direction in train, holdout and control, with absolute holdout and control effect each at least 0.08"
+  },
+  "falsifiers": {
+    "replayMismatch": "If selected-observation replay does not exactly reproduce the frozen full-world topology aggregates for every selected observation, vertex evidence is rejected.",
+    "noVertexSignal": "If preserved and matched broken pairs have indistinguishable correspondence edits under train nulls, no local vertex-edit grammar is supported.",
+    "noTransfer": "If train-selected edits reverse or collapse in Bavaria or LOC, they are not transferable edit constraints."
+  },
+  "custody": {
+    "noProvenance": true,
+    "noStateVocabulary": true,
+    "noTransitionGrammar": true,
+    "roleLabelsFrozenBeforePhysicalGeometry": true,
+    "selectedReplayUsesExactSealedSourcePixels": true,
+    "aggregateEquivalenceGateBeforeCorrespondenceDiscovery": true
+  }
+}
