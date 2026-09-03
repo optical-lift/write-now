@@ -24,10 +24,23 @@ function deterministicSpread(total, count, salt) {
   for (let i = 0; i < Math.min(count, total); i += 1) out.push((start + i * step) % total);
   return out;
 }
-async function fetchJson(url) {
-  const response = await fetch(url, { redirect: "follow", headers: { accept: "application/json", "user-agent": userAgent } });
-  if (!response.ok) throw new Error(`feed fetch failed ${response.status}: ${url}`);
-  return response.json();
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function fetchJson(url, { attempts = 3 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, { redirect: "follow", headers: { accept: "application/json", "user-agent": userAgent } });
+      if (response.ok) return response.json();
+      const retryable = response.status === 429 || response.status >= 500;
+      if (!retryable || attempt === attempts) throw new Error(`feed fetch failed ${response.status}: ${url}`);
+      await sleep(attempt * 1200);
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) throw error;
+      await sleep(attempt * 1200);
+    }
+  }
+  throw lastError ?? new Error(`feed fetch failed: ${url}`);
 }
 function sourceFrom(item, index) {
   return {
@@ -124,30 +137,35 @@ async function metItems() {
   return items;
 }
 
+function locRows(payload, pageOrdinal) {
+  const rows = Array.isArray(payload.results) ? payload.results : [];
+  const order = deterministicSpread(rows.length, rows.length, `loc-photo-page-${pageOrdinal}-items`);
+  return order.map(index => rows[index]);
+}
 async function locItems() {
   const pageSize = 100;
-  const first = await fetchJson(`https://www.loc.gov/photos/?fo=json&at=results,pagination&c=${pageSize}&sp=1`);
-  const reportedPages = Math.max(1, Number(first.pagination?.total ?? 1));
-  const deepPagingItemLimit = 100000;
-  const maxReachablePages = Math.max(1, Math.floor(deepPagingItemLimit / pageSize));
-  const reachablePages = Math.min(reportedPages, maxReachablePages);
-  const pages = deterministicSpread(reachablePages, Math.min(reachablePages, Math.ceil(maxSources / 20) + 8), "loc-photo-pages").map(x => x + 1);
+  let nextUrl = `https://www.loc.gov/photos/?fo=json&at=results,pagination&c=${pageSize}&sp=1`;
   const items = [];
-  for (const page of pages) {
-    const payload = page === 1 ? first : await fetchJson(`https://www.loc.gov/photos/?fo=json&at=results,pagination&c=${pageSize}&sp=${page}`);
-    for (const row of payload.results ?? []) {
-      const urls = Array.isArray(row.image_url) ? row.image_url : [];
+  const seenIds = new Set();
+  const maxPages = 4;
+  for (let pageOrdinal = 1; pageOrdinal <= maxPages && nextUrl && items.length < maxSources; pageOrdinal += 1) {
+    const payload = await fetchJson(nextUrl);
+    for (const row of locRows(payload, pageOrdinal)) {
+      const urls = Array.isArray(row?.image_url) ? row.image_url : [];
       const assetUrl = [...urls].reverse().find(url => /^https:\/\//i.test(url) && /\.(jpe?g|png)(\?|$)/i.test(url)) ?? urls.find(url => /^https:\/\//i.test(url));
-      if (!assetUrl || !row.id) continue;
+      if (!assetUrl || !row?.id || seenIds.has(row.id)) continue;
+      seenIds.add(row.id);
       items.push({
         assetUrl,
         sourceUrl: row.id,
         objectId: row.id,
         rightsBasis: request.rightsBasis ?? "source_rights_govern_research_analysis_only",
-        context: { title: row.title, date: row.date, originalFormat: row.original_format, subject: row.subject, location: row.location, collection: row.partof, reportedPages, reachablePages, deepPagingItemLimit },
+        context: { title: row.title, date: row.date, originalFormat: row.original_format, subject: row.subject, location: row.location, collection: row.partof, enumeration: "official_pagination_next_with_deterministic_within_page_spread", pageOrdinal },
       });
       if (items.length >= maxSources) return items;
     }
+    nextUrl = typeof payload.pagination?.next === "string" ? payload.pagination.next : null;
+    if (nextUrl) await sleep(3200);
   }
   return items;
 }
