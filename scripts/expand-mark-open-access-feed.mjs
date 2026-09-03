@@ -125,10 +125,13 @@ async function metItems() {
 }
 
 async function locItems() {
-  const pageSize = Math.min(100, Math.max(25, maxSources));
+  const pageSize = 100;
   const first = await fetchJson(`https://www.loc.gov/photos/?fo=json&at=results,pagination&c=${pageSize}&sp=1`);
-  const totalPages = Math.max(1, Number(first.pagination?.total_pages ?? first.pagination?.total ?? 1));
-  const pages = deterministicSpread(totalPages, Math.min(totalPages, Math.ceil(maxSources / 20) + 8), "loc-photo-pages").map(x => x + 1);
+  const reportedPages = Math.max(1, Number(first.pagination?.total ?? 1));
+  const deepPagingItemLimit = 100000;
+  const maxReachablePages = Math.max(1, Math.floor(deepPagingItemLimit / pageSize));
+  const reachablePages = Math.min(reportedPages, maxReachablePages);
+  const pages = deterministicSpread(reachablePages, Math.min(reachablePages, Math.ceil(maxSources / 20) + 8), "loc-photo-pages").map(x => x + 1);
   const items = [];
   for (const page of pages) {
     const payload = page === 1 ? first : await fetchJson(`https://www.loc.gov/photos/?fo=json&at=results,pagination&c=${pageSize}&sp=${page}`);
@@ -141,7 +144,7 @@ async function locItems() {
         sourceUrl: row.id,
         objectId: row.id,
         rightsBasis: request.rightsBasis ?? "source_rights_govern_research_analysis_only",
-        context: { title: row.title, date: row.date, originalFormat: row.original_format, subject: row.subject, location: row.location, collection: row.partof },
+        context: { title: row.title, date: row.date, originalFormat: row.original_format, subject: row.subject, location: row.location, collection: row.partof, reportedPages, reachablePages, deepPagingItemLimit },
       });
       if (items.length >= maxSources) return items;
     }
