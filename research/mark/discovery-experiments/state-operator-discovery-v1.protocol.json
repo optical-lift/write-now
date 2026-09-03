@@ -1,0 +1,90 @@
+{
+  "schema": "mark_state_operator_discovery_protocol_v1",
+  "experimentId": "mark:state-operator-discovery:v1",
+  "phase": "theory_generating_physical_operator_discovery_below_frozen_state_transitions",
+  "question": "When a frozen State 2 region persists as State 2 or resolves into State 1 or State 3 at the next contained physical scale, which topology changes accompany and distinguish those branches beyond geometry alone, and do those operator signatures transfer into independent lanes?",
+  "parentEvidence": {
+    "sourceRuleAtlasRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "localStateFieldRunId": 33767475851,
+    "localStateFieldArtifact": "mark-local-state-field-v1-frozen",
+    "localStateFieldDiscoverySha256": "c0a1f65816532b7af247d4d7522ba844ee28841aed17bd9f98abb1b0331e2469",
+    "stateTransitionRunId": 33773740050,
+    "stateTransitionArtifact": "mark-state-transition-grammar-v1-frozen",
+    "stateTransitionGrammarDiscoverySha256": "979d097dcdfc8df8007f6c3b4ef7d1b16950c56cb2287a46ff77b480cd2635d8"
+  },
+  "target": {
+    "parentState": 2,
+    "childOutcomes": [1, 2, 3],
+    "direction": "smallest strictly larger wholly-containing observation -> contained observation",
+    "interpretation": "branch operator candidate, not historical meaning and not causal proof"
+  },
+  "physicalFeatureBoundary": {
+    "allowed": [
+      "endpoint and junction center proportions",
+      "resolved PATH_TO_ENDPOINT and PATH_TO_JUNCTION arm proportions by center kind",
+      "unresolved-arm proportion",
+      "center-degree histogram proportions",
+      "blind center-signature proportions derived from arm histograms",
+      "foreground critical-center density change"
+    ],
+    "explicitlyExcludedFromTopologyModel": [
+      "the two frozen rule accuracies",
+      "the frozen local-state feature vector",
+      "local-state mixture proportions",
+      "institution",
+      "catalog metadata",
+      "culture",
+      "language",
+      "object type",
+      "chronology"
+    ],
+    "reason": "The operator test must not predict a state using the exact four coordinates that originally defined that state."
+  },
+  "featureDiscovery": {
+    "trainingLaneOnly": true,
+    "minimumTrainTransitionSupportForDynamicCenterSignature": 25,
+    "maximumTopologyFeatures": 24,
+    "ranking": "three-class between-branch variance divided by within-branch variance on train transitions only",
+    "standardization": "train mean and standard deviation only"
+  },
+  "models": {
+    "topologyOnly": "nearest train branch centroid in selected standardized topology-delta space",
+    "geometryOnly": "nearest train branch centroid using log area contraction, normalized center displacement, aspect-ratio change, and containment depth geometry only",
+    "combined": "nearest train branch centroid in concatenated topology and geometry space",
+    "evaluationLanes": ["holdout", "control"],
+    "primaryComparison": "topology-only transfer accuracy versus geometry-only transfer accuracy"
+  },
+  "nullModel": {
+    "iterations": 128,
+    "evaluation": "shuffle frozen child-state outcome labels only within evaluation lane + parent proposal scale + deterministic area-contraction quartile",
+    "preserves": [
+      "operator feature vectors",
+      "geometry",
+      "lane",
+      "parent proposal scale",
+      "area-contraction stratum",
+      "branch outcome inventory inside each stratum"
+    ]
+  },
+  "operatorEvidence": {
+    "retainAllState2ContainmentEdges": true,
+    "retainSelectedFeatureNamesAndTrainStatistics": true,
+    "retainPerBranchFeatureCentroidsAcrossAllThreeLanes": true,
+    "retainPerEdgeFrozenPredictionAndMargin": true,
+    "positiveAndNegativeFeatureDeltasAreSymmetric": true,
+    "noPostHocFeatureDeletion": true
+  },
+  "theoryTargets": {
+    "branchOperatorHypothesis": "State 2 is not merely a cluster label; distinct changes in raw relational topology accompany persistence versus resolution into State 1 or State 3.",
+    "geometryArtifactFalsifier": "If topology-only transfer does not outperform geometry-only transfer, nested proposal geometry is a sufficient explanation for the apparent branch operator.",
+    "crossMediumOperatorHypothesis": "If the same topology-delta ordering for 2->1, 2->2 and 2->3 recurs in train, holdout and control, the branch states have a medium-independent physical realization in this representation."
+  },
+  "custody": {
+    "reproduceExactFrozenPhysicalLedger": true,
+    "verifyLedgerMerkleBeforeProjection": true,
+    "discoverAndFreezeBeforeProvenance": true,
+    "freezeOperatorShaBeforeContextDownload": true,
+    "provenanceCannotAlterFeaturesModelsPredictionsRanksOrStatistics": true
+  }
+}
