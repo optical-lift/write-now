@@ -158,16 +158,19 @@ fn merkle_root(hex_hashes: &[String]) -> Result<String> {
 
 fn parse_rule(rule: FrozenRule) -> Result<RuleSpec> {
     let context = rule.context;
-    let rest = context.strip_prefix("CENTER:").ok_or_else(|| anyhow!("unsupported context {context}"))?;
-    let (center_kind, context_arm) = rest.split_once("|ARM:").ok_or_else(|| anyhow!("unsupported context {context}"))?;
-    if center_kind.is_empty() || context_arm.is_empty() || rule.predicted_outcome.is_empty() { bail!("incomplete frozen rule {context}"); }
+    let (center_kind, context_arm) = {
+        let rest = context.strip_prefix("CENTER:").ok_or_else(|| anyhow!("unsupported context {context}"))?;
+        let (center_kind, context_arm) = rest.split_once("|ARM:").ok_or_else(|| anyhow!("unsupported context {context}"))?;
+        if center_kind.is_empty() || context_arm.is_empty() || rule.predicted_outcome.is_empty() { bail!("incomplete frozen rule {context}"); }
+        (center_kind.to_string(), context_arm.to_string())
+    };
     Ok(RuleSpec {
         context,
         predicted_outcome: rule.predicted_outcome,
         blind_rank: rule.blind_rank,
         candidate_tier: rule.candidate_tier,
-        center_kind: center_kind.to_string(),
-        context_arm: context_arm.to_string(),
+        center_kind,
+        context_arm,
     })
 }
 
