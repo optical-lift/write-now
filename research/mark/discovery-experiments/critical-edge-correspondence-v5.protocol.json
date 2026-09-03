@@ -1,0 +1,80 @@
+{
+  "schema": "mark_critical_edge_correspondence_protocol_v5",
+  "experimentId": "mark:critical-edge-correspondence:v5",
+  "question": "After v4 role-pair labels and literal critical centers are frozen, which center-to-center connection edits preserve structural role, and which connection or path edits distinguish role-broken controls across Cleveland, Bavaria and LOC?",
+  "parentEvidence": {
+    "v4RunId": 33802582222,
+    "v4Artifact": "mark-critical-center-correspondence-v4-frozen",
+    "sealedEvidenceRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence"
+  },
+  "pairFreeze": {
+    "v4ArtifactMustBeDownloadedBeforeSealedPixels": true,
+    "expectedParentVertexPairManifestSha256": "818e31eee40bf2bfbe5ba5b7eedd371c5844683040d923c6c48200d6f4a6406a",
+    "expectedParentCriticalCenterWorldSha256": "fc1e276d1f19042ee98c563fc52c44a8668a761ca020d0a1187b702f199e7b3f",
+    "expectedParentCorrespondenceSha256": "3daaf50d900a079e6a2e6cbe2f7268427340b807edd0f35bc2c5605c71da91c7",
+    "expectedPairs": 484,
+    "expectedUniqueObservations": 435
+  },
+  "physicalProjection": {
+    "selectedObservationSubsetOnly": true,
+    "compilerTile": 512,
+    "compilerOverlap": 32,
+    "reuseExactCompilerThresholdAndSkeletonization": true,
+    "centerIdentity": "same CENTER hash preimage, critical clustering, centroid rounding, arm histogram and tile index as v4",
+    "pixelGraph": "union each compiler tile core's thinned skeleton adjacency plus reciprocal overlap-crossing adjacency, then contract anchored v4 critical-center clusters into center-to-center paths",
+    "parallelPathsPreserved": true,
+    "pathEvidence": ["pathSteps", "chordPixels", "tortuosity", "turnCount", "turnRate", "pathSha256"],
+    "requireExactCenterEqualityToV4": true,
+    "minimumGlobalTraceResolutionFraction": 0.8,
+    "minimumObservationTraceResolutionForPair": 0.7,
+    "minimumEligibleTrainPairs": 50,
+    "forbiddenClaims": ["semantic glyph identity", "spoken-language value", "culture-specific meaning", "globally unique stroke identity beyond the frozen physical pixels"]
+  },
+  "centerCorrespondence": {
+    "mustMatchV4Algorithm": true,
+    "transformSearch": ["IDENTITY", "ROT90", "ROT180", "ROT270", "MIRROR_X", "MIRROR_Y", "MIRROR_DIAGONAL", "MIRROR_ANTIDIAGONAL"],
+    "transformSelection": "minimum kind-weighted symmetric nearest-center displacement by cKDTree, ties by listed order",
+    "oneToOneCenterMatching": "same-kind sparse greedy assignment using each smaller-set center's eight nearest candidates after transform freeze",
+    "greedyNearestCandidatesPerCenter": 8,
+    "roleLabelUnavailableDuringAlignment": true
+  },
+  "editObservables": [
+    {"id": "mappedEdgeDeletionFraction", "label": "fraction of A edges between surviving matched centers whose mapped B connection is absent"},
+    {"id": "mappedEdgeInsertionFraction", "label": "fraction of B edges between surviving matched centers with no mapped A connection"},
+    {"id": "mappedEdgeSymmetricDifferenceFraction", "label": "normalized multigraph connection symmetric difference after center correspondence"},
+    {"id": "parallelPathMultiplicityMutation", "label": "mean normalized parallel-path multiplicity change for corresponding center pairs"},
+    {"id": "endpointAttachmentMutationFraction", "label": "mean mapped-neighbor Jaccard mutation around surviving endpoint centers"},
+    {"id": "junctionAdjacencyMutationFraction", "label": "mean mapped-neighbor Jaccard mutation around surviving junction centers"},
+    {"id": "preservedEdgeMeanNormalizedLengthMutation", "label": "mean absolute observation-diagonal-normalized path-step mutation among preserved mapped connections"},
+    {"id": "preservedEdgeMeanTortuosityMutation", "label": "mean absolute tortuosity mutation among preserved mapped connections"},
+    {"id": "preservedEdgeMeanTurnRateMutation", "label": "mean absolute turn-rate mutation among preserved mapped connections"}
+  ],
+  "trainDiscovery": {
+    "lane": "train",
+    "nullIterations": 128,
+    "nullShuffle": "preserved/broken labels within each physical occupant-family pair preserving positive count",
+    "maximumSelectedEditAtoms": 8,
+    "selection": "largest absolute family-pair-balanced rank effect in Cleveland only",
+    "minimumPairCoveragePerEditAtom": 0.6
+  },
+  "transfer": {
+    "lanes": ["holdout", "control"],
+    "reselectNothing": true,
+    "descriptivePass": "same balanced-effect direction in train, holdout and control, with absolute holdout and control effect each at least 0.08"
+  },
+  "falsifiers": {
+    "centerMismatch": "If the edge projector does not reproduce every v4 center record exactly for all 435 selected observations, the edge world is rejected.",
+    "insufficientGraphResolution": "If fewer than 80% of center-started stitched paths resolve globally, do not infer a connection grammar from this projector.",
+    "noEdgeSignal": "If preserved and matched-broken pairs are indistinguishable under Cleveland nulls, no literal connection-edit grammar is supported at this resolution.",
+    "noTransfer": "If Cleveland-selected edge edits reverse or collapse in Bavaria or LOC, they are not transferable physical syntax constraints."
+  },
+  "custody": {
+    "noProvenance": true,
+    "noStateVocabulary": true,
+    "noTransitionGrammar": true,
+    "roleLabelsFrozenBeforeSourcePixels": true,
+    "graphProjectorCannotReadRoleLabels": true,
+    "edgeGrammarOpensRoleLabelsOnlyAfterGraphWorldShaFrozen": true
+  }
+}
