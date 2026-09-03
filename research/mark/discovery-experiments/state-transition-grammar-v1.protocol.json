@@ -1,0 +1,74 @@
+{
+  "schema": "mark_state_transition_grammar_protocol_v1",
+  "experimentId": "mark:state-transition-grammar:v1",
+  "phase": "theory_generating_transition_discovery_on_frozen_local_state_field",
+  "question": "Do recursively nested physical regions move through the three frozen local states according to directional transition constraints and recurring multi-step programs that survive source-, scale-, and area-preserving null worlds?",
+  "parentEvidence": {
+    "localStateFieldRunId": 33767475851,
+    "localStateFieldArtifact": "mark-local-state-field-v1-frozen",
+    "localStateFieldDiscoverySha256": "c0a1f65816532b7af247d4d7522ba844ee28841aed17bd9f98abb1b0331e2469",
+    "relationalStateRunId": 33763572040,
+    "relationalStateArtifact": "mark-relational-state-discovery-v1-frozen",
+    "contextRunId": 33755743472,
+    "contextArtifact": "mark-source-rule-atlas-v1-context-rejoin"
+  },
+  "stateIds": [1, 2, 3],
+  "direction": {
+    "basis": "physical containment only",
+    "parentDefinition": "within one anonymous source, the smallest strictly larger observation region that wholly contains the child region",
+    "edgeDirection": "containing/coarser region -> contained/finer region",
+    "forbiddenAssumptions": [
+      "reading direction",
+      "language order",
+      "chronology",
+      "catalog order",
+      "cultural provenance"
+    ]
+  },
+  "retention": {
+    "allDirectedEdges": 9,
+    "allLengthThreePrograms": 27,
+    "retainPositiveAndNegativeDeviations": true,
+    "noPostHocMotifDeletion": true
+  },
+  "nullModel": {
+    "iterations": 128,
+    "primary": "shuffle frozen state labels only within source + proposalScale + deterministic within-scale region-area quartile",
+    "preserves": [
+      "source",
+      "lane",
+      "observation geometry",
+      "containment hierarchy",
+      "proposal scale",
+      "within-scale area stratum",
+      "state multiset inside each stratum"
+    ],
+    "purpose": "separate transition structure from the possibility that state identity is merely an artifact of source, multiscale proposal depth, or region size"
+  },
+  "theoryTargets": {
+    "state2CommitmentHypothesis": {
+      "workingTheory": "State 2 may behave as a high-context integration/field state from which finer structure resolves into States 1 or 3 and rarely returns.",
+      "commitmentPrograms": ["2->1->1", "2->3->3"],
+      "returnPrograms": ["2->1->2", "2->3->2"],
+      "status": "explicitly theory-generating; not privileged over the retained full motif inventory"
+    },
+    "generalProgramHypothesis": "If states are operating states rather than object labels, enriched persistence paths and suppressed return/switch paths should recur across anonymous lanes.",
+    "sourceDynamicsHypothesis": "Transition-program vectors may reconstruct the previously frozen whole-source regimes at least as well as static local-state mixtures and may deepen previously frozen cross-lane structural twins."
+  },
+  "ranking": {
+    "edgeAndProgramOrder": [
+      "observed beyond all primary nulls",
+      "same deviation direction in train/holdout/control",
+      "absolute standardized deviation from primary null",
+      "distinct-source support",
+      "motif lexical order"
+    ],
+    "interpretSuppressionAs": "constraint_or_prohibition_candidate",
+    "interpretEnrichmentAs": "preferred_or_persistent_transition_candidate"
+  },
+  "custody": {
+    "discoverBeforeProvenance": true,
+    "freezeTransitionShaBeforeContextDownload": true,
+    "provenanceCannotAlterEdgesProgramsRanksOrStatistics": true
+  }
+}
