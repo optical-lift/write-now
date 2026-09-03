@@ -93,12 +93,21 @@ jobs:
               --expected-merkle "$expected_merkle" \
               --out artifacts/mark-observation-topology-atlas-v1
           ) 2> >(tee artifacts/mark-observation-topology-atlas-v1/runtime.txt >&2)
-      - name: Discover State 2 branch operators with provenance sealed
+      - name: Freeze State 2 latent aliases before child outcomes are available
         env:
           MARK_TOPOLOGY_ATLAS: artifacts/mark-observation-topology-atlas-v1
           MARK_LOCAL_STATE_FIELD: artifact-staging/local-state-field
           MARK_TRANSITION_GRAMMAR: artifact-staging/transition-grammar
           MARK_OPERATOR_OUT: artifacts/mark-state-operator-discovery-v1
+          MARK_OPERATOR_PHASE: cluster
+        run: python3 scripts/discover-mark-state-operators.py
+      - name: Reveal frozen 2-to-1, 2-to-2 and 2-to-3 associations without refitting
+        env:
+          MARK_TOPOLOGY_ATLAS: artifacts/mark-observation-topology-atlas-v1
+          MARK_LOCAL_STATE_FIELD: artifact-staging/local-state-field
+          MARK_TRANSITION_GRAMMAR: artifact-staging/transition-grammar
+          MARK_OPERATOR_OUT: artifacts/mark-state-operator-discovery-v1
+          MARK_OPERATOR_PHASE: reveal
         run: python3 scripts/discover-mark-state-operators.py
       - name: Free bulky physical ledgers after operator freeze
         run: rm -f artifacts/mark-state-operator-compiler-v1/events.jsonl artifacts/mark-state-operator-compiler-v1/grammar-contributions.jsonl
@@ -113,7 +122,7 @@ jobs:
       - name: Publish blind operator summary
         shell: bash
         run: |
-          echo '### Mark state operator discovery v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '### Mark State 2 alias breaker v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/mark-state-operator-discovery-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
@@ -144,7 +153,7 @@ jobs:
           repository: optical-lift/write-now
           run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
           github-token: ${{ github.token }}
-      - name: Rejoin provenance without changing features or predictions
+      - name: Rejoin provenance without changing aliases or exit statistics
         env:
           MARK_OPERATOR_PACKET: artifact-staging/operator
           MARK_SOURCE_CONTEXT: artifact-staging/context
@@ -153,7 +162,7 @@ jobs:
       - name: Publish operator provenance summary
         shell: bash
         run: |
-          echo '### Mark state operator discovery v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '### Mark State 2 alias breaker v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/mark-state-operator-discovery-v1-context/summary.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
