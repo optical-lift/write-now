@@ -1,0 +1,124 @@
+name: Mark Typed Construction Grammar v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/typed-construction-grammar-v1.protocol.json"
+      - "scripts/synthesize-mark-typed-construction-grammar.py"
+      - ".github/workflows/mark-typed-construction-grammar-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_TYPED_PROTOCOL: research/mark/discovery-experiments/typed-construction-grammar-v1.protocol.json
+  MARK_TYPED_INPUT: artifact-staging/typed-grammar
+  MARK_TYPED_OUT: artifacts/mark-typed-construction-grammar-v1
+
+jobs:
+  frozen-cross-experiment-synthesis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen synthesis contract
+        run: |
+          python3 -m json.tool "$MARK_TYPED_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/synthesize-mark-typed-construction-grammar.py
+
+      - name: Download frozen topology-edit lineage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-topology-edit-invariance-v3-frozen
+          path: artifact-staging/typed-grammar/topology
+          repository: optical-lift/write-now
+          run-id: 33800387594
+          github-token: ${{ github.token }}
+
+      - name: Download frozen critical-center edit artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-center-correspondence-v4-frozen
+          path: artifact-staging/typed-grammar/vertex
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+
+      - name: Download frozen matched-edge geometry artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-matched-edge-geometry-v6-frozen
+          path: artifact-staging/typed-grammar/edge
+          repository: optical-lift/write-now
+          run-id: 33812383388
+          github-token: ${{ github.token }}
+
+      - name: Download frozen standardized glyph blind artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-white-paint-glyph-transfer-v2-blind
+          path: artifact-staging/typed-grammar/glyph-blind
+          repository: optical-lift/write-now
+          run-id: 33810144498
+          github-token: ${{ github.token }}
+
+      - name: Download frozen standardized glyph context artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-white-paint-glyph-transfer-v2-context
+          path: artifact-staging/typed-grammar/glyph-context
+          repository: optical-lift/write-now
+          run-id: 33810144498
+          github-token: ${{ github.token }}
+
+      - name: Download frozen physical witness blind artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-white-paint-physical-witness-v3-blind
+          path: artifact-staging/typed-grammar/physical-blind
+          repository: optical-lift/write-now
+          run-id: 33811822722
+          github-token: ${{ github.token }}
+
+      - name: Download frozen physical witness context artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-white-paint-physical-witness-v3-context
+          path: artifact-staging/typed-grammar/physical-context
+          repository: optical-lift/write-now
+          run-id: 33811822722
+          github-token: ${{ github.token }}
+
+      - name: Download frozen state-program artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-frozen
+          path: artifact-staging/typed-grammar/state
+          repository: optical-lift/write-now
+          run-id: 33773740050
+          github-token: ${{ github.token }}
+
+      - name: Synthesize typed construction grammar from frozen results only
+        run: python3 scripts/synthesize-mark-typed-construction-grammar.py
+
+      - name: Publish synthesis summary
+        run: cat "$MARK_TYPED_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_TYPED_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen synthesis packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-typed-construction-grammar-v1-frozen
+          path: artifacts/mark-typed-construction-grammar-v1/**
+          if-no-files-found: error
+          retention-days: 30
