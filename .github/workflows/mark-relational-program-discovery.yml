@@ -14,6 +14,7 @@ on:
       - "scripts/propose-mark-observables.mjs"
       - "scripts/finalize-mark-harvest-rejoin.mjs"
       - "scripts/expand-mark-open-access-feed.mjs"
+      - "scripts/expand-mark-iiif-feed.mjs"
       - "scripts/compose-mark-real-corpus-challenge.mjs"
       - "research/mark/harvest-feeds/**"
       - "research/mark/harvest-manifests/v5-fixture-**"
@@ -46,13 +47,14 @@ jobs:
           node --check scripts/evaluate-mark-relational-transfer.mjs
           node --check scripts/report-mark-relational-programs.mjs
           node --check scripts/assert-mark-relational-kernel.mjs
+          node --check scripts/expand-mark-iiif-feed.mjs
           node scripts/test-mark-relational-core.mjs
       - name: Expand live heterogeneous source feeds
         if: github.event_name == 'workflow_dispatch' || hashFiles('research/mark/live-v6-smoke.flag') != ''
         run: |
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/aic-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v6-feed-aic node scripts/expand-mark-open-access-feed.mjs
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/cleveland-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v6-feed-cleveland node scripts/expand-mark-open-access-feed.mjs
-          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/met-firehose-holdout.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v6-feed-met node scripts/expand-mark-open-access-feed.mjs
+          MARK_IIIF_FEED_REQUEST=research/mark/harvest-feeds/bsb-iiif-holdout.v1.json MARK_IIIF_FEED_OUT=artifacts/v6-feed-bsb node scripts/expand-mark-iiif-feed.mjs
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v6-feed-loc node scripts/expand-mark-open-access-feed.mjs
       - name: Compose synthetic custody-safe CI packet
         if: github.event_name != 'workflow_dispatch' && hashFiles('research/mark/live-v6-smoke.flag') == ''
@@ -63,8 +65,8 @@ jobs:
       - name: Compose live sealed transfer packet
         if: github.event_name == 'workflow_dispatch' || hashFiles('research/mark/live-v6-smoke.flag') != ''
         env:
-          MARK_CHALLENGE_ID: mark:v6:open-access-relational-smoke-v1
-          MARK_CHALLENGE_MANIFESTS: artifacts/v6-feed-aic/generated-harvest-manifest.v1.json,artifacts/v6-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v6-feed-met/generated-harvest-manifest.v1.json,artifacts/v6-feed-loc/generated-harvest-manifest.v1.json
+          MARK_CHALLENGE_ID: mark:v6:heterogeneous-relational-smoke-v1
+          MARK_CHALLENGE_MANIFESTS: artifacts/v6-feed-aic/generated-harvest-manifest.v1.json,artifacts/v6-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v6-feed-bsb/generated-harvest-manifest.v1.json,artifacts/v6-feed-loc/generated-harvest-manifest.v1.json
         run: node scripts/compose-mark-real-corpus-challenge.mjs
       - name: Harvest exact physical custody and reject duplicate witnesses
         env:
