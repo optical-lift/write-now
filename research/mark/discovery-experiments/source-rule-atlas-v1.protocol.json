@@ -19,14 +19,19 @@
     "sparseRowRule": "emit one anonymous source-rule row iff contextCount > 0",
     "allFrozenRulesProjected": true,
     "postHocRuleFiltering": false,
-    "postHocSourceFiltering": false
+    "postHocSourceFiltering": false,
+    "exactAggregateEquivalenceGate": "for every frozen rule and each train/holdout/control lane, summing anonymous source-rule context and predicted-outcome counts must exactly equal the v7 observed iteration=-1 grammar statistics"
   },
   "custodyContract": {
     "verifyPhysicalLedgerLineCount": true,
     "verifyEveryPhysicalLedgerChunkHash": true,
     "verifyPhysicalLedgerMerkleRoot": true,
+    "verifyAtlasRowsSha256": true,
+    "verifyAtlasHashPreimage": true,
+    "verifyEveryAtlasRowBelongsToFrozenRule": true,
+    "verifyBlindRankAndCandidateTierPreserved": true,
     "atlasHashWrittenBeforeProvenanceRejoin": true,
-    "bulkyPhysicalAndContributionLedgersMayBeDeletedOnlyAfterAtlasFreeze": true
+    "bulkyPhysicalAndContributionLedgersMayBeDeletedOnlyAfterAtlasFreezeAndExactnessGate": true
   },
   "rejoinContract": {
     "provenanceMayReopenOnlyAfterAtlasHashExists": true,
