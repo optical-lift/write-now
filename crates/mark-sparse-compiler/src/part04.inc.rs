@@ -1,31 +1,5 @@
-fn add_grammar_count(
-    aggregated: &mut BTreeMap<(String, String), u64>,
-    context: String,
-    outcome: String,
-    count: u64,
-) -> Result<()> {
-    if count == 0 {
-        return Ok(());
-    }
-    let slot = aggregated.entry((context, outcome)).or_default();
-    *slot = (*slot)
-        .checked_add(count)
-        .ok_or_else(|| anyhow!("grammar multiplicity overflow while aggregating one observation"))?;
-    Ok(())
-}
-
-fn grammar_from_centers(
-    shards: &mut GrammarShards,
-    iteration: i32,
-    observation: &Observation,
-    centers: &[CenterEvidence],
-) -> Result<(u64, u128)> {
-    // The reducer only needs the sufficient statistic for one sealed observation:
-    // (context, outcome) -> exact multiplicity.  Repeating an identical TSV row
-    // once per center carries no additional evidence, so collapse those rows here
-    // before touching disk.  This remains bounded by the anonymous relation
-    // vocabulary of a single observation rather than its number of centers.
-    let mut aggregated = BTreeMap::<(String, String), u64>::new();
+fn grammar_counts_from_centers(centers: &[CenterEvidence]) -> Result<(LocalGrammar, u128)> {
+    let mut aggregated = LocalGrammar::new();
     let mut weight = 0u128;
 
     for center in centers {
@@ -35,7 +9,6 @@ fn grammar_from_centers(
                 *counts.entry(arm.clone()).or_default() += 1;
             }
         }
-
         let tokens: Vec<_> = counts.into_iter().collect();
         for i in 0..tokens.len() {
             for j in i..tokens.len() {
@@ -51,42 +24,90 @@ fn grammar_from_centers(
                 }
 
                 let context_a = format!("CENTER:{}|ARM:{}", center.kind, a);
-                add_grammar_count(&mut aggregated, context_a, b.clone(), pair_count)?;
+                let slot_a = aggregated.entry((context_a, b.clone())).or_default();
+                *slot_a = slot_a
+                    .checked_add(pair_count as u128)
+                    .ok_or_else(|| anyhow!("grammar multiplicity overflow"))?;
                 weight = weight
                     .checked_add(pair_count as u128)
-                    .ok_or_else(|| anyhow!("observed grammar weight overflow"))?;
+                    .ok_or_else(|| anyhow!("grammar weight overflow"))?;
 
-                // A same-token pair intentionally contributes two masked directions.
-                // When a == b this lands on the same aggregate key and doubles the
-                // count, exactly matching the former two-row representation.
                 let context_b = format!("CENTER:{}|ARM:{}", center.kind, b);
-                add_grammar_count(&mut aggregated, context_b, a.clone(), pair_count)?;
+                let slot_b = aggregated.entry((context_b, a.clone())).or_default();
+                *slot_b = slot_b
+                    .checked_add(pair_count as u128)
+                    .ok_or_else(|| anyhow!("grammar multiplicity overflow"))?;
                 weight = weight
                     .checked_add(pair_count as u128)
-                    .ok_or_else(|| anyhow!("observed grammar weight overflow"))?;
+                    .ok_or_else(|| anyhow!("grammar weight overflow"))?;
             }
         }
     }
+    Ok((aggregated, weight))
+}
 
-    let rows = aggregated.len() as u64;
-    for ((context, outcome), count) in aggregated {
-        shards.write(
-            iteration,
-            &observation.lane,
-            &observation.source_group_id,
-            &observation.id,
-            &context,
-            &outcome,
-            count,
-        )?;
+fn accumulate_source_grammar(
+    source: &mut SourceGrammar,
+    iteration: i32,
+    lane: &str,
+    local: &LocalGrammar,
+) -> Result<()> {
+    for ((context, outcome), count) in local {
+        let slot = source
+            .entry((iteration, lane.to_string(), context.clone(), outcome.clone()))
+            .or_default();
+        *slot = slot
+            .checked_add(*count)
+            .ok_or_else(|| anyhow!("source-local grammar count overflow"))?;
     }
-    Ok((rows, weight))
+    Ok(())
+}
+
+fn contribution_hash(
+    observation: &Observation,
+    iteration: i32,
+    local: &LocalGrammar,
+) -> Result<String> {
+    let stats: Vec<Value> = local
+        .iter()
+        .map(|((context, outcome), count)| json!([context, outcome, count.to_string()]))
+        .collect();
+    let canonical = json!({
+        "schema":"mark_grammar_contribution_preimage_v1",
+        "sourceGroupId":observation.source_group_id,
+        "observationId":observation.id,
+        "lane":observation.lane,
+        "iteration":iteration,
+        "stats":stats
+    });
+    Ok(sha256_hex(&serde_json::to_vec(&canonical)?))
+}
+
+fn emit_grammar_contribution(
+    ledger: &mut ChunkedLedger,
+    observation: &Observation,
+    iteration: i32,
+    local: &LocalGrammar,
+    weight: u128,
+) -> Result<()> {
+    let hash = contribution_hash(observation, iteration, local)?;
+    ledger.write_json(&json!({
+        "schema":"mark_grammar_contribution_v1",
+        "sourceGroupId":observation.source_group_id,
+        "observationId":observation.id,
+        "lane":observation.lane,
+        "iteration":iteration,
+        "uniqueStatistics":local.len(),
+        "directedPairWeight":weight.to_string(),
+        "contributionSha256":hash
+    }))
 }
 
 fn seeded_u64(seed: &str) -> u64 {
     let digest = Sha256::digest(seed.as_bytes());
     u64::from_le_bytes(digest[0..8].try_into().unwrap())
 }
+
 fn shuffle<T>(items: &mut [T], mut state: u64) {
     if state == 0 {
         state = 0x9E3779B97F4A7C15;
@@ -99,6 +120,7 @@ fn shuffle<T>(items: &mut [T], mut state: u64) {
         items.swap(i, j);
     }
 }
+
 fn null_centers(
     observation: &Observation,
     centers: &[CenterEvidence],
@@ -146,12 +168,14 @@ fn compile_observation(
     overlap: u32,
     null_iterations: usize,
     ledger: &mut ChunkedLedger,
-    shards: &mut GrammarShards,
+    contribution_ledger: &mut ChunkedLedger,
+    source_grammar: &mut SourceGrammar,
     stats: &mut CompilerStats,
 ) -> Result<()> {
     validate_region(image, observation.region, &observation.id)?;
     let threshold = resolved_threshold(image, observation)?;
     let mut centers = Vec::<CenterEvidence>::new();
+
     for (tile_index, tile) in tiles(observation.region, tile_size, overlap)
         .into_iter()
         .enumerate()
@@ -164,6 +188,7 @@ fn compile_observation(
         let (labels, clusters) = critical_clusters(&skeleton, w, h);
         let arms = trace_center_arms(&skeleton, &labels, &clusters, w, h);
         stats.events += emit_continuation_stubs(ledger, &skeleton, observation, tile, w, h)?;
+
         for cluster in clusters {
             if !point_in_core(&cluster, tile) {
                 continue;
@@ -185,7 +210,19 @@ fn compile_observation(
                 .iter()
                 .filter(|a| a.as_str() == "UNRESOLVED")
                 .count() as u64;
-            ledger.write_json(&json!({"schema":"mark_sparse_event_v1","eventId":center_id,"sourceGroupId":observation.source_group_id,"observationId":observation.id,"lane":observation.lane,"kind":"CENTER","centerKind":cluster.kind,"x":gx,"y":gy,"armHistogram":arm_histogram(&center_arms),"tileIndex":tile_index}))?;
+            ledger.write_json(&json!({
+                "schema":"mark_sparse_event_v1",
+                "eventId":center_id,
+                "sourceGroupId":observation.source_group_id,
+                "observationId":observation.id,
+                "lane":observation.lane,
+                "kind":"CENTER",
+                "centerKind":cluster.kind,
+                "x":gx,
+                "y":gy,
+                "armHistogram":arm_histogram(&center_arms),
+                "tileIndex":tile_index
+            }))?;
             stats.events += 1;
             stats.centers += 1;
             centers.push(CenterEvidence {
@@ -194,19 +231,57 @@ fn compile_observation(
             });
         }
     }
-    let (rows, weight) = grammar_from_centers(shards, -1, observation, &centers)?;
-    stats.grammar_rows += rows;
-    stats.observed_pair_weight += weight;
+
+    let (observed, observed_weight) = grammar_counts_from_centers(&centers)?;
+    accumulate_source_grammar(source_grammar, -1, &observation.lane, &observed)?;
+    emit_grammar_contribution(
+        contribution_ledger,
+        observation,
+        -1,
+        &observed,
+        observed_weight,
+    )?;
+    stats.grammar_contributions += 1;
+    stats.observed_pair_weight = stats
+        .observed_pair_weight
+        .checked_add(observed_weight)
+        .ok_or_else(|| anyhow!("global observed pair weight overflow"))?;
+
     for iteration in 0..null_iterations {
         let null = null_centers(observation, &centers, iteration);
-        let (rows, _) = grammar_from_centers(shards, iteration as i32, observation, &null)?;
-        stats.grammar_rows += rows;
+        let (null_counts, null_weight) = grammar_counts_from_centers(&null)?;
+        accumulate_source_grammar(
+            source_grammar,
+            iteration as i32,
+            &observation.lane,
+            &null_counts,
+        )?;
+        emit_grammar_contribution(
+            contribution_ledger,
+            observation,
+            iteration as i32,
+            &null_counts,
+            null_weight,
+        )?;
+        stats.grammar_contributions += 1;
     }
-    ledger.write_json(&json!({"schema":"mark_sparse_observation_boundary_v1","sourceGroupId":observation.source_group_id,"observationId":observation.id,"lane":observation.lane,"proposalKind":observation.proposal_kind,"proposalScale":observation.proposal_scale,"region":observation.region,"threshold":threshold,"centers":centers.len()}))?;
+
+    ledger.write_json(&json!({
+        "schema":"mark_sparse_observation_boundary_v1",
+        "sourceGroupId":observation.source_group_id,
+        "observationId":observation.id,
+        "lane":observation.lane,
+        "proposalKind":observation.proposal_kind,
+        "proposalScale":observation.proposal_scale,
+        "region":observation.region,
+        "threshold":threshold,
+        "centers":centers.len()
+    }))?;
     stats.events += 1;
     stats.observations += 1;
     Ok(())
 }
+
 fn arm_histogram(arms: &[String]) -> BTreeMap<String, u64> {
     let mut map = BTreeMap::new();
     for arm in arms {
@@ -214,6 +289,7 @@ fn arm_histogram(arms: &[String]) -> BTreeMap<String, u64> {
     }
     map
 }
+
 impl Serialize for Region {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -222,16 +298,4 @@ impl Serialize for Region {
         json!({"x":self.x,"y":self.y,"width":self.width,"height":self.height})
             .serialize(serializer)
     }
-}
-#[derive(Default)]
-struct OutcomeAgg {
-    count: u128,
-    sources: HashSet<String>,
-}
-#[derive(Clone)]
-struct Rule {
-    outcome: String,
-    distinct_sources: usize,
-    total_count: u128,
-    context_sources: usize,
 }
