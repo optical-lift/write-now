@@ -52,7 +52,7 @@ const blindCore={
   generatedAt:new Date().toISOString(),
   blindInputSha256:input.blindInputSha256,
   runtime:{node:process.version,sharp:sharpVersion},
-  corpus:{totalObservations:measured.length,eligibleObservations:records.length,sourceObjects:input.sources.length,trainObservations:records.filter(r=>r.lane==="train").length,holdoutObservations:records.filter(r=>r.lane==="holdout").length},
+  corpus:{totalObservations:measured.length,eligibleObservations:records.length,sourceObjects:input.sources.length,trainObservations:records.filter(r=>r.lane==="train").length,holdoutObservations:records.filter(r=>r.lane==="holdout").length,controlObservations:records.filter(r=>r.lane==="control").length},
   records,
   exclusions:measured.filter(r=>r.eligible===false).map(({eligible:_eligible,...r})=>r),
   blindnessContract:input.blindnessContract,
@@ -62,14 +62,16 @@ const artifact={...blindCore,blindSha256};
 function partition(name,subset){const core={schema:"mark_observable_feature_partition_blind_v1",partition:name,generatedAt:artifact.generatedAt,sourceMeasurementsSha256:blindSha256,records:subset};const sha=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex");return{...core,blindSha256:sha};}
 const train=partition("train",records.filter(r=>r.lane==="train"));
 const holdout=partition("holdout",records.filter(r=>r.lane==="holdout"));
-if(records.length>=10&&holdout.records.length<1)throw new Error("observable corpus requires at least one source-level holdout observation");
+const control=partition("control",records.filter(r=>r.lane==="control"));
+if(records.length>=10&&input.lanePolicy!=="all_train_negative_control"&&holdout.records.length<1)throw new Error("observable corpus requires at least one source-level holdout observation");
 await fs.mkdir(outDir,{recursive:true});
 await fs.writeFile(path.join(outDir,"mark-observable-measurements-blind-v1.json"),`${JSON.stringify(artifact,null,2)}\n`);
 await fs.writeFile(path.join(outDir,"mark-observable-train-blind-v1.json"),`${JSON.stringify(train,null,2)}\n`);
 await fs.writeFile(path.join(outDir,"mark-observable-holdout-blind-v1.json"),`${JSON.stringify(holdout,null,2)}\n`);
+await fs.writeFile(path.join(outDir,"mark-observable-control-blind-v1.json"),`${JSON.stringify(control,null,2)}\n`);
 await fs.writeFile(path.join(outDir,"summary.txt"),[
   `schema=${artifact.schema}`,`source_objects=${artifact.corpus.sourceObjects}`,`eligible_observations=${artifact.corpus.eligibleObservations}`,
-  `train_observations=${train.records.length}`,`train_sha256=${train.blindSha256}`,`holdout_observations=${holdout.records.length}`,`holdout_sha256=${holdout.blindSha256}`,`blind_sha256=${blindSha256}`,
+  `train_observations=${train.records.length}`,`train_sha256=${train.blindSha256}`,`holdout_observations=${holdout.records.length}`,`holdout_sha256=${holdout.blindSha256}`,`control_observations=${control.records.length}`,`control_sha256=${control.blindSha256}`,`blind_sha256=${blindSha256}`,
 ].join("\n")+"\n");
 console.log(`Measured ${records.length}/${measured.length} observable configurations across ${input.sources.length} source objects`);
 console.log(`Blind measurement SHA-256: ${blindSha256}`);

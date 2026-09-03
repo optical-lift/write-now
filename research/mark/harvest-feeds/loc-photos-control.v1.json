@@ -1,0 +1,10 @@
+{
+  "schema": "mark_open_access_feed_request_v1",
+  "feedId": "loc-photos-control-v1",
+  "provider": "loc_photos",
+  "institution": "Library of Congress",
+  "lane": "control",
+  "rightsBasis": "source_rights_govern_research_analysis_only",
+  "seed": "mark-v5-loc-photo-control-spread-v1",
+  "maxSources": 24
+}

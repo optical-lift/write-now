@@ -1,0 +1,10 @@
+{
+  "schema": "mark_harvest_manifest_v1",
+  "harvestId": "mark:v5-fixture:holdout",
+  "status": "physical_evidence",
+  "purpose": "Local custody-safe whole-institution holdout fixture for v5 CI.",
+  "sources": [
+    {"sourceId":"SRC0001","challengeLane":"holdout","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/holdout-1.svg","imagePath":"../feed-fixtures/v5/holdout-1.svg"},"sourceUrl":"https://example.invalid/v5/holdout/1","institution":"Fixture Institution C","objectId":"C1","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}},
+    {"sourceId":"SRC0002","challengeLane":"holdout","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/holdout-2.svg","imagePath":"../feed-fixtures/v5/holdout-2.svg"},"sourceUrl":"https://example.invalid/v5/holdout/2","institution":"Fixture Institution C","objectId":"C2","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}}
+  ]
+}

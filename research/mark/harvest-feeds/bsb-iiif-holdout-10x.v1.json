@@ -1,0 +1,10 @@
+{
+  "schema": "mark_iiif_feed_request_v1",
+  "feedId": "bsb-iiif-holdout-10x-v1",
+  "collectionUrl": "https://api.digitale-sammlungen.de/iiif/presentation/v2/collection/top",
+  "institution": "Bavarian State Library / Munich Digitization Centre",
+  "lane": "holdout",
+  "rightsBasis": "source_rights_govern_research_analysis_only",
+  "maxSources": 240,
+  "maxCapturesPerManifest": 1
+}

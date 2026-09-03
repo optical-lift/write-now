@@ -1,0 +1,10 @@
+{
+  "schema": "mark_harvest_manifest_v1",
+  "harvestId": "mark:v5-fixture:control",
+  "status": "physical_evidence",
+  "purpose": "Local custody-safe unrelated control fixture for v5 CI.",
+  "sources": [
+    {"sourceId":"SRC0001","challengeLane":"control","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/control-1.svg","imagePath":"../feed-fixtures/v5/control-1.svg"},"sourceUrl":"https://example.invalid/v5/control/1","institution":"Fixture Institution D","objectId":"D1","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}},
+    {"sourceId":"SRC0002","challengeLane":"control","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/control-2.svg","imagePath":"../feed-fixtures/v5/control-2.svg"},"sourceUrl":"https://example.invalid/v5/control/2","institution":"Fixture Institution D","objectId":"D2","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}}
+  ]
+}

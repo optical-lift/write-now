@@ -1,0 +1,10 @@
+{
+  "schema": "mark_harvest_manifest_v1",
+  "harvestId": "mark:v5-fixture:train-a",
+  "status": "physical_evidence",
+  "purpose": "Local custody-safe fixture for v5 whole-institution challenge CI.",
+  "sources": [
+    {"sourceId":"SRC0001","challengeLane":"train","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/train-a-1.svg","imagePath":"../feed-fixtures/v5/train-a-1.svg"},"sourceUrl":"https://example.invalid/v5/train-a/1","institution":"Fixture Institution A","objectId":"A1","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}},
+    {"sourceId":"SRC0002","challengeLane":"train","capture":{"adapter":"image_2d","assetUrl":"https://example.invalid/v5/train-a-2.svg","imagePath":"../feed-fixtures/v5/train-a-2.svg"},"sourceUrl":"https://example.invalid/v5/train-a/2","institution":"Fixture Institution A","objectId":"A2","rightsBasis":"local_ci_fixture","context":{"fixtureOnly":true}}
+  ]
+}

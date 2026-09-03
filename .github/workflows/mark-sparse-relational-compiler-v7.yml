@@ -1,0 +1,147 @@
+name: Mark Sparse Relational Compiler v7
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/**"
+      - "scripts/assert-mark-sparse-compiler-v7.mjs"
+      - "scripts/harvest-mark-sources.mjs"
+      - "scripts/propose-mark-observables.mjs"
+      - "scripts/expand-mark-open-access-feed.mjs"
+      - "scripts/expand-mark-iiif-feed.mjs"
+      - "scripts/compose-mark-real-corpus-challenge.mjs"
+      - "scripts/rasterize-mark-ci-fixtures.mjs"
+      - "research/mark/harvest-feeds/**"
+      - "research/mark/harvest-manifests/v5-fixture-**"
+      - "research/mark/feed-fixtures/v5/**"
+      - "docs/mark-sparse-relational-compiler-v7.md"
+      - ".github/workflows/mark-sparse-relational-compiler-v7.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sparse-relational-compiler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MARK_V7_OUT: artifacts/mark-v7-sparse
+      MARK_V7_MAX_RSS_KB: 524288
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Node acquisition dependencies
+        run: npm install
+      - name: Validate toolchains and v7 source
+        run: |
+          rustc --version
+          cargo --version
+          node --check scripts/assert-mark-sparse-compiler-v7.mjs
+          node --check scripts/rasterize-mark-ci-fixtures.mjs
+          cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
+      - name: Expand live heterogeneous source feeds
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/cleveland-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-cleveland node scripts/expand-mark-open-access-feed.mjs
+          MARK_IIIF_FEED_REQUEST=research/mark/harvest-feeds/bsb-iiif-holdout.v1.json MARK_IIIF_FEED_OUT=artifacts/v7-feed-bsb node scripts/expand-mark-iiif-feed.mjs
+          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-loc node scripts/expand-mark-open-access-feed.mjs
+      - name: Rasterize synthetic custody-safe fixtures for Rust
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_FIXTURE_MANIFESTS: research/mark/harvest-manifests/v5-fixture-train-a.v1.json,research/mark/harvest-manifests/v5-fixture-train-b.v1.json,research/mark/harvest-manifests/v5-fixture-holdout.v1.json,research/mark/harvest-manifests/v5-fixture-control.v1.json
+          MARK_FIXTURE_RASTER_OUT: artifacts/mark-v7-ci-raster-fixtures
+        run: node scripts/rasterize-mark-ci-fixtures.mjs
+      - name: Compose synthetic custody-safe CI packet
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_CHALLENGE_ID: mark:v7-fixture:sparse-relational-compiler
+          MARK_CHALLENGE_MANIFESTS: artifacts/mark-v7-ci-raster-fixtures/v5-fixture-train-a.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-train-b.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-holdout.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-control.v1.json
+        run: node scripts/compose-mark-real-corpus-challenge.mjs
+      - name: Compose live sealed transfer packet
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          MARK_CHALLENGE_ID: mark:v7:heterogeneous-sufficient-statistics-live-v1
+          MARK_CHALLENGE_MANIFESTS: artifacts/v7-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v7-feed-bsb/generated-harvest-manifest.v1.json,artifacts/v7-feed-loc/generated-harvest-manifest.v1.json
+        run: node scripts/compose-mark-real-corpus-challenge.mjs
+      - name: Harvest live physical custody and audit exclusions
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
+          MARK_CONTINUITY_KEY: mark-v7-${{ github.run_id }}-${{ github.sha }}
+          MARK_NEAR_DUPLICATE_BITS: 2
+          MARK_HARVEST_MIN_PER_LANE: 12
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Harvest synthetic custody fixture
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
+          MARK_CONTINUITY_KEY: mark-v7-fixture-continuity-v1
+          MARK_NEAR_DUPLICATE_BITS: 2
+          MARK_HARVEST_MIN_PER_LANE: 1
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Propose blind multiscale observations
+        env:
+          MARK_MAX_COMPONENTS_PER_SOURCE: 32
+        run: node scripts/propose-mark-observables.mjs
+      - name: Verify sealed blind compiler input
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import crypto from "node:crypto";
+          const p="artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json";
+          const value=JSON.parse(fs.readFileSync(p,"utf8"));
+          const {blindInputSha256,...core}=value;
+          const computed=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex");
+          if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("v7 blind input SHA-256 verification failed");
+          console.log(`sealed blind input ${blindInputSha256}`);
+          NODE
+      - name: Build rowless sufficient-statistics compiler
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
+      - name: Compile relational world under hard 512 MB address-space ceiling
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_V7_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json \
+              --out "$MARK_V7_OUT" \
+              --tile 512 \
+              --overlap 32 \
+              --null-iterations 16 \
+              --min-sources 3
+          ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
+      - name: Assert rowless architecture and memory gate
+        run: node scripts/assert-mark-sparse-compiler-v7.mjs
+      - name: Publish v7 architecture summary
+        shell: bash
+        run: |
+          {
+            echo '### Mark v7 sufficient-statistics compiler'
+            echo '```json'
+            cat "$MARK_V7_OUT/summary.json"
+            echo '```'
+            echo '### Architecture assertion'
+            echo '```json'
+            cat "$MARK_V7_OUT/assertion.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload v7 blind custody and evaluation
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v7-sufficient-statistics-evidence
+          path: |
+            artifacts/mark-v7-sparse/summary.json
+            artifacts/mark-v7-sparse/custody.json
+            artifacts/mark-v7-sparse/evaluation.json
+            artifacts/mark-v7-sparse/rules.jsonl
+            artifacts/mark-v7-sparse/assertion.json
+            artifacts/mark-v7-sparse/runtime.txt
+            artifacts/mark-v7-sparse/grammar-stats.sqlite
+            artifacts/mark-v7-sparse/grammar-contributions.jsonl
+          if-no-files-found: error
+          retention-days: 30
