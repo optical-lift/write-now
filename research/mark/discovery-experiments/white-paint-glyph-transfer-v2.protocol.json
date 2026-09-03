@@ -1,0 +1,97 @@
+{
+  "schema": "mark_white_paint_glyph_transfer_protocol_v2",
+  "experimentId": "mark:white-paint-glyph-transfer:v2",
+  "phase": "frozen_cross_system_proxy_transfer_before_physical_witness_harvest",
+  "question": "Do the already-frozen white-paint axes recur across unrelated standardized glyph systems strongly enough to justify a physical-witness historical test?",
+  "parentEvidence": {
+    "whitePaintRunId": 33809154740,
+    "whitePaintArtifact": "mark-white-paint-grammar-v1-frozen",
+    "whitePaintGrammarSha256": "1b7a52b6f88ab1a1c349f05f04c873aaa7077d06a1bf40c0fa3745925d1549df"
+  },
+  "corpus": {
+    "source": "existing 300-sign Glyph Atlas display-engineering corpus",
+    "systems": 12,
+    "signsPerSystem": 25,
+    "status": "standardized display proxies, not physical archaeological or manuscript witnesses",
+    "scriptSystemsUsedForTransfer": 11,
+    "mathSystemRole": "modern formal-notation comparison only",
+    "noSemanticClaimFromThisCorpus": true
+  },
+  "blindBoundary": {
+    "renderingMayUseGlyphCharacterAndFontOnlyToProducePixels": true,
+    "blindPacketForScoringContains": ["opaque id", "anonymous topology", "anonymous geometry", "white-paint observables"],
+    "blindPacketForScoringForbids": ["atlas G id", "character", "codepoint", "font family", "system", "language", "culture", "historical meaning", "source URL"],
+    "blindResultShaMustExistBeforeContextRejoin": true,
+    "contextRejoinMayNotAlterBlindFeaturesClassesOrThresholds": true
+  },
+  "frozenOperators": {
+    "operationPrecedence": ["multi", "loop_continue", "close", "cross", "branch", "turn", "persist", "other"],
+    "multi": "connected components > 1",
+    "loop_continue": "enclosed void present and at least one skeleton terminal remains",
+    "close": "enclosed void present and no skeleton terminal remains",
+    "cross": "single component, no enclosed void, and a junction cluster reaches local degree >= 4",
+    "branch": "single component, no enclosed void, at least one junction cluster, and at least three terminals",
+    "turn": "single component, no enclosed void, no junction cluster, exactly two terminals, local degree-2 turn rate >= 0.08",
+    "persist": "single component, no enclosed void, no junction cluster, exactly two terminals, local degree-2 turn rate < 0.08",
+    "other": "all remaining structures"
+  },
+  "frozenRelation": {
+    "eligible": "at least one clustered junction and at least one skeleton terminal",
+    "nearTerminal": "minimum junction-to-terminal Euclidean distance divided by glyph diagonal <= 0.22",
+    "interior": "same ratio > 0.22",
+    "relationFeatures": ["minJunctionEndpointRatio", "meanJunctionEndpointRatio"],
+    "modifierShapeOnlyFeatures": ["maxJunctionDegree", "degree3JunctionClusters", "degree4PlusJunctionClusters"]
+  },
+  "frozenDegree": {
+    "proxy": "clip degree-3 junction-cluster count to integer range 0..5",
+    "positiveDegrees": [1, 2, 3, 4, 5],
+    "theoryOriginPositiveControl": "Within the first four visible Ogham 5-sign runs, ordinal position 1..5 should correlate with endpoints + junctionClusters + degree3JunctionClusters. This is a positive control motivated before v2 and is not independent universality evidence."
+  },
+  "frozenClosure": {
+    "open": "zero enclosed raster voids",
+    "closed": "one or more enclosed raster voids",
+    "note": "This display-proxy lane intentionally uses literal raster voids, avoiding the v1 critical-center cycle-rank blind spot for degree-2-only loops."
+  },
+  "predictions": [
+    {
+      "id": "P1_OPERATION_RECURRENCE",
+      "prediction": "At least five of persist/turn/branch/cross/close/loop_continue occur in four or more independent script systems, and no passing operation is supplied more than 60% by a single system."
+    },
+    {
+      "id": "P2_RELATION_PORTABILITY",
+      "prediction": "Near-terminal and interior attachment both occur in at least five script systems, and relation-feature nearest-neighbor cross-system mixing exceeds modifier-shape-only mixing by at least 0.05."
+    },
+    {
+      "id": "P3_REPETITION_DEGREE",
+      "prediction": "At least four script systems contain three or more distinct positive repetition-degree proxy values; at least three of the four predeclared Ogham positive-control runs achieve Spearman rho >= 0.80."
+    },
+    {
+      "id": "P4_CLOSURE_PHASE",
+      "prediction": "Both open and closed forms occur in at least seven independent script systems, with no single system supplying more than 50% of closed forms."
+    },
+    {
+      "id": "P5_SUBSTRATE_BEATS_STYLE",
+      "prediction": "Three-nearest-neighbor system-identity accuracy from white-paint structural features is at least 0.05 lower than accuracy from appearance features, indicating greater cross-system mixing in the proposed substrate than in rendered style."
+    }
+  ],
+  "featureFamilies": {
+    "whitePaint": ["components", "holes", "endpoints", "junctionClusters", "degree3JunctionClusters", "degree4PlusJunctionClusters", "turnRate"],
+    "appearance": ["logAspect", "verticalSymmetry", "horizontalSymmetry", "cos2Orientation", "sin2Orientation", "density", "boundaryComplexity"]
+  },
+  "nullModel": {
+    "iterations": 256,
+    "seed": 2409032,
+    "method": "shuffle post-freeze system labels across the frozen blind records while preserving the exact system-size multiset; never alter physical features or blind classes",
+    "purpose": "measure whether observed cross-system recurrence/mixing differs from arbitrary reassignment of the same glyph structures"
+  },
+  "evaluation": {
+    "theoryPassRequires": ["P1_OPERATION_RECURRENCE", "P2_RELATION_PORTABILITY", "P3_REPETITION_DEGREE", "P4_CLOSURE_PHASE", "P5_SUBSTRATE_BEATS_STYLE"],
+    "scientificFailureDoesNotFailCI": true,
+    "ciFailsOnlyFor": ["custody breach", "invalid corpus", "missing fonts/renders", "analysis error", "blind/context contamination"]
+  },
+  "claimBoundary": {
+    "allowed": "The frozen white-paint structural axes do or do not recur across a standardized cross-system glyph proxy corpus under predeclared transfer tests.",
+    "forbidden": ["historical semantic decoding", "proof of universal human grammar", "physical-witness claim", "Atlas meaning assigned to an ancient sign"]
+  },
+  "nextGateIfSupported": "Harvest governed physical witnesses for multiple script traditions, freeze witness lanes before extraction, and repeat the same operator/relation/degree/closure transfer without standardized Unicode forms."
+}

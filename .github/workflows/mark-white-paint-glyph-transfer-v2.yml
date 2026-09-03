@@ -1,0 +1,116 @@
+name: Mark White Paint Glyph Transfer v2
+
+on:
+  pull_request:
+    paths:
+      - "scripts/capture-mark-white-paint-glyph-transfer.mjs"
+      - "scripts/discover-mark-white-paint-glyph-transfer.mjs"
+      - "scripts/rejoin-mark-white-paint-glyph-transfer.mjs"
+      - "research/mark/discovery-experiments/white-paint-glyph-transfer-v2.protocol.json"
+      - ".github/workflows/mark-white-paint-glyph-transfer-v2.yml"
+      - "app/glyph-atlas/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_WHITE_PAINT_GLYPH_PROTOCOL: research/mark/discovery-experiments/white-paint-glyph-transfer-v2.protocol.json
+  MARK_WHITE_PAINT_GLYPH_BLIND_OUT: artifacts/mark-white-paint-glyph-transfer-v2/blind
+  MARK_WHITE_PAINT_GLYPH_DISCOVERY_OUT: artifacts/mark-white-paint-glyph-transfer-v2/frozen
+  MARK_WHITE_PAINT_GLYPH_REJOIN_OUT: artifacts/mark-white-paint-glyph-transfer-v2/context
+  MARK_WHITE_PAINT_GLYPH_CONTEXT_OUT: artifact-staging/white-paint-glyph-context-v2
+
+jobs:
+  blind-proxy-transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate frozen protocol and scripts
+        run: |
+          python3 -m json.tool "$MARK_WHITE_PAINT_GLYPH_PROTOCOL" >/dev/null
+          node --check scripts/capture-mark-white-paint-glyph-transfer.mjs
+          node --check scripts/discover-mark-white-paint-glyph-transfer.mjs
+          node --check scripts/rejoin-mark-white-paint-glyph-transfer.mjs
+
+      - name: Install app, browser and governed glyph fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core fonts-noto-extra
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          fc-cache -f
+
+      - name: Start existing Glyph Atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run dev -- --hostname 127.0.0.1 > "$RUNNER_TEMP/glyph-atlas-v2.log" 2>&1 &
+          for attempt in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/glyph-atlas >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/glyph-atlas-v2.log"
+          exit 1
+
+      - name: Capture anonymous white-paint observables
+        env:
+          GLYPH_ATLAS_URL: http://127.0.0.1:3000/glyph-atlas
+        run: node scripts/capture-mark-white-paint-glyph-transfer.mjs
+
+      - name: Freeze blind transfer before context opens
+        env:
+          MARK_WHITE_PAINT_GLYPH_BLIND: artifacts/mark-white-paint-glyph-transfer-v2/blind/white-paint-glyph-proxy-blind.json
+        run: node scripts/discover-mark-white-paint-glyph-transfer.mjs
+
+      - name: Publish blind result
+        run: |
+          echo '### White-paint glyph transfer v2 — context still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-white-paint-glyph-transfer-v2/blind/capture-summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-white-paint-glyph-transfer-v2/frozen/blind-summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen blind packet before rejoin
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-glyph-transfer-v2-blind
+          path: |
+            artifacts/mark-white-paint-glyph-transfer-v2/blind/**
+            artifacts/mark-white-paint-glyph-transfer-v2/frozen/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Rejoin system identity only after blind SHA exists
+        env:
+          MARK_WHITE_PAINT_GLYPH_BLIND: artifacts/mark-white-paint-glyph-transfer-v2/blind/white-paint-glyph-proxy-blind.json
+          MARK_WHITE_PAINT_GLYPH_FROZEN: artifacts/mark-white-paint-glyph-transfer-v2/frozen/white-paint-glyph-transfer-blind.json
+          MARK_WHITE_PAINT_GLYPH_CONTEXT_MAP: artifact-staging/white-paint-glyph-context-v2/white-paint-glyph-context-map.json
+        run: node scripts/rejoin-mark-white-paint-glyph-transfer.mjs
+
+      - name: Publish cross-system result
+        run: |
+          echo '### Context rejoin — standardized proxy systems only' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-white-paint-glyph-transfer-v2/context/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload post-freeze context packet separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-glyph-transfer-v2-context
+          path: |
+            artifacts/mark-white-paint-glyph-transfer-v2/context/**
+            artifact-staging/white-paint-glyph-context-v2/white-paint-glyph-context-map.json
+          if-no-files-found: error
+          retention-days: 30
