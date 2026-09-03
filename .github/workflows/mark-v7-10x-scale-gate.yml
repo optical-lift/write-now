@@ -1,6 +1,8 @@
 name: Mark v7 10x Scale Gate
 
 on:
+  pull_request:
+    types: [ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +17,7 @@ jobs:
       MARK_V7_MAX_RSS_KB: 524288
       MARK_V7_MIN_LANE_SOURCES: 216
       MARK_V7_MIN_OBSERVATIONS: 20000
+      MARK_V7_COMPILER_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,21 +51,90 @@ jobs:
         env:
           MARK_MAX_COMPONENTS_PER_SOURCE: 32
         run: node scripts/propose-mark-observables.mjs
-      - name: Verify sealed 10x blind input
+      - name: Normalize vector captures for the Rust compiler without changing physical custody
+        run: |
+          node --input-type=module <<'NODE'
+          import crypto from "node:crypto";
+          import fs from "node:fs";
+          import path from "node:path";
+          import sharp from "sharp";
+
+          const sourcePath="artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json";
+          const outputPath=process.env.MARK_V7_COMPILER_INPUT;
+          const source=JSON.parse(fs.readFileSync(sourcePath,"utf8"));
+          const {blindInputSha256:parentBlindInputSha256,...sourceCore}=source;
+          const computedParent=crypto.createHash("sha256").update(JSON.stringify(sourceCore)).digest("hex");
+          if(!parentBlindInputSha256||parentBlindInputSha256!==computedParent) throw new Error("proposal blind input SHA-256 verification failed before compiler normalization");
+
+          const sourceDir=path.dirname(sourcePath);
+          const outputDir=path.dirname(outputPath);
+          if(path.resolve(sourceDir)!==path.resolve(outputDir)) throw new Error("compiler-normalized blind input must remain beside the sealed proposal input");
+          const rasterDir=path.join(outputDir,"compiler-captures");
+          fs.mkdirSync(rasterDir,{recursive:true});
+
+          const wholeBySource=new Map(source.observations.filter(o=>o.proposalKind==="whole_capture").map(o=>[o.sourceGroupId,o]));
+          const mappings=[];
+          const normalizedSources=[];
+          for(const item of source.sources){
+            let capturePath=item.capturePath;
+            if(path.extname(capturePath).toLowerCase()===".svg"){
+              const absolute=path.resolve(sourceDir,capturePath);
+              const physicalBytes=fs.readFileSync(absolute);
+              const {data,info}=await sharp(physicalBytes).greyscale().raw().toBuffer({resolveWithObject:true});
+              const whole=wholeBySource.get(item.sourceGroupId);
+              if(!whole||whole.region.x!==0||whole.region.y!==0||whole.region.width!==info.width||whole.region.height!==info.height){
+                throw new Error(`SVG raster geometry no longer matches sealed proposal for ${item.sourceGroupId}: proposal=${JSON.stringify(whole?.region)} raster=${info.width}x${info.height}`);
+              }
+              const compilerBytes=await sharp(data,{raw:{width:info.width,height:info.height,channels:info.channels}}).png({compressionLevel:9}).toBuffer();
+              const outputName=`${item.sourceGroupId}.png`;
+              const output=path.join(rasterDir,outputName);
+              fs.writeFileSync(output,compilerBytes);
+              capturePath=path.posix.join("compiler-captures",outputName);
+              mappings.push({
+                sourceGroupId:item.sourceGroupId,
+                physicalCapturePath:item.capturePath,
+                compilerCapturePath:capturePath,
+                width:info.width,
+                height:info.height,
+                physicalCaptureSha256:crypto.createHash("sha256").update(physicalBytes).digest("hex"),
+                compilerCaptureSha256:crypto.createHash("sha256").update(compilerBytes).digest("hex")
+              });
+            }
+            normalizedSources.push({...item,capturePath});
+          }
+
+          const compilerCore={...sourceCore,sources:normalizedSources};
+          const compilerBlindInputSha256=crypto.createHash("sha256").update(JSON.stringify(compilerCore)).digest("hex");
+          fs.writeFileSync(outputPath,`${JSON.stringify({...compilerCore,blindInputSha256:compilerBlindInputSha256},null,2)}\n`);
+          const custody={
+            schema:"mark_v7_compiler_capture_normalization_custody_v1",
+            parentProposalBlindInputSha256:parentBlindInputSha256,
+            compilerBlindInputSha256,
+            vectorPolicy:"svg rendered by the same sharp grayscale raster path used by blind proposal; sealed whole-capture geometry must match exactly",
+            originalCapturesRetained:true,
+            normalizedVectorCaptures:mappings.length,
+            mappings
+          };
+          fs.writeFileSync(path.join(outputDir,"compiler-normalization-custody.json"),`${JSON.stringify(custody,null,2)}\n`);
+          console.log(`compiler input ${compilerBlindInputSha256}; normalized ${mappings.length} SVG captures; parent proposal ${parentBlindInputSha256}`);
+          NODE
+      - name: Verify sealed 10x compiler input
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
           import crypto from "node:crypto";
-          const p="artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json";
+          const p=process.env.MARK_V7_COMPILER_INPUT;
           const value=JSON.parse(fs.readFileSync(p,"utf8"));
           const {blindInputSha256,...core}=value;
           const computed=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex");
-          if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("10x blind input SHA-256 verification failed");
+          if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("10x compiler input SHA-256 verification failed");
+          const normalization=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json","utf8"));
+          if(normalization.compilerBlindInputSha256!==blindInputSha256) throw new Error("compiler normalization custody does not match sealed compiler input");
           const lanes=Object.fromEntries(["train","holdout","control"].map(lane=>[lane,value.sources.filter(source=>source.lane===lane).length]));
           const min=Number(process.env.MARK_V7_MIN_LANE_SOURCES);
           for(const [lane,count] of Object.entries(lanes)) if(count<min) throw new Error(`10x retained lane below gate: ${lane}=${count}<${min}`);
           if(value.observations.length<Number(process.env.MARK_V7_MIN_OBSERVATIONS)) throw new Error(`10x observation gate failed: ${value.observations.length}`);
-          console.log(`sealed 10x input ${blindInputSha256}; lanes=${JSON.stringify(lanes)} observations=${value.observations.length}`);
+          console.log(`sealed 10x compiler input ${blindInputSha256}; parent=${normalization.parentProposalBlindInputSha256}; normalized_vectors=${normalization.normalizedVectorCaptures}; lanes=${JSON.stringify(lanes)} observations=${value.observations.length}`);
           NODE
       - name: Build rowless sparse compiler
         run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
@@ -74,7 +146,7 @@ jobs:
           (
             ulimit -v "$MARK_V7_MAX_RSS_KB"
             /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
-              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json \
+              --input "$MARK_V7_COMPILER_INPUT" \
               --out "$MARK_V7_OUT" \
               --tile 512 \
               --overlap 32 \
@@ -91,7 +163,8 @@ jobs:
           const summary=JSON.parse(fs.readFileSync(`${out}/summary.json`,"utf8"));
           const custody=JSON.parse(fs.readFileSync(`${out}/custody.json`,"utf8"));
           const evaluation=JSON.parse(fs.readFileSync(`${out}/evaluation.json`,"utf8"));
-          const blind=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json","utf8"));
+          const blind=JSON.parse(fs.readFileSync(process.env.MARK_V7_COMPILER_INPUT,"utf8"));
+          const normalization=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json","utf8"));
           const runtime=fs.readFileSync(`${out}/runtime.txt`,"utf8");
           const lanes=Object.fromEntries(["train","holdout","control"].map(lane=>[lane,blind.sources.filter(source=>source.lane===lane).length]));
           const rss=Number(runtime.match(/Maximum resident set size \(kbytes\):\s*(\d+)/)?.[1] ?? NaN);
@@ -111,10 +184,11 @@ jobs:
           if(summary.grammarContributions!==summary.observations*(summary.nullIterations+1)) throw new Error("10x contribution ledger is incomplete");
           if(BigInt(summary.observedPairWeight)<1n || summary.events<1 || summary.centers<1) throw new Error("10x compiler emitted no relational evidence");
           if(summary.physicalLedgerMerkleRoot!==custody.physicalLedger?.merkleRoot || summary.grammarContributionMerkleRoot!==custody.grammarStatistics?.contributionMerkleRoot) throw new Error("10x custody roots disagree with summary");
+          if(normalization.compilerBlindInputSha256!==summary.sourceBlindInputSha256 || !normalization.parentProposalBlindInputSha256) throw new Error("10x compiler normalization custody chain is incomplete");
           const db=fs.readFileSync(`${out}/grammar-stats.sqlite`);
           const dbSha=crypto.createHash("sha256").update(db).digest("hex");
           if(dbSha!==custody.grammarStatistics?.databaseSha256) throw new Error("10x sufficient-statistics database hash mismatch");
-          const assertion={schema:"mark_v7_10x_scale_assertion_v2",status:"passed",scaleGateOnly:true,scientificInterpretationAuthorized:false,sourceBlindInputSha256:summary.sourceBlindInputSha256,lanes,sources:summary.sources,observations:summary.observations,tiles:summary.tiles,centers:summary.centers,events:summary.events,grammarRowsMaterialized:summary.grammarRowsMaterialized,grammarStatRows:summary.grammarStatRows,contextStatRows:summary.contextStatRows,sourceStatCommits:summary.sourceStatCommits,grammarContributions:summary.grammarContributions,observedPairWeight:summary.observedPairWeight,rules:evaluation.rules,maxRssKb:rss,memoryGateKb:Number(process.env.MARK_V7_MAX_RSS_KB),wallTime:wall,fileSystemOutputs:fsOutputs,outputDirectoryKb:outputKb,physicalLedgerMerkleRoot:custody.physicalLedger.merkleRoot,grammarContributionMerkleRoot:custody.grammarStatistics.contributionMerkleRoot,grammarStatisticsDatabaseSha256:dbSha,grammarStatisticsDatabaseBytes:custody.grammarStatistics.databaseBytes};
+          const assertion={schema:"mark_v7_10x_scale_assertion_v3",status:"passed",scaleGateOnly:true,scientificInterpretationAuthorized:false,parentProposalBlindInputSha256:normalization.parentProposalBlindInputSha256,sourceBlindInputSha256:summary.sourceBlindInputSha256,normalizedVectorCaptures:normalization.normalizedVectorCaptures,lanes,sources:summary.sources,observations:summary.observations,tiles:summary.tiles,centers:summary.centers,events:summary.events,grammarRowsMaterialized:summary.grammarRowsMaterialized,grammarStatRows:summary.grammarStatRows,contextStatRows:summary.contextStatRows,sourceStatCommits:summary.sourceStatCommits,grammarContributions:summary.grammarContributions,observedPairWeight:summary.observedPairWeight,rules:evaluation.rules,maxRssKb:rss,memoryGateKb:Number(process.env.MARK_V7_MAX_RSS_KB),wallTime:wall,fileSystemOutputs:fsOutputs,outputDirectoryKb:outputKb,physicalLedgerMerkleRoot:custody.physicalLedger.merkleRoot,grammarContributionMerkleRoot:custody.grammarStatistics.contributionMerkleRoot,grammarStatisticsDatabaseSha256:dbSha,grammarStatisticsDatabaseBytes:custody.grammarStatistics.databaseBytes};
           fs.writeFileSync(`${out}/scale-assertion.json`,`${JSON.stringify(assertion,null,2)}\n`);
           console.log(JSON.stringify(assertion,null,2));
           NODE
@@ -136,5 +210,6 @@ jobs:
             artifacts/mark-v7-10x/grammar-stats.sqlite
             artifacts/mark-v7-10x/runtime.txt
             artifacts/mark-v7-10x/scale-assertion.json
+            artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json
           if-no-files-found: error
           retention-days: 30
