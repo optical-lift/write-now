@@ -1,0 +1,115 @@
+{
+  "schema": "mark_local_wiring_motif_correspondence_protocol_v7",
+  "experimentId": "mark:local-wiring-motif-correspondence:v7",
+  "question": "After blind critical-center correspondence, are small rooted wiring neighborhoods preserved more strongly when structural role is preserved than when role is broken, and does that conservation remain local at radius 1 or compose outward to radius 2?",
+  "rationaleParentV6": {
+    "branchHead": "ec3952aa83ee719f581d4c4187119de49a13b8e7",
+    "runId": 33812383388,
+    "result": "v5_turn_rate_counter_signal_collapses_after_structural_matching",
+    "consumedAsData": false,
+    "purpose": "V6 adjudicated residual turn rate and tortuosity as non-protected at the tested resolution, motivating the next test at the wiring-neighborhood level."
+  },
+  "parentV5": {
+    "expectedRunId": 33807154154,
+    "expectedArtifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedEligibleTrainPairs": 125,
+    "greedyNearestCandidatesPerCenter": 8
+  },
+  "motifConstruction": {
+    "root": "every blindly mapped v4 critical center in a V5 pair-eligible observation pair",
+    "neighborhood": "induced center-to-center multigraph neighborhood containing every center at unweighted graph distance <= radius from the root; neighbors do not need to survive cross-observation correspondence",
+    "radii": [1, 2],
+    "nodeLabel": ["root flag", "ENDPOINT/JUNCTION kind", "full critical-center degree class"],
+    "degreeCap": 6,
+    "edgeMultiplicity": "all literal parallel center-to-center paths collapsed to one undirected neighborhood edge carrying multiplicity class",
+    "multiplicityCap": 3,
+    "selfLoops": "retained as local edge tokens but do not expand breadth-first radius",
+    "topologyVariant": "edge labels contain multiplicity class only",
+    "lengthAwareVariant": "edge labels contain multiplicity class plus mean observation-diagonal-normalized path-step bin",
+    "normalizedLengthBinWidth": 0.05,
+    "residualGeometryForbidden": ["turnRate", "tortuosity", "turnCount", "pathSha256"],
+    "positionForbidden": true,
+    "orientationForbidden": true,
+    "sourceIdentityForbiddenFromFingerprint": true,
+    "centerIdentityForbiddenFromFingerprint": true
+  },
+  "canonicalization": {
+    "method": "rooted Weisfeiler-Lehman refinement over the induced radius-limited multigraph plus an identity-free structural token multiset",
+    "rounds": "radius + 2",
+    "fingerprintUse": "exact motif equality is a secondary strict observable, not an isomorphism theorem",
+    "gradedDistance": "multiset Jaccard distance over identity-free node and edge structural tokens",
+    "whyTwoViews": "the strict fingerprint detects reusable identical rooted motifs while the graded token distance preserves sensitivity when one local structural token changes"
+  },
+  "observables": [
+    {"id": "r1TopologyTokenMutation", "radius": 1, "variant": "topology", "kind": "graded", "primary": true},
+    {"id": "r2TopologyTokenMutation", "radius": 2, "variant": "topology", "kind": "graded", "primary": true},
+    {"id": "r1LengthAwareTokenMutation", "radius": 1, "variant": "lengthAware", "kind": "graded", "primary": true},
+    {"id": "r2LengthAwareTokenMutation", "radius": 2, "variant": "lengthAware", "kind": "graded", "primary": true},
+    {"id": "r1TopologyExactMutation", "radius": 1, "variant": "topology", "kind": "exact", "primary": false},
+    {"id": "r2TopologyExactMutation", "radius": 2, "variant": "topology", "kind": "exact", "primary": false},
+    {"id": "r1LengthAwareExactMutation", "radius": 1, "variant": "lengthAware", "kind": "exact", "primary": false},
+    {"id": "r2LengthAwareExactMutation", "radius": 2, "variant": "lengthAware", "kind": "exact", "primary": false}
+  ],
+  "pairAggregation": {
+    "unit": "observation pair",
+    "rootWeighting": "each blindly mapped root contributes equally inside its observation pair",
+    "gradedPairMetric": "mean rooted motif multiset-Jaccard mutation across mapped roots",
+    "exactPairMetric": "fraction of mapped roots whose strict rooted motif fingerprint differs",
+    "minimumMappedRoots": 1,
+    "noEdgeOrRootPseudoReplicationAcrossPairs": true
+  },
+  "discovery": {
+    "trainLane": "train",
+    "physicalStratum": "exact occupantFamilyA + occupantFamilyB",
+    "effect": "family-pair-balanced smaller-is-more-conserved rank effect; positive means motif mutation is smaller in role-preserving pairs",
+    "nullIterations": 128,
+    "nullShuffle": "shuffle preserved/broken observation-pair labels within each physical occupant-family pair while preserving the original preserved count",
+    "nullUnit": "observation pair",
+    "practicalEffectMagnitude": 0.08,
+    "evidenceNullAbsoluteCountMaximum": 16,
+    "selection": "none; all four primary observables are predeclared and all secondary exact observables are reported"
+  },
+  "transfer": {
+    "holdoutLane": "holdout",
+    "controlLane": "control",
+    "reselectNothing": true,
+    "refitNothing": true,
+    "sameCanonicalization": true,
+    "sameDirectionMinimumMagnitude": 0.08,
+    "bavariaRequiredForTransferClaim": true,
+    "locRequiredForThreeLaneClaim": true
+  },
+  "adjudication": {
+    "radius1Only": "If a radius-1 primary topology observable meets the Cleveland evidence gate and Bavaria transfer gate but the corresponding radius-2 observable falls below practical magnitude, treat syntax as sharply local around junction/endpoint neighborhoods.",
+    "radius2Composes": "If radius-2 meets the Cleveland evidence gate and Bavaria transfer gate without collapsing relative to radius 1, local wiring motifs compose outward and become candidate structural syllables for the next sequence experiment.",
+    "lengthRefinesTopology": "If length-aware conservation materially exceeds topology-only conservation at the same radius, normalized physical span is part of motif identity rather than merely an edge-level constraint.",
+    "topologyDominates": "If topology-only equals or exceeds length-aware conservation, motif identity is primarily adjacency/multiplicity structure.",
+    "noMotifSignal": "If all primary Cleveland effects remain below 0.08 or fail the predeclared null gate, do not construct a motif alphabet from this representation; test distributed/global graph organization next."
+  },
+  "descriptiveInventory": {
+    "enabled": true,
+    "roleLabelsUsed": false,
+    "lane": "train",
+    "report": "for each radius/variant, count distinct fingerprints, fingerprints recurring in >=2 distinct sourceGroupIds, and fraction of roots belonging to such cross-source recurring fingerprints",
+    "notUsedForDiscoverySelection": true
+  },
+  "falsifiers": {
+    "parentDrift": "If the V5 manifest, edge world, projector rows, or role-pair rows fail their frozen hashes, abort.",
+    "insufficientRoots": "If an eligible observation pair has no blindly mapped roots, exclude it transparently; if fewer than 50 Cleveland pairs remain, abort the motif claim.",
+    "radiusCollapse": "If radius-1 signal survives but radius-2 collapses, do not call radius-2 structure compositional.",
+    "transferCollapse": "If a Cleveland motif signal reverses or falls below 0.08 in Bavaria, do not call it transferable syntax.",
+    "inventoryWithoutCorrespondence": "Cross-source motif recurrence alone is descriptive and cannot substitute for preserved-vs-broken correspondence evidence."
+  },
+  "custody": {
+    "consumeFrozenV5ArtifactOnly": true,
+    "sourcePixelsMustNotBeDownloaded": true,
+    "topologyMustNotBeReprojected": true,
+    "v6GeometryArtifactNotConsumed": true,
+    "otherExperimentBranchesMustNotBeReadOrMutated": true,
+    "noProvenance": true,
+    "noStateVocabulary": true,
+    "noTransitionGrammar": true
+  }
+}
