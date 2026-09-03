@@ -53,7 +53,7 @@ const compilerBlindInputSha256 = crypto.createHash("sha256").update(JSON.stringi
 fs.writeFileSync(outputPath, `${JSON.stringify({ ...compilerCore, blindInputSha256: compilerBlindInputSha256 }, null, 2)}\n`);
 const custody = {
   schema: "mark_v7_compiler_capture_normalization_custody_v1",
-  parentProposalBlindInputSha256,
+  parentProposalBlindInputSha256: parentBlindInputSha256,
   compilerBlindInputSha256,
   vectorPolicy: "svg rendered by the same sharp grayscale raster path used by blind proposal; sealed whole-capture geometry must match exactly",
   originalCapturesRetained: true,
