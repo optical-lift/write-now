@@ -117,6 +117,7 @@ jobs:
         run: |
           mkdir -p artifacts/mark-v7-equivalence-proof/baseline
           cp artifacts/mark-v7-equivalence-baseline/{summary.json,custody.json,evaluation.json,rules.jsonl,runtime.txt} artifacts/mark-v7-equivalence-proof/baseline/
+          cp artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json artifacts/mark-v7-equivalence-proof/
           rm -rf artifacts/mark-v7-equivalence-baseline
       - name: Run rowless sufficient-statistics compiler under same 512 MB gate
         shell: bash
@@ -144,6 +145,7 @@ jobs:
           const sufficientEval=readJson(`${sufficientDir}/evaluation.json`);
           const baselineCustody=readJson(`${baselineDir}/custody.json`);
           const sufficientCustody=readJson(`${sufficientDir}/custody.json`);
+          const normalization=readJson("artifacts/mark-v7-equivalence-proof/compiler-normalization-custody.json");
           const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
           const coreFields=["sourceBlindInputSha256","sources","observations","tiles","centers","events","observedPairWeight","unresolvedArms","tileSize","overlap","nullIterations"];
           for(const field of coreFields) if(!equal(baseline[field],sufficient[field])) throw new Error(`sufficient-statistics compiler changed ${field}: baseline=${baseline[field]} sufficient=${sufficient[field]}`);
@@ -151,6 +153,7 @@ jobs:
           const parseRules=p=>fs.readFileSync(p,"utf8").trim().split(/\n+/).filter(Boolean).map(JSON.parse).sort((a,b)=>a.context.localeCompare(b.context));
           if(!equal(parseRules(`${baselineDir}/rules.jsonl`),parseRules(`${sufficientDir}/rules.jsonl`))) throw new Error("sufficient-statistics compiler changed learned rules or support counts");
           if(baselineCustody.merkleRoot!==sufficientCustody.physicalLedger?.merkleRoot) throw new Error("sufficient-statistics compiler changed physical event ledger custody");
+          if(normalization.compilerBlindInputSha256!==sufficient.sourceBlindInputSha256) throw new Error("equivalence proof lost normalization custody");
           if(sufficient.grammarRowsMaterialized!==0) throw new Error(`grammar rows still exist: ${sufficient.grammarRowsMaterialized}`);
           if(sufficient.grammarStatRows<1||sufficient.contextStatRows<1) throw new Error("sufficient-statistics database is empty");
           if(sufficient.grammarContributions!==sufficient.observations*(sufficient.nullIterations+1)) throw new Error("per-observation contribution custody is incomplete");
@@ -165,6 +168,8 @@ jobs:
             status:"passed",
             baselineCommit:process.env.MARK_BASELINE_COMMIT,
             sourceBlindInputSha256:sufficient.sourceBlindInputSha256,
+            normalizationCustodySha256:normalization.compilerBlindInputSha256,
+            normalizedCaptures:normalization.normalizedCaptureCount ?? normalization.captures?.length ?? 0,
             sources:sufficient.sources,
             observations:sufficient.observations,
             centers:sufficient.centers,
@@ -198,6 +203,7 @@ jobs:
           name: mark-v7-live-sufficient-statistics-equivalence
           path: |
             artifacts/mark-v7-equivalence-proof/equivalence.json
+            artifacts/mark-v7-equivalence-proof/compiler-normalization-custody.json
             artifacts/mark-v7-equivalence-proof/baseline/summary.json
             artifacts/mark-v7-equivalence-proof/baseline/evaluation.json
             artifacts/mark-v7-equivalence-proof/baseline/rules.jsonl
