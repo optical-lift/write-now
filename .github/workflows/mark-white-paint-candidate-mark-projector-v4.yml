@@ -5,6 +5,7 @@ on:
     paths:
       - "research/mark/discovery-experiments/white-paint-candidate-mark-projector-v4.*"
       - "scripts/mark-white-paint-candidate-projector-v4.mjs"
+      - "scripts/freeze-v3-primary-image-fetch.mjs"
       - ".github/workflows/mark-white-paint-candidate-mark-projector-v4.yml"
   workflow_dispatch:
 
@@ -30,10 +31,11 @@ jobs:
           python3 -m json.tool "$MARK_CANDIDATE_MANIFEST" >/dev/null
           python3 -m json.tool "$MARK_CANDIDATE_PROTOCOL" >/dev/null
           node --check scripts/mark-white-paint-candidate-projector-v4.mjs
+          node --check scripts/freeze-v3-primary-image-fetch.mjs
       - name: Install image decoder
         run: npm install --no-save sharp
       - name: Reacquire exact v3 images and run blind candidate projector
-        run: node scripts/mark-white-paint-candidate-projector-v4.mjs
+        run: node --import ./scripts/freeze-v3-primary-image-fetch.mjs scripts/mark-white-paint-candidate-projector-v4.mjs
       - name: Publish blind feasibility result
         if: always()
         run: |
