@@ -1,0 +1,92 @@
+{
+  "schema": "mark_matched_edge_geometry_protocol_v6",
+  "experimentId": "mark:matched-edge-geometry:v6",
+  "question": "Given surviving center-to-center connections that are structurally equivalent before residual shape is inspected, is turn-rate or tortuosity mutation smaller when structural role is preserved than when role is broken?",
+  "parentV5": {
+    "expectedRunId": 33807154154,
+    "expectedArtifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedEligibleTrainPairs": 125,
+    "greedyNearestCandidatesPerCenter": 8,
+    "expectedV5TurnRateBalancedEffectRounded": -0.152976,
+    "expectedV5TortuosityBalancedEffectRounded": -0.037937,
+    "v5RoundedEffectReproductionTolerance": 0.000001
+  },
+  "matching": {
+    "rule": "Residual geometry is scored only after exact physical-family conditioning and a predeclared coarsened structural key is formed without turn rate or tortuosity.",
+    "physicalFamilyPair": "exact occupantFamilyA + occupantFamilyB stratum",
+    "centerTypes": "exact mapped endpoint/junction profile at both ends",
+    "localDegree": "exact mapped A/B endpoint degree profile after capping high degree",
+    "degreeCap": 6,
+    "parallelPathMultiplicity": "A and B must have identical raw multiplicity before geometry is scored; the structural key carries a capped multiplicity class",
+    "multiplicityCap": 3,
+    "normalizedSpanMeanBinWidth": 0.05,
+    "normalizedSpanDeltaBinWidth": 0.025,
+    "normalizedPathMeanBinWidth": 0.05,
+    "normalizedPathDeltaBinWidth": 0.025,
+    "broadPositionGrid": 3,
+    "graphSize": "floor(log2(geometric-mean center count + 1))",
+    "selfLoop": "exact boolean",
+    "pathLengthIsConditioningNotOutcome": true,
+    "residualGeometryForbiddenFromMatchingKey": ["turnRate", "tortuosity", "pathSha256"]
+  },
+  "residualGeometryFeatures": [
+    {
+      "id": "meanTurnRateMutation",
+      "label": "absolute difference between within-mapped-edge-bucket mean turn rate after structural matching"
+    },
+    {
+      "id": "meanTortuosityMutation",
+      "label": "absolute difference between within-mapped-edge-bucket mean tortuosity after structural matching"
+    }
+  ],
+  "aggregation": {
+    "parallelPathRule": "Do not pair parallel paths by geometry. For a surviving mapped center pair with equal multiplicity, reduce each side to its mean residual feature first.",
+    "pairRule": "Aggregate mapped edge buckets within each observation-pair + structural-key cell before comparing role labels.",
+    "stratumRule": "Within each physical-family + structural-key stratum compare preserved and broken observation pairs by smaller-is-more-conserved rank effect.",
+    "familyRule": "Average supported structural-stratum effects within each physical family pair, then average supported family-pair effects equally."
+  },
+  "discovery": {
+    "trainLane": "train",
+    "minimumPairsPerLabelPerStructuralStratum": 1,
+    "nullIterations": 128,
+    "nullShuffle": "shuffle preserved/broken observation-pair labels within each physical occupant-family pair while preserving the original preserved count",
+    "nullUnit": "observation pair, never edge bucket",
+    "selection": "none; both residual features are predeclared and reported"
+  },
+  "transfer": {
+    "lanes": ["holdout", "control"],
+    "reselectNothing": true,
+    "refitNothing": true,
+    "sameMatchingContract": true,
+    "descriptiveMagnitude": 0.08
+  },
+  "interpretation": {
+    "practicalEffectMagnitude": 0.08,
+    "collapse": "If the Cleveland matched turn-rate effect has absolute magnitude below 0.08, classify the V5 turn-rate counter-signal as collapsed after structural matching and do not treat it as grammar evidence.",
+    "residualConservation": "If the matched effect is at least +0.08, residual path geometry is more conserved in role-preserving pairs beyond the matched wiring scaffold.",
+    "persistentCounterSignal": "If the matched effect is at most -0.08, the counter-direction persists after the predeclared structural conditioning.",
+    "mixedFeatures": "If turn rate and tortuosity separate materially, retain the distinction rather than collapsing path geometry into one grammar feature."
+  },
+  "falsifiers": {
+    "parentDrift": "If the V5 manifest, edge world, projector rows, or role-pair rows fail their frozen hashes, abort.",
+    "v5Reproduction": "If the exact V5 Cleveland turn-rate and tortuosity effects cannot be reproduced to the predeclared rounded tolerance, abort before corrected analysis.",
+    "insufficientSupport": "If structural matching leaves no supported preserved/broken strata, report insufficient matched support rather than infer geometry.",
+    "noResidualSignal": "If corrected geometry is near zero under the practical magnitude rule, remove the V5 geometry counter-signal from the grammar rather than explain it away."
+  },
+  "limits": {
+    "availableFromFrozenV5Packet": ["turnRate", "tortuosity", "pathSteps", "chordPixels", "center kind", "center degree", "center position", "parallel multiplicity"],
+    "notAvailableWithoutReprojection": ["curvatureSequence", "directionSequence", "localWiggleSpectrum"],
+    "pathHashMustNotBeUsedToInferMissingGeometry": true
+  },
+  "custody": {
+    "consumeFrozenV5ArtifactOnly": true,
+    "sourcePixelsMustNotBeDownloaded": true,
+    "topologyMustNotBeReprojected": true,
+    "otherExperimentBranchesMustNotBeReadOrMutated": true,
+    "noProvenance": true,
+    "noStateVocabulary": true,
+    "noTransitionGrammar": true
+  }
+}

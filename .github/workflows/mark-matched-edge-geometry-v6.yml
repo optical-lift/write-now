@@ -1,0 +1,69 @@
+name: Mark Matched Edge Geometry v6
+
+on:
+  pull_request:
+    paths:
+      - "scripts/evaluate-mark-matched-edge-geometry*.py"
+      - "research/mark/discovery-experiments/matched-edge-geometry-v6.protocol.json"
+      - ".github/workflows/mark-matched-edge-geometry-v6.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V5_RUN_ID: 33807154154
+  MARK_V5_PACKET: artifact-staging/v5
+  MARK_MATCH_PROTOCOL: research/mark/discovery-experiments/matched-edge-geometry-v6.protocol.json
+  MARK_MATCH_OUT: artifacts/mark-matched-edge-geometry-v6
+
+jobs:
+  matched-edge-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen downstream analysis
+        run: |
+          python3 -m json.tool "$MARK_MATCH_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/evaluate-mark-matched-edge-geometry.py
+          cat scripts/evaluate-mark-matched-edge-geometry.part{0,1,2,3}.inc.py > /tmp/evaluate-mark-matched-edge-geometry-v6.py
+          python3 -m py_compile /tmp/evaluate-mark-matched-edge-geometry-v6.py
+
+      - name: Install scalable center-correspondence dependency
+        run: python3 -m pip install --disable-pip-version-check scipy
+
+      - name: Download frozen v5 edge world only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/v5
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V5_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Reproduce v5 counter-signal then run matched-edge geometry
+        run: python3 scripts/evaluate-mark-matched-edge-geometry.py
+
+      - name: Publish frozen result in workflow summary
+        run: |
+          cat "$MARK_MATCH_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish frozen result on stacked PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_MATCH_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen matched-edge packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-matched-edge-geometry-v6-frozen
+          path: |
+            artifacts/mark-matched-edge-geometry-v6/**
+          if-no-files-found: error
+          retention-days: 30
