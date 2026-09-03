@@ -1,0 +1,70 @@
+{
+  "schema": "mark_blind_discovery_protocol_v1",
+  "experimentId": "mark:blind-discovery:v1",
+  "phase": "blind_scientific_discovery_before_provenance_rejoin",
+  "question": "Do anonymous relational context-to-outcome rules learned from one sealed institutional lane transfer into an independently sealed institutional holdout beyond structure-preserving null worlds and beyond a heterogeneous visual control lane?",
+  "frozenCompilerContract": {
+    "compiler": "mark-sparse-compiler-v7",
+    "wholeWorldGraphMaterialized": false,
+    "grammarRowsMaterialized": false,
+    "sourceLocalAccumulation": true,
+    "diskBackedSufficientStatistics": true
+  },
+  "evaluation": {
+    "nullIterations": 16,
+    "minimumTrainSourceObjectsPerRule": 3,
+    "primaryRuleStatistic": "holdout_accuracy_lift_over_rule_local_null_mean",
+    "controlPenalty": "subtract_positive_control_accuracy_lift_only",
+    "specificityLift": "holdoutLift - max(0, controlLift)",
+    "nullExtremeness": "report count of null iterations whose rule accuracy is greater than or equal to observed; do not convert 16 null worlds into a significance claim"
+  },
+  "ranking": {
+    "preRegistered": true,
+    "order": [
+      "specificityLift descending",
+      "holdoutLift descending",
+      "holdout predicted-outcome distinct-source support descending",
+      "controlLift ascending",
+      "context ascending",
+      "predictedOutcome ascending"
+    ],
+    "allTrainDerivedRulesMustBeFrozen": true,
+    "noPostHocRuleDeletion": true
+  },
+  "candidateTiers": {
+    "A": "holdout support >= 3 sources, holdout lift > 0, specificity lift > 0, and observed holdout accuracy beats every preregistered null iteration",
+    "B": "holdout support >= 3 sources, holdout lift > 0, and specificity lift > 0",
+    "C": "holdout support >= 3 sources and holdout lift > 0",
+    "exploratory": "all other train-derived rules; retained in the frozen packet rather than discarded"
+  },
+  "blindnessContract": {
+    "permittedDuringDiscovery": [
+      "opaque source ids",
+      "opaque observation ids",
+      "train holdout or control lane",
+      "anonymous relational contexts and outcomes",
+      "source support counts",
+      "observed multiplicities",
+      "structure-preserving null statistics"
+    ],
+    "forbiddenDuringDiscovery": [
+      "institution",
+      "catalog identity",
+      "object category",
+      "culture",
+      "language",
+      "geography",
+      "chronology",
+      "sign name",
+      "reading",
+      "meaning",
+      "scholarly interpretation"
+    ]
+  },
+  "rejoinContract": {
+    "provenanceMayReopenOnlyAfterBlindPacketHashIsWritten": true,
+    "blindRankingMayNotChangeAfterRejoin": true,
+    "rejoinRevealsSourceContextNotSemanticMeaning": true,
+    "semanticClaimsAuthorizedByThisExperiment": false
+  }
+}
