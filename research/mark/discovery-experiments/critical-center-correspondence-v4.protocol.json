@@ -29,84 +29,30 @@
   },
   "correspondence": {
     "coordinateSystem": "center x/y normalized inside each frozen observation region",
-    "vertexKinds": [
-      "ENDPOINT",
-      "JUNCTION"
-    ],
-    "matching": "minimum-total-spatial-distance one-to-one assignment performed independently within vertex kind; smaller kind-set is matched completely and surplus vertices remain unmatched",
-    "transformSearch": [
-      "IDENTITY",
-      "ROT90",
-      "ROT180",
-      "ROT270",
-      "MIRROR_X",
-      "MIRROR_Y",
-      "MIRROR_DIAGONAL",
-      "MIRROR_ANTIDIAGONAL"
-    ],
-    "transformSelection": "lowest mean matched spatial displacement across both kinds, ties by listed order; no role label used",
+    "vertexKinds": ["ENDPOINT", "JUNCTION"],
+    "transformSearch": ["IDENTITY", "ROT90", "ROT180", "ROT270", "MIRROR_X", "MIRROR_Y", "MIRROR_DIAGONAL", "MIRROR_ANTIDIAGONAL"],
+    "transformSelection": "minimum kind-weighted symmetric nearest-center displacement under a cKDTree, ties by listed transform order; no role label used",
+    "oneToOneMutationMatching": "after transform freeze, independently within ENDPOINT and JUNCTION, construct each smaller-set center's eight nearest opposite-set candidates by cKDTree, globally sort candidate edges by distance then center index, greedily accept edges whose endpoints are both unused",
+    "greedyNearestCandidatesPerCenter": 8,
+    "scalabilityReason": "selected observations range to tens of thousands of critical centers; cubic full Hungarian assignment is inappropriate and is not required to test local vertex invariance",
     "reportIdentityAndBestD4": true,
-    "forbiddenClaims": [
-      "explicit center-to-center graph edge correspondence",
-      "literal loop opening or closure",
-      "stroke-path insertion identity",
-      "semantic glyph identity"
-    ],
-    "reason": "sealed CENTER events retain center coordinates, kind and arm histogram but not target center IDs for each arm"
+    "forbiddenClaims": ["globally optimal bipartite vertex assignment", "explicit center-to-center graph edge correspondence", "literal loop opening or closure", "stroke-path insertion identity", "semantic glyph identity"],
+    "evidenceLimit": "sealed CENTER events retain center coordinates, kind and arm histogram but not target center IDs for each arm"
   },
   "editObservables": [
-    {
-      "id": "criticalCenterBirthDeathFraction",
-      "label": "fractional surplus critical centers after same-kind correspondence"
-    },
-    {
-      "id": "endpointBirthDeathFraction",
-      "label": "fractional unmatched endpoint centers"
-    },
-    {
-      "id": "junctionBirthDeathFraction",
-      "label": "fractional unmatched junction centers"
-    },
-    {
-      "id": "identityMeanMatchedDisplacement",
-      "label": "mean matched-center displacement without orientation normalization"
-    },
-    {
-      "id": "bestD4MeanMatchedDisplacement",
-      "label": "mean matched-center displacement after blind D4 transform selection"
-    },
-    {
-      "id": "orientationNormalizationGain",
-      "label": "identity displacement minus best-D4 displacement"
-    },
-    {
-      "id": "nonIdentityTransform",
-      "label": "whether best blind D4 alignment is non-identity"
-    },
-    {
-      "id": "reflectionTransform",
-      "label": "whether best blind D4 alignment uses a reflection"
-    },
-    {
-      "id": "endpointMeanDegreeMutation",
-      "label": "mean absolute degree change among matched endpoints"
-    },
-    {
-      "id": "junctionMeanDegreeMutation",
-      "label": "mean absolute degree change among matched junctions"
-    },
-    {
-      "id": "endpointMeanArmMutation",
-      "label": "mean normalized arm-histogram L1 change among matched endpoints"
-    },
-    {
-      "id": "junctionMeanArmMutation",
-      "label": "mean normalized arm-histogram L1 change among matched junctions"
-    },
-    {
-      "id": "allMatchedMeanArmMutation",
-      "label": "mean normalized arm-histogram L1 change among all matched critical centers"
-    }
+    {"id": "criticalCenterBirthDeathFraction", "label": "fractional surplus critical centers by kind"},
+    {"id": "endpointBirthDeathFraction", "label": "fractional unmatched endpoint-center count"},
+    {"id": "junctionBirthDeathFraction", "label": "fractional unmatched junction-center count"},
+    {"id": "identitySymmetricNearestDisplacement", "label": "symmetric nearest-center displacement without orientation normalization"},
+    {"id": "bestD4SymmetricNearestDisplacement", "label": "symmetric nearest-center displacement after blind D4 transform selection"},
+    {"id": "orientationNormalizationGain", "label": "identity symmetric-nearest displacement minus best-D4 displacement"},
+    {"id": "nonIdentityTransform", "label": "whether best blind D4 alignment is non-identity"},
+    {"id": "reflectionTransform", "label": "whether best blind D4 alignment uses a reflection"},
+    {"id": "endpointMeanDegreeMutation", "label": "mean absolute degree change among sparse one-to-one matched endpoints"},
+    {"id": "junctionMeanDegreeMutation", "label": "mean absolute degree change among sparse one-to-one matched junctions"},
+    {"id": "endpointMeanArmMutation", "label": "mean normalized arm-histogram L1 change among sparse one-to-one matched endpoints"},
+    {"id": "junctionMeanArmMutation", "label": "mean normalized arm-histogram L1 change among sparse one-to-one matched junctions"},
+    {"id": "allMatchedMeanArmMutation", "label": "mean normalized arm-histogram L1 change among all sparse one-to-one matched critical centers"}
   ],
   "trainDiscovery": {
     "lane": "train",
@@ -117,10 +63,7 @@
     "minimumPairCoveragePerEditAtom": 0.75
   },
   "transfer": {
-    "lanes": [
-      "holdout",
-      "control"
-    ],
+    "lanes": ["holdout", "control"],
     "reselectNothing": true,
     "descriptivePass": "same balanced-effect direction in train, holdout and control, with absolute holdout and control effect each at least 0.08"
   },

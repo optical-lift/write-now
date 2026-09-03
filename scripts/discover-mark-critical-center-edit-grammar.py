@@ -3,6 +3,8 @@ import hashlib, json, math, os, statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from scipy.spatial import cKDTree
+
 protocol_path=Path(os.environ.get("MARK_VERTEX_PROTOCOL","research/mark/discovery-experiments/critical-center-correspondence-v4.protocol.json"))
 manifest_dir=Path(os.environ.get("MARK_VERTEX_PAIR_MANIFEST","artifacts/mark-vertex-pair-manifest-v4"))
 world_dir=Path(os.environ.get("MARK_VERTEX_WORLD","artifacts/mark-critical-center-world-v4"))
@@ -20,41 +22,33 @@ def transform_point(u,v,name):
     if name=="MIRROR_DIAGONAL": return v,u
     if name=="MIRROR_ANTIDIAGONAL": return 1.0-v,1.0-u
     raise RuntimeError(name)
-def euclid(a,b): return math.hypot(a[0]-b[0],a[1]-b[1])
-def hungarian(cost):
-    n=len(cost)
-    if n==0:return []
-    m=len(cost[0])
-    if n>m:raise RuntimeError("hungarian requires rows<=columns")
-    u=[0.0]*(n+1);v=[0.0]*(m+1);p=[0]*(m+1);way=[0]*(m+1)
-    for i in range(1,n+1):
-        p[0]=i;j0=0;minv=[float("inf")]*(m+1);used=[False]*(m+1)
-        while True:
-            used[j0]=True;i0=p[j0];delta=float("inf");j1=0
-            for j in range(1,m+1):
-                if used[j]:continue
-                cur=cost[i0-1][j-1]-u[i0]-v[j]
-                if cur<minv[j]-1e-15:minv[j]=cur;way[j]=j0
-                if minv[j]<delta-1e-15 or (abs(minv[j]-delta)<=1e-15 and (j1==0 or j<j1)):delta=minv[j];j1=j
-            for j in range(m+1):
-                if used[j]:u[p[j]]+=delta;v[j]-=delta
-                else:minv[j]-=delta
-            j0=j1
-            if p[j0]==0:break
-        while True:
-            j1=way[j0];p[j0]=p[j1];j0=j1
-            if j0==0:break
-    assignment=[None]*n
-    for j in range(1,m+1):
-        if p[j]!=0:assignment[p[j]-1]=j-1
-    return [(i,j) for i,j in enumerate(assignment) if j is not None]
-def match_kind(a,b,transform):
+def transformed_points(rows,transform):
+    return [transform_point(float(x["u"]),float(x["v"]),transform) for x in rows]
+def symmetric_nearest_distance(a,b,transform):
+    if not a or not b:return None
+    A=transformed_points(a,transform);B=[(float(x["u"]),float(x["v"])) for x in b]
+    ta=cKDTree(A);tb=cKDTree(B)
+    dab=tb.query(A,k=1,workers=1)[0];dba=ta.query(B,k=1,workers=1)[0]
+    return (float(dab.sum())+float(dba.sum()))/(len(A)+len(B))
+def sparse_greedy_match(a,b,transform,k_candidates):
     if not a or not b:return []
-    apos=[transform_point(x["u"],x["v"],transform) for x in a];bpos=[(x["u"],x["v"]) for x in b]
-    if len(a)<=len(b):
-        return hungarian([[euclid(apos[i],bpos[j]) for j in range(len(b))] for i in range(len(a))])
-    rev=hungarian([[euclid(bpos[j],apos[i]) for i in range(len(a))] for j in range(len(b))])
-    return [(ai,bj) for bj,ai in rev]
+    A=transformed_points(a,transform);B=[(float(x["u"]),float(x["v"])) for x in b]
+    swapped=False
+    left,right=A,B
+    if len(left)>len(right):left,right=right,left;swapped=True
+    k=max(1,min(int(k_candidates),len(right)))
+    tree=cKDTree(right);dists,idxs=tree.query(left,k=k,workers=1)
+    if k==1:
+        dists=[[float(x)] for x in dists];idxs=[[int(x)] for x in idxs]
+    edges=[]
+    for i in range(len(left)):
+        for q in range(k):edges.append((float(dists[i][q]),i,int(idxs[i][q])))
+    edges.sort(key=lambda x:(x[0],x[1],x[2]));used_left=set();used_right=set();pairs=[]
+    for d,i,j in edges:
+        if i in used_left or j in used_right:continue
+        used_left.add(i);used_right.add(j)
+        pairs.append((j,i,d) if swapped else (i,j,d))
+    pairs.sort(key=lambda x:(x[0],x[1],x[2]));return pairs
 def arm_norm(c):
     d=max(1,int(c["degree"]));return {k:float(v)/d for k,v in c.get("armHistogram",{}).items()}
 def arm_l1(a,b):
@@ -62,46 +56,45 @@ def arm_l1(a,b):
 def mean_or_none(xs):return statistics.mean(xs) if xs else None
 TRANSFORMS=["IDENTITY","ROT90","ROT180","ROT270","MIRROR_X","MIRROR_Y","MIRROR_DIAGONAL","MIRROR_ANTIDIAGONAL"]
 REFLECTIONS={"MIRROR_X","MIRROR_Y","MIRROR_DIAGONAL","MIRROR_ANTIDIAGONAL"}
-def alignment(A,B,transform):
+def pair_metrics(A,B,k_candidates):
     byA=defaultdict(list);byB=defaultdict(list)
     for c in A:byA[c["kind"]].append(c)
     for c in B:byB[c["kind"]].append(c)
-    pairs=[]
+    scores=[]
+    for order,t in enumerate(TRANSFORMS):
+        numer=0.0;denom=0
+        for kind in ("ENDPOINT","JUNCTION"):
+            aa=byA[kind];bb=byB[kind]
+            d=symmetric_nearest_distance(aa,bb,t)
+            if d is not None:
+                w=len(aa)+len(bb);numer+=d*w;denom+=w
+        scores.append((float("inf") if denom==0 else numer/denom,order,t))
+    best=min(scores)[2]
+    identity_distance=next(x[0] for x in scores if x[2]=="IDENTITY");best_distance=min(scores)[0]
+    matched=defaultdict(list);matched_total=0
     for kind in ("ENDPOINT","JUNCTION"):
         aa=byA[kind];bb=byB[kind]
-        for ia,ib in match_kind(aa,bb,transform):
-            pa=transform_point(aa[ia]["u"],aa[ia]["v"],transform);pb=(bb[ib]["u"],bb[ib]["v"])
-            pairs.append((kind,aa[ia],bb[ib],euclid(pa,pb)))
-    return pairs
-def pair_metrics(A,B):
-    alignments={t:alignment(A,B,t) for t in TRANSFORMS}
-    def disp(ps):return statistics.mean([x[3] for x in ps]) if ps else None
-    scored=[]
-    for order,t in enumerate(TRANSFORMS):
-        d=disp(alignments[t]);scored.append((float("inf") if d is None else d,order,t))
-    best=min(scored)[2];id_pairs=alignments["IDENTITY"];best_pairs=alignments[best]
+        for ia,ib,d in sparse_greedy_match(aa,bb,best,k_candidates):
+            matched[kind].append((aa[ia],bb[ib],d));matched_total+=1
     countsA=Counter(c["kind"] for c in A);countsB=Counter(c["kind"] for c in B)
-    matched=defaultdict(list)
-    for kind,a,b,d in best_pairs:matched[kind].append((a,b,d))
     def degree_mut(kind):return mean_or_none([abs(int(a["degree"])-int(b["degree"])) for a,b,_ in matched[kind]])
     def arm_mut(kind):return mean_or_none([arm_l1(a,b) for a,b,_ in matched[kind]])
-    identity_disp=disp(id_pairs);best_disp=disp(best_pairs)
     endpoint_total=max(1,countsA["ENDPOINT"]+countsB["ENDPOINT"]);junction_total=max(1,countsA["JUNCTION"]+countsB["JUNCTION"]);total=max(1,len(A)+len(B))
     return {
       "criticalCenterBirthDeathFraction":(abs(countsA["ENDPOINT"]-countsB["ENDPOINT"])+abs(countsA["JUNCTION"]-countsB["JUNCTION"]))/total,
       "endpointBirthDeathFraction":abs(countsA["ENDPOINT"]-countsB["ENDPOINT"])/endpoint_total,
       "junctionBirthDeathFraction":abs(countsA["JUNCTION"]-countsB["JUNCTION"])/junction_total,
-      "identityMeanMatchedDisplacement":identity_disp,
-      "bestD4MeanMatchedDisplacement":best_disp,
-      "orientationNormalizationGain":None if identity_disp is None or best_disp is None else identity_disp-best_disp,
+      "identitySymmetricNearestDisplacement":None if math.isinf(identity_distance) else identity_distance,
+      "bestD4SymmetricNearestDisplacement":None if math.isinf(best_distance) else best_distance,
+      "orientationNormalizationGain":None if math.isinf(identity_distance) or math.isinf(best_distance) else identity_distance-best_distance,
       "nonIdentityTransform":0.0 if best=="IDENTITY" else 1.0,
       "reflectionTransform":1.0 if best in REFLECTIONS else 0.0,
       "endpointMeanDegreeMutation":degree_mut("ENDPOINT"),
       "junctionMeanDegreeMutation":degree_mut("JUNCTION"),
       "endpointMeanArmMutation":arm_mut("ENDPOINT"),
       "junctionMeanArmMutation":arm_mut("JUNCTION"),
-      "allMatchedMeanArmMutation":mean_or_none([arm_l1(a,b) for _,a,b,_ in best_pairs]),
-      "_bestTransform":best,"_matchedCenters":len(best_pairs),"_centersA":len(A),"_centersB":len(B)
+      "allMatchedMeanArmMutation":mean_or_none([arm_l1(a,b) for kind in ("ENDPOINT","JUNCTION") for a,b,_ in matched[kind]]),
+      "_bestTransform":best,"_matchedCenters":matched_total,"_centersA":len(A),"_centersB":len(B)
     }
 def auc_smaller(pos,neg):
     if not pos or not neg:return None
@@ -139,10 +132,10 @@ for raw in row_bytes.splitlines():
 pair_bytes=(manifest_dir/"role-pair-labels.jsonl").read_bytes()
 if hashlib.sha256(pair_bytes).hexdigest()!=manifest["parentRolePairRowsSha256"]:raise RuntimeError("pair row SHA mismatch")
 pairs=[json.loads(x) for x in pair_bytes.splitlines() if x.strip()]
-features=[x["id"] for x in protocol["editObservables"]];labels={x["id"]:x["label"] for x in protocol["editObservables"]}
+features=[x["id"] for x in protocol["editObservables"]];labels={x["id"]:x["label"] for x in protocol["editObservables"]};k_candidates=int(protocol["correspondence"]["greedyNearestCandidatesPerCenter"])
 edit_rows=[];transform_counts=defaultdict(lambda:defaultdict(Counter))
 for r in pairs:
-    metrics=pair_metrics(obs[r["observationA"]]["centers"],obs[r["observationB"]]["centers"]);best=metrics.pop("_bestTransform")
+    metrics=pair_metrics(obs[r["observationA"]]["centers"],obs[r["observationB"]]["centers"],k_candidates);best=metrics.pop("_bestTransform")
     transform_counts[r["lane"]][r["label"]][best]+=1;edit_rows.append({**r,"editMagnitudes":metrics,"bestD4Transform":best})
 train=[r for r in edit_rows if r["lane"]=="train"];min_cov=float(protocol["trainDiscovery"]["minimumPairCoveragePerEditAtom"])
 observed={};eligible=[]
@@ -162,7 +155,7 @@ for it in range(iterations):
 for f in eligible:
     obs_effect=observed[f]["balancedEffect"];vals=nulls[f];observed[f]["null"]={"iterations":iterations,"mean":statistics.mean(vals),"min":min(vals),"max":max(vals),"absoluteNullAtLeastObserved":sum(abs(x)>=abs(obs_effect) for x in vals),"beatsAllNullsByAbsoluteEffect":all(abs(obs_effect)>abs(x) for x in vals)}
 max_atoms=int(protocol["trainDiscovery"]["maximumSelectedEditAtoms"]);selected=sorted(eligible,key=lambda f:(-abs(observed[f]["balancedEffect"]),f))[:max_atoms]
-core={"schema":"mark_critical_center_edit_grammar_v4","experimentId":protocol["experimentId"],"vertexPairManifestSha256":msha,"criticalCenterWorldSha256":wsha,"parentRolePairFreezeSha256":manifest["parentRolePairFreezeSha256"],"provenanceAvailableDuringDiscovery":False,"trainPairs":len(train),"editRows":len(edit_rows),"effectSemantics":"positive = edit value is smaller in role-preserving pairs; negative = edit value is larger/enriched in role-preserving pairs","selectedEditAtoms":[observed[f] for f in selected],"allTrainEditAtomEffects":[observed[f] for f in features],"transformCountsByLaneAndLabel":{lane:{label:dict(sorted(c.items())) for label,c in labels2.items()} for lane,labels2 in transform_counts.items()},"contract":{"alignmentUsesNoRoleLabel":True,"matchingWithinCriticalCenterKindOnly":True,"editSelectionTrainOnly":True,"nullShufflesRoleLabelsWithinPhysicalFamilyPair":True,"holdoutAndControlUnavailableToSelection":True,"selectedReplayExactToFrozenFullWorldAggregates":True,"explicitEdgeCorrespondenceClaim":False,"noStateVocabularyConsumed":True,"noTransitionGrammarConsumed":True,"noProvenanceConsumed":True}}
+core={"schema":"mark_critical_center_edit_grammar_v4","experimentId":protocol["experimentId"],"vertexPairManifestSha256":msha,"criticalCenterWorldSha256":wsha,"parentRolePairFreezeSha256":manifest["parentRolePairFreezeSha256"],"provenanceAvailableDuringDiscovery":False,"trainPairs":len(train),"editRows":len(edit_rows),"effectSemantics":"positive = edit value is smaller in role-preserving pairs; negative = edit value is larger/enriched in role-preserving pairs","selectedEditAtoms":[observed[f] for f in selected],"allTrainEditAtomEffects":[observed[f] for f in features],"transformCountsByLaneAndLabel":{lane:{label:dict(sorted(c.items())) for label,c in labels2.items()} for lane,labels2 in transform_counts.items()},"contract":{"alignmentUsesNoRoleLabel":True,"transformSelectionUsesSymmetricNearestDistance":True,"oneToOneMutationCorrespondenceUsesSparseGreedyNearestCandidates":True,"matchingWithinCriticalCenterKindOnly":True,"editSelectionTrainOnly":True,"nullShufflesRoleLabelsWithinPhysicalFamilyPair":True,"holdoutAndControlUnavailableToSelection":True,"selectedReplayExactToFrozenFullWorldAggregates":True,"explicitEdgeCorrespondenceClaim":False,"noStateVocabularyConsumed":True,"noTransitionGrammarConsumed":True,"noProvenanceConsumed":True}}
 digest=canonical_sha(core);packet={**core,"criticalCenterEditGrammarSha256":digest}
 out_dir.mkdir(parents=True,exist_ok=True);(out_dir/"critical-center-edit-grammar.json").write_text(json.dumps(packet,indent=2)+"\n")
 with (out_dir/"critical-center-pair-edits.jsonl").open("w",encoding="utf-8") as h:
