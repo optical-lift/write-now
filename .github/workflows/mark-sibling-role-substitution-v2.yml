@@ -1,0 +1,72 @@
+name: Mark Sibling Role Substitution v2
+
+on:
+  pull_request:
+    paths:
+      - "scripts/discover-mark-sibling-role-vocabulary.py"
+      - "scripts/evaluate-mark-sibling-role-substitution.py"
+      - "research/mark/discovery-experiments/sibling-role-substitution-v2.protocol.json"
+      - ".github/workflows/mark-sibling-role-substitution-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_TOPOLOGY_CACHE_RUN_ID: 33791958187
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_SIBLING_ROLE_PROTOCOL: research/mark/discovery-experiments/sibling-role-substitution-v2.protocol.json
+
+jobs:
+  blind-sibling-role-substitution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate protocol and blind analysis
+        run: |
+          python3 -m json.tool "$MARK_SIBLING_ROLE_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-sibling-role-vocabulary.py scripts/evaluate-mark-sibling-role-substitution.py
+      - name: Download exact frozen blind topology cache
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/topology-cache
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_TOPOLOGY_CACHE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download frozen parent custody independently
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/parent-atlas
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Freeze continuous masked sibling roles and multi-family occupants
+        env:
+          MARK_TOPOLOGY_ATLAS: artifact-staging/topology-cache/topology-atlas
+          MARK_PARENT_ATLAS: artifact-staging/parent-atlas
+          MARK_SIBLING_ROLE_VOCAB_OUT: artifacts/mark-sibling-role-vocabulary-v2
+        run: python3 scripts/discover-mark-sibling-role-vocabulary.py
+      - name: Ask which physically different occupants share the same sibling roles
+        env:
+          MARK_SIBLING_ROLE_VOCAB: artifacts/mark-sibling-role-vocabulary-v2
+          MARK_SIBLING_ROLE_OUT: artifacts/mark-sibling-role-substitution-v2
+        run: python3 scripts/evaluate-mark-sibling-role-substitution.py
+      - name: Publish blind result
+        run: |
+          echo '### Mark sibling-role substitution v2 — provenance sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-sibling-role-substitution-v2/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind sibling-role packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-sibling-role-substitution-v2-frozen
+          path: |
+            artifacts/mark-sibling-role-vocabulary-v2/**
+            artifacts/mark-sibling-role-substitution-v2/**
+          if-no-files-found: error
+          retention-days: 30

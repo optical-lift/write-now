@@ -1,0 +1,72 @@
+{
+  "schema": "mark_sibling_role_substitution_protocol_v2",
+  "experimentId": "mark:sibling-role-substitution:v2",
+  "question": "Among observations with at least two non-overlapping sibling peers, which physically different anonymous occupant families repeatedly appear in nearly the same masked relational role among siblings across independent sources?",
+  "parentEvidence": {
+    "topologyCacheRunId": 33791958187,
+    "topologyCacheArtifact": "mark-state-operator-discovery-v1-frozen",
+    "sourceRuleAtlasRunId": 33755743472,
+    "frozenAtlasArtifact": "mark-source-rule-atlas-v1-frozen"
+  },
+  "eligibility": {
+    "minimumDisjointSiblingPeers": 2,
+    "minimumTrainEligibleObservations": 250
+  },
+  "maskedRoleContext": {
+    "geometryOnlyPrimary": true,
+    "neighborTopologySecondary": true,
+    "neighborTopology": {
+      "minimumTrainTargetSupport": 25,
+      "maximumBaseFeatures": 8
+    },
+    "excluded": [
+      "target topology",
+      "parent topology",
+      "ancestor topology",
+      "overlapping sibling topology",
+      "sibling count as a role feature",
+      "local state IDs",
+      "transition grammar",
+      "provenance"
+    ]
+  },
+  "robustStandardization": {
+    "trainingLaneOnly": true,
+    "zClip": 3.0,
+    "reason": "prevent rare physical outliers from becoming artificial occupant families or dominating continuous context distance"
+  },
+  "occupantDiscovery": {
+    "trainingLaneOnly": true,
+    "minimumTrainObservationSupport": 25,
+    "maximumFeatures": 24
+  },
+  "occupantClustering": {
+    "candidateK": [4,5,6,7,8],
+    "minimumClusterObservations": 25,
+    "minimumClusterDistinctSources": 8,
+    "silhouetteSampleLimit": 512,
+    "selection": "discard the 5% most extreme clipped train topology vectors from centroid discovery only, then choose highest deterministic sampled silhouette among supported multi-family solutions; lower k breaks ties; all observations are assigned afterward",
+    "coreTrainingFraction": 0.95,
+    "minimumCoreTrainingObservations": 250
+  },
+  "substitutionTest": {
+    "minimumTrainDistinctSourcesPerOccupant": 8,
+    "physicalDifferenceGate": "occupant centroid distance at or above median supported-family pair distance",
+    "primaryContextMetric": "symmetric median nearest-neighbor masked-role distance with every match forced across sourceGroupId",
+    "withinFamilyBaseline": "same metric within each physical family with self and same-source matches forbidden",
+    "maximumFrozenCandidatePairs": 12,
+    "trainSelection": "smallest geometry cross-family distance ratio to pooled within-family baseline, then augmented-context ratio, among physically separated supported families",
+    "transfer": "same physical families and frozen train standardization evaluated unchanged in holdout and control"
+  },
+  "falsifiers": {
+    "coarseGeometryOnly": "If a pair matches in geometry but not when non-overlapping sibling topology is included, simple spatial role is insufficient.",
+    "noCrossSourceMatch": "If physically different families do not approach their own within-family masked-context spread across independent sources, substitution is unsupported.",
+    "transferFailure": "If train-selected pairs do not remain unusually close in both Bavaria and LOC, the apparent sibling-role substitution is not transferable."
+  },
+  "custody": {
+    "consumeOnlyFrozenBlindTopology": true,
+    "verifyTopologyAgainstFrozenSourceRuleAtlasCustody": true,
+    "freezeRoleVectorsAndOccupantFamiliesBeforePairEvaluation": true,
+    "freezeSubstitutionShaBeforeContextDownload": true
+  }
+}
