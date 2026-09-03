@@ -1,0 +1,97 @@
+name: Mark Relational State Discovery v1
+
+on:
+  pull_request:
+    paths:
+      - "scripts/discover-mark-relational-states.py"
+      - "scripts/rejoin-mark-relational-states.py"
+      - "research/mark/discovery-experiments/relational-state-discovery-v1.protocol.json"
+      - ".github/workflows/mark-relational-state-discovery-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_RELATIONAL_STATE_PROTOCOL: research/mark/discovery-experiments/relational-state-discovery-v1.protocol.json
+
+jobs:
+  blind-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate discovery protocol and scripts
+        run: |
+          python3 -m json.tool "$MARK_RELATIONAL_STATE_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-relational-states.py scripts/rejoin-mark-relational-states.py
+      - name: Download the already-frozen source-rule atlas only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/blind-atlas
+          repository: ${{ github.repository }}
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Discover signed states, construction regimes, and structural twins while provenance is sealed
+        env:
+          MARK_SOURCE_RULE_ATLAS: artifact-staging/blind-atlas/source-rule-atlas
+          MARK_BLIND_DISCOVERY_PACKET: artifact-staging/blind-atlas/blind-discovery/blind-discovery.json
+          MARK_RELATIONAL_STATE_OUT: artifacts/mark-relational-state-discovery-v1
+        run: python3 scripts/discover-mark-relational-states.py
+      - name: Publish blind discovery summary
+        shell: bash
+        run: |
+          echo '### Mark relational state discovery v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-relational-state-discovery-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind relational-state discovery
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-relational-state-discovery-v1-frozen
+          path: artifacts/mark-relational-state-discovery-v1/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: blind-discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen blind relational-state discovery
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-relational-state-discovery-v1-frozen
+          path: artifact-staging/blind-discovery
+      - name: Download parent contextual custody only after the new blind products are frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-custody
+          path: artifact-staging/context-custody
+          repository: ${{ github.repository }}
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Rejoin provenance without changing states, regimes, or twin ranks
+        env:
+          MARK_RELATIONAL_STATE_BLIND: artifact-staging/blind-discovery
+          MARK_HARVEST_REJOIN: artifact-staging/context-custody/mark-harvest-rejoin-v1/mark-harvest-custody-rejoin-v1.json
+          MARK_RELATIONAL_STATE_REJOIN_OUT: artifacts/mark-relational-state-context-v1
+        run: python3 scripts/rejoin-mark-relational-states.py
+      - name: Publish contextual rejoin summary
+        shell: bash
+        run: |
+          echo '### Mark relational state discovery v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-relational-state-context-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload contextual rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-relational-state-discovery-v1-context-rejoin
+          path: artifacts/mark-relational-state-context-v1/**
+          if-no-files-found: error
+          retention-days: 30
