@@ -10,6 +10,7 @@ on:
       - "scripts/expand-mark-open-access-feed.mjs"
       - "scripts/expand-mark-iiif-feed.mjs"
       - "scripts/compose-mark-real-corpus-challenge.mjs"
+      - "scripts/rasterize-mark-ci-fixtures.mjs"
       - "research/mark/harvest-feeds/**"
       - "research/mark/harvest-manifests/v5-fixture-**"
       - "research/mark/feed-fixtures/v5/**"
@@ -39,6 +40,7 @@ jobs:
           rustc --version
           cargo --version
           node --check scripts/assert-mark-sparse-compiler-v7.mjs
+          node --check scripts/rasterize-mark-ci-fixtures.mjs
           cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
       - name: Expand live heterogeneous source feeds
         if: github.event_name == 'workflow_dispatch'
@@ -46,11 +48,17 @@ jobs:
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/cleveland-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-cleveland node scripts/expand-mark-open-access-feed.mjs
           MARK_IIIF_FEED_REQUEST=research/mark/harvest-feeds/bsb-iiif-holdout.v1.json MARK_IIIF_FEED_OUT=artifacts/v7-feed-bsb node scripts/expand-mark-iiif-feed.mjs
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-loc node scripts/expand-mark-open-access-feed.mjs
+      - name: Rasterize synthetic custody-safe fixtures for Rust
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_FIXTURE_MANIFESTS: research/mark/harvest-manifests/v5-fixture-train-a.v1.json,research/mark/harvest-manifests/v5-fixture-train-b.v1.json,research/mark/harvest-manifests/v5-fixture-holdout.v1.json,research/mark/harvest-manifests/v5-fixture-control.v1.json
+          MARK_FIXTURE_RASTER_OUT: artifacts/mark-v7-ci-raster-fixtures
+        run: node scripts/rasterize-mark-ci-fixtures.mjs
       - name: Compose synthetic custody-safe CI packet
         if: github.event_name != 'workflow_dispatch'
         env:
           MARK_CHALLENGE_ID: mark:v7-fixture:sparse-relational-compiler
-          MARK_CHALLENGE_MANIFESTS: research/mark/harvest-manifests/v5-fixture-train-a.v1.json,research/mark/harvest-manifests/v5-fixture-train-b.v1.json,research/mark/harvest-manifests/v5-fixture-holdout.v1.json,research/mark/harvest-manifests/v5-fixture-control.v1.json
+          MARK_CHALLENGE_MANIFESTS: artifacts/mark-v7-ci-raster-fixtures/v5-fixture-train-a.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-train-b.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-holdout.v1.json,artifacts/mark-v7-ci-raster-fixtures/v5-fixture-control.v1.json
         run: node scripts/compose-mark-real-corpus-challenge.mjs
       - name: Compose live sealed transfer packet
         if: github.event_name == 'workflow_dispatch'
