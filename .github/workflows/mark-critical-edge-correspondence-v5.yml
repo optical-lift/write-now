@@ -1,0 +1,139 @@
+name: Mark Critical Edge Correspondence v5
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/src/bin/mark-critical-edge-atlas.rs"
+      - "scripts/freeze-mark-edge-pair-manifest.py"
+      - "scripts/build-mark-edge-subset-input.py"
+      - "scripts/assert-mark-critical-edge-world.py"
+      - "scripts/discover-mark-critical-edge-grammar.py"
+      - "scripts/evaluate-mark-critical-edge-correspondence.py"
+      - "research/mark/discovery-experiments/critical-edge-correspondence-v5.protocol.json"
+      - ".github/workflows/mark-critical-edge-correspondence-v5.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_V4_RUN_ID: 33802582222
+  MARK_SEALED_EVIDENCE_RUN_ID: 33755743472
+  MARK_EDGE_PROTOCOL: research/mark/discovery-experiments/critical-edge-correspondence-v5.protocol.json
+  MARK_EDGE_PAIR_MANIFEST: artifacts/mark-edge-pair-manifest-v5
+  MARK_EDGE_SUBSET_CUSTODY: artifacts/mark-edge-subset-custody-v5/subset-custody.json
+  MARK_EDGE_PROJECTOR_OUT: artifacts/mark-critical-edge-projector-v5
+  MARK_EDGE_WORLD_OUT: artifacts/mark-critical-edge-world-v5
+  MARK_EDGE_GRAMMAR_OUT: artifacts/mark-critical-edge-grammar-v5
+  MARK_EDGE_TRANSFER_OUT: artifacts/mark-critical-edge-correspondence-v5
+  MARK_V7_MAX_RSS_KB: 786432
+
+jobs:
+  blind-critical-edge-correspondence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate v5 protocol, projector and analysis
+        run: |
+          python3 -m json.tool "$MARK_EDGE_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/freeze-mark-edge-pair-manifest.py \
+            scripts/build-mark-edge-subset-input.py \
+            scripts/assert-mark-critical-edge-world.py \
+            scripts/discover-mark-critical-edge-grammar.py \
+            scripts/evaluate-mark-critical-edge-correspondence.py
+          cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-critical-edge-atlas
+
+      - name: Install scalable center-correspondence dependency
+        run: python3 -m pip install --disable-pip-version-check scipy
+
+      - name: Download frozen v4 pair and center world before source pixels
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-center-correspondence-v4-frozen
+          path: artifact-staging/v4
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V4_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Freeze v5 graph pair manifest before source pixels exist
+        env:
+          MARK_V4_PACKET: artifact-staging/v4
+          MARK_EDGE_PAIR_OUT: artifacts/mark-edge-pair-manifest-v5
+        run: python3 scripts/freeze-mark-edge-pair-manifest.py
+
+      - name: Download exact original sealed source pixels only after pair freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/sealed-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_SEALED_EVIDENCE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Build exact 435-observation edge-projector input
+        env:
+          MARK_FULL_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_EDGE_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.edge-v5.compiler.json
+        run: python3 scripts/build-mark-edge-subset-input.py
+
+      - name: Build literal critical-edge projector
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-critical-edge-atlas
+
+      - name: Project center-to-center paths from exact sealed pixels
+        shell: bash
+        env:
+          MARK_EDGE_COMPILER_INPUT: artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.edge-v5.compiler.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_EDGE_PROJECTOR_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-critical-edge-atlas \
+              --input "$MARK_EDGE_COMPILER_INPUT" \
+              --out "$MARK_EDGE_PROJECTOR_OUT" \
+              --tile 512 \
+              --overlap 32
+          ) 2> >(tee "$MARK_EDGE_PROJECTOR_OUT/runtime.txt" >&2)
+
+      - name: Prove every center is exactly v4 and freeze the edge world
+        env:
+          MARK_V4_PACKET: artifact-staging/v4
+        run: python3 scripts/assert-mark-critical-edge-world.py
+
+      - name: Destroy source pixels before role labels are opened for edge scoring
+        shell: bash
+        run: rm -rf artifact-staging/sealed-evidence
+
+      - name: Discover Cleveland literal connection-edit grammar
+        run: python3 scripts/discover-mark-critical-edge-grammar.py
+
+      - name: Transfer frozen connection-edit atoms to Bavaria and LOC unchanged
+        run: python3 scripts/evaluate-mark-critical-edge-correspondence.py
+
+      - name: Publish blind v5 result
+        run: |
+          echo '### Mark critical-edge correspondence v5 — provenance sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-edge-pair-manifest-v5/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-edge-world-v5/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-edge-grammar-v5/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-edge-correspondence-v5/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen blind critical-edge packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: |
+            artifacts/mark-edge-pair-manifest-v5/**
+            artifacts/mark-edge-subset-custody-v5/**
+            artifacts/mark-critical-edge-projector-v5/**
+            artifacts/mark-critical-edge-world-v5/**
+            artifacts/mark-critical-edge-grammar-v5/**
+            artifacts/mark-critical-edge-correspondence-v5/**
+          if-no-files-found: error
+          retention-days: 30
