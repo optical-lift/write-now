@@ -1,0 +1,41 @@
+{
+  "schema": "mark_white_paint_physical_witness_roster_v3",
+  "experimentId": "mark:white-paint-physical-witness:v3",
+  "frozenBeforePixelFetch": true,
+  "provider": {
+    "name": "The Metropolitan Museum of Art Open Access",
+    "objectApiTemplate": "https://collectionapi.metmuseum.org/public/collection/v1/objects/{objectId}",
+    "requirements": [
+      "object metadata endpoint resolves",
+      "isPublicDomain is true",
+      "primaryImage or primaryImageSmall is non-empty",
+      "museum object URL is retained only in sealed context"
+    ]
+  },
+  "selectionRule": "Object-level museum photography of a physical historical writing surface or inscribed object. The roster is fixed before image bytes are downloaded. This first physical gate prioritizes clearly inscribed surfaces that substantially fill the museum image; it is not an exhaustive or random sample of each tradition.",
+  "systems": [
+    {
+      "system": "cuneiform_mesopotamian",
+      "objectIds": [325501, 321878, 321677, 321826, 322471, 321977, 321697, 321761]
+    },
+    {
+      "system": "greek_epigraphic",
+      "objectIds": [252471, 252472, 252473, 252475, 241991, 241992, 241970, 241968, 241985, 241999]
+    },
+    {
+      "system": "egyptian_hieroglyphic",
+      "objectIds": [562008, 546031, 561427, 555100, 548087, 545255, 559915, 545228, 549105, 545238, 562491, 545235]
+    },
+    {
+      "system": "chinese_seal_inscription",
+      "objectIds": [41047, 41041, 41033, 41031, 41038, 41028, 41029, 41025]
+    }
+  ],
+  "minimumAcceptedPerSystem": 6,
+  "knownDesignLimits": [
+    "All v3 witnesses come from one institutional imaging program, so institution cannot yet serve as an independent replication axis.",
+    "Writing system and physical medium are partly confounded in this roster; appearance-vs-substrate results therefore remain a physical-witness gate rather than a universal-culture claim.",
+    "The experiment does not use catalog transcription, translation, phonetic value, historical meaning, or sign identity during blind extraction.",
+    "A later writing-specificity control must compare inscribed regions with matched uninscribed surfaces before claiming that a structural effect is specific to writing rather than object texture."
+  ]
+}

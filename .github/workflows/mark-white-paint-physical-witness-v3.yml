@@ -1,0 +1,91 @@
+name: Mark White Paint Physical Witness v3
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/white-paint-physical-witness-v3.*"
+      - "scripts/capture-mark-white-paint-physical-witness.mjs"
+      - "scripts/discover-mark-white-paint-physical-witness.mjs"
+      - "scripts/rejoin-mark-white-paint-physical-witness.mjs"
+      - ".github/workflows/mark-white-paint-physical-witness-v3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MARK_WHITE_PAINT_PHYSICAL_ROSTER: research/mark/discovery-experiments/white-paint-physical-witness-v3.witnesses.json
+  MARK_WHITE_PAINT_PHYSICAL_PROTOCOL: research/mark/discovery-experiments/white-paint-physical-witness-v3.protocol.json
+  MARK_WHITE_PAINT_PHYSICAL_BLIND_OUT: artifacts/mark-white-paint-physical-witness-v3/blind
+  MARK_WHITE_PAINT_PHYSICAL_FROZEN_OUT: artifacts/mark-white-paint-physical-witness-v3/frozen
+  MARK_WHITE_PAINT_PHYSICAL_REJOIN_OUT: artifacts/mark-white-paint-physical-witness-v3/context
+  MARK_WHITE_PAINT_PHYSICAL_CONTEXT_OUT: artifact-staging/white-paint-physical-witness-v3-context
+
+jobs:
+  physical-witness-transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate frozen protocol and code
+        run: |
+          python3 -m json.tool "$MARK_WHITE_PAINT_PHYSICAL_ROSTER" >/dev/null
+          python3 -m json.tool "$MARK_WHITE_PAINT_PHYSICAL_PROTOCOL" >/dev/null
+          node --check scripts/capture-mark-white-paint-physical-witness.mjs
+          node --check scripts/discover-mark-white-paint-physical-witness.mjs
+          node --check scripts/rejoin-mark-white-paint-physical-witness.mjs
+
+      - name: Install physical image decoder
+        run: npm install --no-save sharp
+
+      - name: Acquire preregistered physical witnesses and extract blind local marks
+        run: node scripts/capture-mark-white-paint-physical-witness.mjs
+
+      - name: Freeze blind physical feature world before context opens
+        run: node scripts/discover-mark-white-paint-physical-witness.mjs
+
+      - name: Publish context-sealed summary
+        run: |
+          echo '### White-paint physical witness v3 — context still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat "$MARK_WHITE_PAINT_PHYSICAL_BLIND_OUT/capture-summary.txt" >> "$GITHUB_STEP_SUMMARY"
+          cat "$MARK_WHITE_PAINT_PHYSICAL_FROZEN_OUT/blind-summary.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload blind physical packet before rejoin
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-physical-witness-v3-blind
+          path: |
+            artifacts/mark-white-paint-physical-witness-v3/blind/**
+            artifacts/mark-white-paint-physical-witness-v3/frozen/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Rejoin writing-system context only after blind feature SHA exists
+        run: node scripts/rejoin-mark-white-paint-physical-witness.mjs
+
+      - name: Publish physical transfer result
+        if: always()
+        run: |
+          if [[ -s "$MARK_WHITE_PAINT_PHYSICAL_REJOIN_OUT/summary.txt" ]]; then
+            echo '### Physical witness context rejoin' >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat "$MARK_WHITE_PAINT_PHYSICAL_REJOIN_OUT/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload post-freeze context separately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-physical-witness-v3-context
+          path: |
+            artifacts/mark-white-paint-physical-witness-v3/context/**
+            artifact-staging/white-paint-physical-witness-v3-context/physical-witness-context-map.json
+          if-no-files-found: warn
+          retention-days: 30
