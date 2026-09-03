@@ -1,0 +1,96 @@
+{
+  "schema": "mark_critical_center_correspondence_protocol_v4",
+  "experimentId": "mark:critical-center-correspondence:v4",
+  "question": "When two anonymous observations preserve the same frozen sibling role, which local critical-center correspondences and edit motifs remain invariant compared with matched role-broken controls?",
+  "parentEvidence": {
+    "topologyEditRunId": 33800387594,
+    "topologyEditArtifact": "mark-topology-edit-invariance-v3-frozen",
+    "rolePairFreezeSha256": "b09e9e4c51cbe5e7692eba627c8afcda46395c441876eee2592db0c58c98c8e7",
+    "topologyEditInvarianceSha256": "850f540f2b834f600e6c74cda21610b629886096f5c349d5b09d767242844eab",
+    "sealedEvidenceRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "topologyCacheRunId": 33791958187,
+    "topologyCacheArtifact": "mark-state-operator-discovery-v1-frozen"
+  },
+  "pairWorld": {
+    "separateUnlabeledPairManifestFromLabels": true,
+    "alignmentJobMayNotDownloadLabels": true,
+    "allV3PairsRetained": true
+  },
+  "physicalReplay": {
+    "deriveSubsetOnlyAfterObservationIdsFrozen": true,
+    "recomputeDerivedBlindInputSha256": true,
+    "sameCapturePaths": true,
+    "sameObservationRegions": true,
+    "sameSegmentation": true,
+    "tileSize": 512,
+    "overlap": 32,
+    "nullIterations": 1,
+    "replayMustExactlyMatchFrozenAggregateTopologyForEverySelectedObservation": true
+  },
+  "alignment": {
+    "coordinateNormalization": "observation-region normalized, then centroid centered and isotropically RMS scaled",
+    "candidateTransforms": ["identity", "rot90", "rot180", "rot270", "reflectX", "reflectY", "reflectDiag", "reflectAntiDiag"],
+    "transformSelection": "label-blind; maximize mutual matched fraction, then minimize median spatial displacement, then mean signature edit, then fixed transform order",
+    "spatialGridCell": 0.2,
+    "maximumSpatialRadius": 0.45,
+    "centerCost": {
+      "spatialWeight": 1.0,
+      "kindMismatchPenalty": 0.3,
+      "degreeDifferenceWeight": 0.06,
+      "armL1Weight": 0.03
+    },
+    "mutualNearestOnly": true,
+    "sameAlgorithmForPreservedAndBroken": true,
+    "transformSelectionSketchLimit": 2048
+  },
+  "editAtoms": [
+    {"id": "unmatchedCenterFraction", "label": "fraction of critical centers inserted/deleted"},
+    {"id": "medianMatchedDisplacement", "label": "median displacement of matched critical centers"},
+    {"id": "p90MatchedDisplacement", "label": "90th-percentile displacement of matched critical centers"},
+    {"id": "endpointMedianDisplacement", "label": "median displacement of matched endpoints"},
+    {"id": "junctionMedianDisplacement", "label": "median displacement of matched junctions"},
+    {"id": "kindSwitchFraction", "label": "fraction of matched centers switching endpoint/junction kind"},
+    {"id": "degreeChangeFraction", "label": "fraction of matched centers changing arm degree"},
+    {"id": "meanAbsDegreeChange", "label": "mean absolute matched-center degree change"},
+    {"id": "endpointArmChangeMean", "label": "mean absolute change in endpoint-target arm count"},
+    {"id": "junctionArmChangeMean", "label": "mean absolute change in junction-target arm count"},
+    {"id": "unresolvedArmChangeMean", "label": "mean absolute change in unresolved arm count"},
+    {"id": "signatureChangeFraction", "label": "fraction of matched centers changing full local arm signature"},
+    {"id": "nonIdentityTransform", "label": "whether best label-blind center-cloud alignment requires a non-identity transform"},
+    {"id": "reflectionTransform", "label": "whether best alignment requires reflection"},
+    {"id": "quarterTurnTransform", "label": "whether best alignment requires a 90/270-degree quarter turn"}
+  ],
+  "motifDiscovery": {
+    "movementBins": [0.05, 0.15],
+    "minimumTrainPairsContainingMotif": 8,
+    "maximumSelectedMotifs": 16,
+    "motif": "kindA>kindB|degreeDelta|endpointArmDelta|junctionArmDelta|unresolvedDelta|movementBin",
+    "pairRate": "matched centers with motif divided by all matched centers in that pair"
+  },
+  "trainDiscovery": {
+    "lane": "train",
+    "familyPairBalancedEffect": "mean rank-biserial effect across frozen physical-family pairs",
+    "continuousEffect": "positive means edit magnitude is smaller in role-preserving pairs",
+    "motifEffect": "positive means motif rate is higher in role-preserving pairs",
+    "nullIterations": 128,
+    "null": "shuffle preserved/broken labels within each physical-family pair while preserving positive count",
+    "maximumSelectedContinuousAtoms": 10,
+    "holdoutAndControlUnavailableToSelection": true
+  },
+  "transfer": {
+    "sameAtomsAndMotifsNoReselection": true,
+    "strongTransferGate": "same effect sign in holdout and control and each absolute transfer effect at least 25% of train"
+  },
+  "interpretationLimits": {
+    "criticalCentersAreObservedVertices": true,
+    "internalCenterToCenterEdgeIdentityNotPresentInParentLedger": true,
+    "doNotClaimSpecificBranchConnectivityOrLoopClosureFromV4": true,
+    "meaning": "V4 aligns actual critical-center coordinates and local arm signatures. It can test endpoint/junction insertion, deletion, movement, kind/degree/signature changes and orientation/reflection invariance, but cannot identify a specific center-to-center branch edge because the parent ledger stores arm destination classes rather than target center IDs."
+  },
+  "custody": {
+    "noStateVocabularyConsumed": true,
+    "noTransitionGrammarConsumed": true,
+    "noProvenanceConsumed": true
+  }
+}

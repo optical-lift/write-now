@@ -1,0 +1,218 @@
+name: Mark Critical Center Correspondence v4
+
+on:
+  pull_request:
+    paths:
+      - "scripts/freeze-mark-v4-pair-world.py"
+      - "scripts/derive-mark-v4-critical-center-subset.mjs"
+      - "scripts/project-mark-v4-critical-centers.py"
+      - "scripts/align-mark-v4-critical-centers.py"
+      - "scripts/discover-mark-v4-critical-center-edit-grammar.py"
+      - "research/mark/discovery-experiments/critical-center-correspondence-v4.protocol.json"
+      - ".github/workflows/mark-critical-center-correspondence-v4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_V4_PROTOCOL: research/mark/discovery-experiments/critical-center-correspondence-v4.protocol.json
+  MARK_V3_RUN_ID: 33800387594
+  MARK_SEALED_EVIDENCE_RUN_ID: 33755743472
+  MARK_TOPOLOGY_CACHE_RUN_ID: 33791958187
+  MARK_V7_MAX_RSS_KB: 524288
+
+jobs:
+  freeze-unlabeled-pair-world:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate v4 protocol and scripts
+        run: |
+          python3 -m json.tool "$MARK_V4_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/freeze-mark-v4-pair-world.py \
+            scripts/project-mark-v4-critical-centers.py \
+            scripts/align-mark-v4-critical-centers.py \
+            scripts/discover-mark-v4-critical-center-edit-grammar.py
+          node --check scripts/derive-mark-v4-critical-center-subset.mjs
+      - name: Download exact frozen v3 result
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-topology-edit-invariance-v3-frozen
+          path: artifact-staging/v3
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V3_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Separate unlabeled pair world from preserved/broken labels
+        env:
+          MARK_V3_FROZEN: artifact-staging/v3
+          MARK_V4_UNLABELED_OUT: artifacts/mark-v4-unlabeled-pairs
+          MARK_V4_LABELS_OUT: artifacts/mark-v4-labels-sealed
+        run: python3 scripts/freeze-mark-v4-pair-world.py
+      - name: Upload unlabeled pair world
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v4-unlabeled-pairs
+          path: artifacts/mark-v4-unlabeled-pairs/**
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload labels separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v4-labels-sealed
+          path: artifacts/mark-v4-labels-sealed/**
+          if-no-files-found: error
+          retention-days: 30
+
+  replay-critical-centers:
+    needs: freeze-unlabeled-pair-world
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download unlabeled frozen observation set only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-unlabeled-pairs
+          path: artifact-staging/v4-unlabeled
+      - name: Download original sealed physical evidence after observation IDs are frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/sealed-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_SEALED_EVIDENCE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download frozen aggregate topology only for replay exactness
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/topology-cache
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_TOPOLOGY_CACHE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Derive custody-chained compiler subset
+        env:
+          MARK_V4_UNLABELED: artifact-staging/v4-unlabeled
+          MARK_SEALED_EVIDENCE: artifact-staging/sealed-evidence
+          MARK_V4_SUBSET_OUT: artifacts/mark-critical-center-subset-v4
+        run: node scripts/derive-mark-v4-critical-center-subset.mjs
+      - name: Build exact physical compiler
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+      - name: Replay only frozen observation IDs under original physical compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          derived="$(cat artifacts/mark-critical-center-subset-v4/derived-input-path.txt)"
+          mkdir -p artifacts/mark-critical-center-replay-v4
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$derived" \
+              --out artifacts/mark-critical-center-replay-v4 \
+              --tile 512 \
+              --overlap 32 \
+              --null-iterations 1 \
+              --min-sources 1
+          )
+      - name: Project actual critical-center coordinates and prove exact replay
+        shell: bash
+        env:
+          MARK_V4_SUBSET: artifacts/mark-critical-center-subset-v4
+          MARK_V4_REPLAY: artifacts/mark-critical-center-replay-v4
+          MARK_TOPOLOGY_ATLAS: artifact-staging/topology-cache/topology-atlas
+          MARK_V4_CENTER_OUT: artifacts/mark-critical-centers-v4
+        run: |
+          set -euo pipefail
+          export MARK_V4_DERIVED_INPUT="$(cat artifacts/mark-critical-center-subset-v4/derived-input-path.txt)"
+          python3 scripts/project-mark-v4-critical-centers.py
+      - name: Publish replay exactness
+        run: |
+          echo '### Mark v4 critical-center replay — labels still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-centers-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload exact blind critical-center world
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v4-critical-centers-frozen
+          path: |
+            artifacts/mark-critical-center-subset-v4/subset-custody.json
+            artifacts/mark-critical-centers-v4/**
+          if-no-files-found: error
+          retention-days: 30
+
+  align-critical-centers-label-blind:
+    needs: [freeze-unlabeled-pair-world, replay-critical-centers]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download unlabeled pairs
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-unlabeled-pairs
+          path: artifact-staging/v4-unlabeled
+      - name: Download exact critical-center world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-critical-centers-frozen
+          path: artifact-staging/v4-centers
+      - name: Align actual critical centers while labels remain unavailable
+        env:
+          MARK_V4_UNLABELED: artifact-staging/v4-unlabeled
+          MARK_V4_CENTERS: artifact-staging/v4-centers
+          MARK_V4_ALIGNMENT_OUT: artifacts/mark-critical-center-alignment-v4
+        run: python3 scripts/align-mark-v4-critical-centers.py
+      - name: Publish frozen correspondence custody
+        run: |
+          echo '### Mark v4 critical-center correspondence — preserved/broken labels unavailable' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-center-alignment-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload label-blind correspondence freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-v4-critical-center-correspondence-frozen
+          path: artifacts/mark-critical-center-alignment-v4/**
+          if-no-files-found: error
+          retention-days: 30
+
+  reveal-edit-grammar:
+    needs: [freeze-unlabeled-pair-world, align-critical-centers-label-blind]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen label-blind correspondences
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-critical-center-correspondence-frozen
+          path: artifact-staging/v4-alignment
+      - name: Open preserved/broken labels only after correspondence SHA is frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-labels-sealed
+          path: artifact-staging/v4-labels
+      - name: Discover Cleveland edit grammar and transfer unchanged
+        env:
+          MARK_V4_ALIGNMENT: artifact-staging/v4-alignment
+          MARK_V4_LABELS: artifact-staging/v4-labels
+          MARK_V4_DISCOVERY_OUT: artifacts/mark-critical-center-edit-grammar-v4
+        run: python3 scripts/discover-mark-v4-critical-center-edit-grammar.py
+      - name: Publish blind v4 result
+        run: |
+          echo '### Mark critical-center correspondence edit grammar v4' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-critical-center-edit-grammar-v4/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen v4 result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-critical-center-correspondence-v4-frozen
+          path: artifacts/mark-critical-center-edit-grammar-v4/**
+          if-no-files-found: error
+          retention-days: 30
