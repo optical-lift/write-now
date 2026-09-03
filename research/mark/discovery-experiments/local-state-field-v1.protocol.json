@@ -1,0 +1,58 @@
+{
+  "schema": "mark_local_state_field_protocol_v1",
+  "experimentId": "mark:local-state-field:v1",
+  "parentExperiments": [
+    "mark:source-rule-atlas:v1",
+    "mark:relational-state-discovery:v1"
+  ],
+  "question": "Are the source-level construction regimes mixtures of recurring local relational states inside individual objects, with non-random spatial organization and deeper agreement among previously frozen structural twins?",
+  "parentEvidence": {
+    "sourceRuleAtlasRunId": 33755743472,
+    "sourceRuleAtlasSha256": "dcb704b540d8c25030627fafddb82e4b1ba9104bd553a77ecf03d50cdd5b7e75",
+    "relationalStateRunId": 33763572040,
+    "relationalStateDiscoverySha256": "6eb1ec62485ce71235f22ccf344e4df9068ad57c600917567860efec7182f3fb",
+    "sealedCompilerEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "frozenAtlasArtifact": "mark-source-rule-atlas-v1-frozen",
+    "frozenRelationalStateArtifact": "mark-relational-state-discovery-v1-frozen",
+    "contextCustodyArtifact": "mark-source-rule-atlas-v1-context-custody"
+  },
+  "projection": {
+    "compilerSemanticsFrozen": "v7",
+    "rules": "the two already-frozen parent blind rules; no new rule learning in this experiment",
+    "unit": "anonymous observation within anonymous source",
+    "observationCoordinatesRetained": ["region", "proposalScale", "proposalKind"],
+    "provenanceAvailable": false,
+    "physicalEventLedgerMustReproduceParentMerkleRoot": true,
+    "sourcePixelsRemeasuredOnlyByFrozenV7Compiler": true,
+    "observationRuleProjectionUsesExactV7DirectedPairMultiplicity": true
+  },
+  "localStateDiscovery": {
+    "featureVector": [
+      "rule1Accuracy",
+      "rule2Accuracy",
+      "logRule2ToRule1ContextRatio",
+      "logTotalContextMass"
+    ],
+    "minimumContextMasses": [1, 16, 64, 256],
+    "candidateK": [2, 3, 4, 5, 6],
+    "selection": "for each minimum context mass, standardize features and choose deterministic k-means solution with highest mean silhouette among non-empty solutions",
+    "primaryDepth": 64,
+    "noInstitutionLabelsDuringClustering": true
+  },
+  "stateSystemTests": {
+    "withinSourceMixture": "measure how often sources with at least two eligible observations contain more than one local state, plus normalized state entropy",
+    "spatialOrganization": "within each source, connect each eligible observation to its nearest other observation by region-center distance; compare same-state edge fraction with deterministic within-source label permutations",
+    "sourceRegimeComposition": "test whether the already-frozen two source-level construction regimes differ primarily in mixture proportions of the newly discovered local states",
+    "structuralTwinDepth": "compare local-state histogram distance for the already-frozen 100 cross-lane twins against the full eligible cross-lane source-pair background",
+    "thresholdRobustness": "repeat local-state discovery at every registered context-mass depth and record whether the same coarse state split persists"
+  },
+  "freezeContract": {
+    "localStateAssignmentsFrozenBeforeProvenance": true,
+    "sourceMixturesFrozenBeforeProvenance": true,
+    "spatialTestFrozenBeforeProvenance": true,
+    "twinDepthTestFrozenBeforeProvenance": true,
+    "discoveryShaWrittenBeforeContextCustodyDownload": true,
+    "postRejoinCountsAndAssignmentsImmutable": true
+  },
+  "interpretivePosture": "This experiment explicitly tests a generated theory. Failure, partial structure, state multiplicity, or unexpected state counts are all informative. The blind boundary protects the measurement; it does not prohibit theorizing from prior results."
+}
