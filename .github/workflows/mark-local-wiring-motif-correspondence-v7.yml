@@ -1,0 +1,68 @@
+name: Mark Local Wiring Motif Correspondence v7
+
+on:
+  pull_request:
+    paths:
+      - "scripts/evaluate-mark-local-wiring-motifs*.py"
+      - "research/mark/discovery-experiments/local-wiring-motif-correspondence-v7.protocol.json"
+      - ".github/workflows/mark-local-wiring-motif-correspondence-v7.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V5_RUN_ID: 33807154154
+  MARK_V5_PACKET: artifact-staging/v5
+  MARK_MOTIF_PROTOCOL: research/mark/discovery-experiments/local-wiring-motif-correspondence-v7.protocol.json
+  MARK_MOTIF_OUT: artifacts/mark-local-wiring-motif-correspondence-v7
+
+jobs:
+  local-wiring-motif-correspondence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen motif analysis before evidence exists
+        run: |
+          python3 -m json.tool "$MARK_MOTIF_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/evaluate-mark-local-wiring-motifs.py
+          cat scripts/evaluate-mark-local-wiring-motifs.part{0,1,2,3}.inc.py > /tmp/evaluate-mark-local-wiring-motifs-v7.py
+          python3 -m py_compile /tmp/evaluate-mark-local-wiring-motifs-v7.py
+
+      - name: Install blind center-correspondence dependency
+        run: python3 -m pip install --disable-pip-version-check scipy
+
+      - name: Download frozen v5 graph world only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/v5
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V5_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Run blind local wiring motif correspondence
+        run: python3 scripts/evaluate-mark-local-wiring-motifs.py
+
+      - name: Publish frozen result in workflow summary
+        run: cat "$MARK_MOTIF_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish frozen result on stacked PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_MOTIF_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen local motif packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-local-wiring-motif-correspondence-v7-frozen
+          path: |
+            artifacts/mark-local-wiring-motif-correspondence-v7/**
+          if-no-files-found: error
+          retention-days: 30
