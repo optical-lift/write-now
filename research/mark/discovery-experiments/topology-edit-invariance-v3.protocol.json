@@ -1,0 +1,63 @@
+{
+  "schema": "mark_topology_edit_invariance_protocol_v3",
+  "experimentId": "mark:topology-edit-invariance:v3",
+  "question": "Which measurable topology-composition changes remain bounded when two physically different observations preserve the same masked sibling role, and do those same edit constraints transfer unchanged to Bavaria and LOC?",
+  "parentEvidence": {
+    "siblingRoleRunId": 33798179424,
+    "siblingRoleArtifact": "mark-sibling-role-substitution-v2-frozen",
+    "topologyCacheRunId": 33791958187,
+    "topologyCacheArtifact": "mark-state-operator-discovery-v1-frozen",
+    "sourceRuleAtlasRunId": 33755743472,
+    "frozenAtlasArtifact": "mark-source-rule-atlas-v1-frozen"
+  },
+  "rolePairFreeze": {
+    "positiveDefinition": "cross-source pair from different frozen physical families that is a reciprocal nearest neighbor in both frozen geometry-only and neighbor-topology-augmented sibling-role spaces",
+    "negativeDefinition": "same frozen family pair and lane, cross-source, not positive, with both role distances at or above that family-pair lane median",
+    "negativeMultiplierPerPositive": 3,
+    "sourceBalance": "one deterministic representative per source per frozen physical family before role pairing",
+    "topologyUnavailableUntilPairLabelsFrozen": true
+  },
+  "editObservables": [
+    {"id":"derived:centerCountLog1p","label":"total topology-center count change"},
+    {"id":"derived:centerDensityPerMillionPixelsLog1p","label":"topology-center density change"},
+    {"id":"center:ENDPOINT","label":"endpoint-center share change"},
+    {"id":"center:JUNCTION","label":"junction-center share change"},
+    {"id":"degree:ENDPOINT:0","label":"isolated endpoint share change"},
+    {"id":"degree:ENDPOINT:1","label":"degree-1 endpoint share change"},
+    {"id":"degree:JUNCTION:2","label":"degree-2 junction share change"},
+    {"id":"degree:JUNCTION:3","label":"degree-3 junction share change"},
+    {"id":"degree:JUNCTION:4","label":"degree-4 junction share change"},
+    {"id":"degree:JUNCTION:5plus","label":"degree-5-plus junction share change"},
+    {"id":"arm:ENDPOINT:PATH_TO_ENDPOINT","label":"endpoint-to-endpoint arm-rate change"},
+    {"id":"arm:ENDPOINT:PATH_TO_JUNCTION","label":"endpoint-to-junction arm-rate change"},
+    {"id":"arm:ENDPOINT:UNRESOLVED","label":"unresolved endpoint-arm rate change"},
+    {"id":"arm:JUNCTION:PATH_TO_ENDPOINT","label":"junction-to-endpoint arm-rate change"},
+    {"id":"arm:JUNCTION:PATH_TO_JUNCTION","label":"junction-to-junction arm-rate change"},
+    {"id":"arm:JUNCTION:UNRESOLVED","label":"unresolved junction-arm rate change"}
+  ],
+  "trainDiscovery": {
+    "balancedEffect": "mean across physical-family pairs of signed rank-biserial AUC; positive means the edit magnitude is smaller in role-preserving pairs than in matched role-broken pairs",
+    "maximumSelectedEditAtoms": 8,
+    "nullIterations": 128,
+    "null": "shuffle preserved/broken labels within each physical-family pair while preserving the observed positive count",
+    "selection": "largest absolute Cleveland/train balanced effect; ties by edit id; holdout and control unavailable to selection"
+  },
+  "transfer": {
+    "noReselection": true,
+    "report": "same balanced effect for frozen edit atoms in holdout and control, with sign agreement and retained-effect fraction relative to train",
+    "strongTransferDescriptiveGate": "same effect sign in both holdout and control and each absolute transfer effect is at least 25% of the absolute train effect"
+  },
+  "interpretationLimits": {
+    "aggregateTopologyNotAlignedGraphEdit": true,
+    "doNotClaimOrientationLoopOrLocalBranchInsertionUnlessDirectlyObserved": true,
+    "meaning": "This test can identify bounded changes in observable topology composition. It cannot yet align individual graph vertices and therefore cannot prove a literal local stroke edit."
+  },
+  "custody": {
+    "freezeRoleLabelsBeforeTopologyDownload": true,
+    "verifySiblingRoleShas": true,
+    "verifyTopologyAgainstFrozenSourceRuleAtlasCustody": true,
+    "noStateVocabularyConsumed": true,
+    "noTransitionGrammarConsumed": true,
+    "noProvenanceConsumed": true
+  }
+}
