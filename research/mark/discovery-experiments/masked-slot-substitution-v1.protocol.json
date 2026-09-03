@@ -1,0 +1,89 @@
+{
+  "schema": "mark_masked_slot_substitution_protocol_v1",
+  "experimentId": "mark:masked-slot-substitution:v1",
+  "phase": "vocabulary_free_masked_structural_slot_substitution",
+  "question": "Which physically different anonymous observations repeatedly occupy the same surrounding structural slots without using inherited state labels, cultural metadata, language labels, chronology, or semantic interpretation?",
+  "parentEvidence": {
+    "sourceRuleAtlasRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "frozenAtlasArtifact": "mark-source-rule-atlas-v1-frozen",
+    "contextRejoinArtifact": "mark-source-rule-atlas-v1-context-rejoin"
+  },
+  "maskBoundary": {
+    "targetOwnTopologyExcludedFromSlotDefinition": true,
+    "parentAndAncestorTopologyExcludedFromSlotDefinition": true,
+    "overlappingSiblingTopologyExcludedFromSlotDefinition": true,
+    "allowedSlotEvidence": [
+      "target region geometry relative to its minimal strict containing observation",
+      "parent region geometry relative to its own parent when present",
+      "count and region geometry of non-overlapping siblings",
+      "topology summaries of non-overlapping siblings only"
+    ],
+    "reason": "The empty slot must be discoverable without smuggling the occupant's pixels back into its context through the target, an ancestor, or an overlapping proposal."
+  },
+  "slotDiscovery": {
+    "trainingLaneOnly": true,
+    "disjointSiblingTopology": {
+      "minimumTrainTargetSupport": 50,
+      "maximumFeatures": 12
+    }
+  },
+  "occupantDiscovery": {
+    "trainingLaneOnly": true,
+    "minimumTrainObservationSupport": 50,
+    "maximumFeatures": 24,
+    "input": "target observation raw normalized topology only; no state labels or slot-family labels"
+  },
+  "clustering": {
+    "slotCandidateK": [2,3,4,5,6,7,8,9,10],
+    "occupantCandidateK": [2,3,4,5,6,7,8,9,10],
+    "minimumClusterObservations": 25,
+    "minimumClusterDistinctSources": 5,
+    "silhouetteSampleLimit": 768,
+    "selection": "highest deterministic sampled silhouette; lower k breaks ties",
+    "transfer": "holdout and control assigned to frozen train centroids without refit"
+  },
+  "substitutionTest": {
+    "minimumTrainDistinctSourcesPerOccupant": 8,
+    "maximumFrozenCandidatePairs": 20,
+    "physicalDifferenceGate": "occupant centroid distance at or above the median pair distance in frozen train topology space",
+    "functionalSimilarity": "cosine similarity of each occupant family's distribution across frozen slot families",
+    "minimumTrainCosineForStrongCandidate": 0.8,
+    "secondaryEvidence": [
+      "number of shared slot families",
+      "balanced shared-slot mass",
+      "sources containing both occupants in the same slot family",
+      "holdout/control pair similarity percentile among all frozen occupant-family pairs"
+    ]
+  },
+  "nullModel": {
+    "iterations": 128,
+    "evaluation": "for each frozen train-selected pair, compare holdout/control slot-distribution similarity to deterministic random pairs of frozen physical occupant families in that lane",
+    "purpose": "test whether the same physical family correspondence transfers better than an arbitrary physical-family pairing; do not destroy slot structure or refit vocabularies"
+  },
+  "explicitlyExcluded": [
+    "local State 1/2/3 identifiers",
+    "state-transition grammar",
+    "source construction regimes",
+    "frozen rule accuracies",
+    "institution",
+    "catalog metadata",
+    "culture",
+    "language",
+    "object type",
+    "chronology",
+    "semantic labels"
+  ],
+  "custody": {
+    "reproduceExactFrozenPhysicalLedger": true,
+    "verifyLedgerAgainstFrozenSourceRuleAtlasCustody": true,
+    "freezeSlotAndOccupantVocabulariesBeforeAssociation": true,
+    "freezeSubstitutionShaBeforeContextDownload": true,
+    "provenanceCannotAlterVocabulariesAssignmentsPairsOrStatistics": true
+  },
+  "falsifiers": {
+    "noStableSlotVocabulary": "If masked contexts do not form supported train-discovered slot families, the corpus does not support this level of structural-slot abstraction.",
+    "noInterchangeablePhysicalFamilies": "If physically separated occupant families do not share slot distributions beyond isolated examples or fail to transfer, functional substitution is not supported at this representation.",
+    "transferFailure": "If train-selected substitutable pairs lose their slot-distribution similarity in both independent lanes, the apparent interchangeability is institution-local or overfit."
+  }
+}
