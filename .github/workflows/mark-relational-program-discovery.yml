@@ -3,6 +3,7 @@ name: Mark Relational Program Discovery v6
 on:
   pull_request:
     paths:
+      - "scripts/lib/mark-image-observable.mjs"
       - "scripts/lib/mark-relational-core.mjs"
       - "scripts/build-mark-relational-graphs.mjs"
       - "scripts/discover-mark-relational-programs.mjs"
@@ -41,6 +42,7 @@ jobs:
       - name: Validate relational kernel syntax and invariance contract
         run: |
           npm run check:mark-harvests
+          node --check scripts/lib/mark-image-observable.mjs
           node --check scripts/lib/mark-relational-core.mjs
           node --check scripts/build-mark-relational-graphs.mjs
           node --check scripts/discover-mark-relational-programs.mjs
