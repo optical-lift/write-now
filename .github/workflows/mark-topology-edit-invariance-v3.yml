@@ -1,0 +1,105 @@
+name: Mark Topology Edit Invariance v3
+
+on:
+  pull_request:
+    paths:
+      - "scripts/freeze-mark-role-preservation-pairs.py"
+      - "scripts/discover-mark-topology-edit-grammar.py"
+      - "scripts/evaluate-mark-topology-edit-transfer.py"
+      - "research/mark/discovery-experiments/topology-edit-invariance-v3.protocol.json"
+      - ".github/workflows/mark-topology-edit-invariance-v3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_SIBLING_ROLE_RUN_ID: 33798179424
+  MARK_TOPOLOGY_CACHE_RUN_ID: 33791958187
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_EDIT_PROTOCOL: research/mark/discovery-experiments/topology-edit-invariance-v3.protocol.json
+
+jobs:
+  blind-topology-edit-invariance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate v3 protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_EDIT_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/freeze-mark-role-preservation-pairs.py \
+            scripts/discover-mark-topology-edit-grammar.py \
+            scripts/evaluate-mark-topology-edit-transfer.py
+
+      - name: Download frozen v2 sibling-role world without topology
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-sibling-role-substitution-v2-frozen
+          path: artifact-staging/sibling-role-v2
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_SIBLING_ROLE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Freeze role-preserved and role-broken pairs before topology is available
+        env:
+          MARK_SIBLING_ROLE_V2: artifact-staging/sibling-role-v2
+          MARK_ROLE_PAIR_OUT: artifacts/mark-role-pair-freeze-v3
+        run: python3 scripts/freeze-mark-role-preservation-pairs.py
+
+      - name: Download exact frozen anonymous topology only after role labels are frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/topology-cache
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_TOPOLOGY_CACHE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Download frozen parent custody independently
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/parent-atlas
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Discover Cleveland topology edit constraints and freeze grammar
+        env:
+          MARK_ROLE_PAIR_FREEZE: artifacts/mark-role-pair-freeze-v3
+          MARK_TOPOLOGY_ATLAS: artifact-staging/topology-cache/topology-atlas
+          MARK_PARENT_ATLAS: artifact-staging/parent-atlas
+          MARK_EDIT_GRAMMAR_OUT: artifacts/mark-topology-edit-grammar-v3
+        run: python3 scripts/discover-mark-topology-edit-grammar.py
+
+      - name: Transfer frozen edit constraints to Bavaria and LOC without reselection
+        env:
+          MARK_ROLE_PAIR_FREEZE: artifacts/mark-role-pair-freeze-v3
+          MARK_EDIT_GRAMMAR: artifacts/mark-topology-edit-grammar-v3
+          MARK_TOPOLOGY_ATLAS: artifact-staging/topology-cache/topology-atlas
+          MARK_EDIT_TRANSFER_OUT: artifacts/mark-topology-edit-invariance-v3
+        run: python3 scripts/evaluate-mark-topology-edit-transfer.py
+
+      - name: Publish blind edit-invariance result
+        run: |
+          echo '### Mark topology edit invariance v3 — provenance sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-role-pair-freeze-v3/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-topology-edit-grammar-v3/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-topology-edit-invariance-v3/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen blind edit-invariance packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-topology-edit-invariance-v3-frozen
+          path: |
+            artifacts/mark-role-pair-freeze-v3/**
+            artifacts/mark-topology-edit-grammar-v3/**
+            artifacts/mark-topology-edit-invariance-v3/**
+          if-no-files-found: error
+          retention-days: 30
