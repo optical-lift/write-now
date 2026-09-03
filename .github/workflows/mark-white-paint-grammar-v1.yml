@@ -1,0 +1,65 @@
+name: Mark White Paint Grammar v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/white-paint-grammar-v1.protocol.json"
+      - "scripts/discover-mark-white-paint-grammar.py"
+      - ".github/workflows/mark-white-paint-grammar-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_WHITE_PAINT_PROTOCOL: research/mark/discovery-experiments/white-paint-grammar-v1.protocol.json
+  MARK_WHITE_PAINT_OUT: artifacts/mark-white-paint-grammar-v1
+  MARK_V5_RUN_ID: 33807154154
+
+jobs:
+  white-paint-calibration-and-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_WHITE_PAINT_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-white-paint-grammar.py
+
+      - name: Download frozen v5 physical graph world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/v5
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V5_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Resolve frozen v5 observation ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          OBS="$(find artifact-staging/v5 -name critical-edge-observations.jsonl -type f | head -n 1)"
+          test -n "$OBS"
+          echo "MARK_WHITE_PAINT_V5_OBSERVATIONS=$OBS" >> "$GITHUB_ENV"
+
+      - name: Calibrate white-paint grammar and screen physical observability
+        run: python3 scripts/discover-mark-white-paint-grammar.py
+
+      - name: Publish white-paint result
+        run: |
+          echo '### Mark white-paint grammar v1' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat "$MARK_WHITE_PAINT_OUT/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen white-paint packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-white-paint-grammar-v1-frozen
+          path: artifacts/mark-white-paint-grammar-v1/**
+          if-no-files-found: error
+          retention-days: 30
