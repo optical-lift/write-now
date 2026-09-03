@@ -1,0 +1,49 @@
+{
+  "schema": "mark_relational_state_discovery_protocol_v1",
+  "experimentId": "mark:relational-state-discovery:v1",
+  "parentExperimentId": "mark:source-rule-atlas:v1",
+  "purpose": "Interrogate the already-frozen source-rule atlas as a discovery surface rather than treating the original positive-transfer rubric as the only scientifically meaningful view of the evidence.",
+  "theoryMode": "exploratory_theory_generation_with_frozen_inputs",
+  "operatingPosture": {
+    "theoryIsAllowed": true,
+    "unexpectedStructureIsAResult": true,
+    "negativeDeviationIsNotFailure": true,
+    "postHocQuestionsMayBeAskedOfFrozenEvidence": true,
+    "newClaimsMustRemainTraceableToFrozenInputs": true
+  },
+  "signedRelationalStateExperiment": {
+    "question": "Do any learned relational transitions behave as exclusions or prohibitions, not merely attractions?",
+    "nullInterpretation": "Observed values above every null world are attraction candidates; observed values below every null world are exclusion candidates.",
+    "directionalSpecificity": "absolute holdout lift minus control lift magnitude when the control moves in the same direction",
+    "rankBothDirectionsSymmetrically": true
+  },
+  "constructionRegimeExperiment": {
+    "question": "Do anonymous sources fall into recurring construction regimes when represented only by the two frozen relational coordinates that already exposed cross-medium outliers?",
+    "featureRuleRanks": [1, 2],
+    "features": [
+      "rule-1 accuracy",
+      "rule-2 accuracy",
+      "log ratio of rule-2 context mass to rule-1 context mass",
+      "log total context mass"
+    ],
+    "minimumK": 2,
+    "maximumK": 8,
+    "minimumClusterSize": 5,
+    "selection": "deterministic k-means; choose the valid k with maximum mean silhouette, ties favor smaller k",
+    "institutionLabelsAvailable": false
+  },
+  "structuralTwinExperiment": {
+    "question": "Which anonymous source objects from different sealed lanes occupy nearly the same relational state despite coming from separately acquired source worlds?",
+    "featureSpace": "the same standardized four-dimensional construction-regime space",
+    "pairRule": "freeze mutual nearest-neighbor pairs across different anonymous lanes",
+    "maximumFrozenPairs": 100,
+    "institutionLabelsAvailable": false
+  },
+  "custodyContract": {
+    "sourcePixelsRemeasured": false,
+    "parentAtlasMustVerify": true,
+    "parentBlindDiscoveryMustVerify": true,
+    "allThreeBlindProductsFrozenBeforeProvenance": true,
+    "rejoinMayNotChangeSignedStatesRegimesOrTwinRanks": true
+  }
+}
