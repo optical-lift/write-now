@@ -1,0 +1,97 @@
+{
+  "schema": "mark_white_paint_grammar_protocol_v1",
+  "experimentId": "mark:white-paint-grammar:v1",
+  "phase": "synthetic_calibration_then_blind_physical_observability_screen",
+  "question": "Can a small pre-semantic grammar of operation, attachment relation, repetition degree, and closure be recovered from known graph constructions despite style changes, and are corresponding observables sufficiently present in the frozen v5 physical graph world to justify a later blinded historical test?",
+  "theory": "Complex glyph meaning may be culturally specific paint applied over a smaller structural grammar. The proposed white-paint axes are operation, relation, degree, and closure. Atlas is treated as a controlled synthetic culture whose intended semantics are known, while Mark only sees graph structure.",
+  "parentEvidence": {
+    "criticalEdgeRunId": 33807154154,
+    "criticalEdgeArtifact": "mark-critical-edge-correspondence-v5-frozen",
+    "criticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "criticalEdgeGrammarSha256": "593cc29904c4eb4f6a1eb67618e392707bf470d210580d70b05e4bb0f2d3f675",
+    "criticalEdgeCorrespondenceSha256": "36f8994e7bcb097be210087accaf6d9a2e809072775acb84ad83e51dcea04cd0"
+  },
+  "axes": {
+    "operation": ["persist", "turn", "branch", "cross", "close", "loop_continue"],
+    "relation": ["near_terminal_attachment", "interior_attachment"],
+    "degree": [1, 2, 3, 4, 5],
+    "closure": ["open", "closed"]
+  },
+  "predictions": [
+    {
+      "id": "P1_ATTACHMENT_LOCUS",
+      "prediction": "Attachment locus relative to a stable carrier remains recoverable when modifier shape is held out, and outperforms modifier-shape-only features.",
+      "primaryContrast": "near-terminal versus interior attachment with tick, zigzag, and fork modifiers balanced across both classes"
+    },
+    {
+      "id": "P2_REPETITION_DEGREE",
+      "prediction": "Repeated equivalent adjuncts behave as an ordered variable rather than unrelated categories.",
+      "primaryContrast": "one through five repeated carrier attachments"
+    },
+    {
+      "id": "P3_CLOSURE_PHASE",
+      "prediction": "Open-to-closed mutation is recoverable as a topology phase change independent of geometric style and an optional continuing tail.",
+      "primaryContrast": "open versus closed cycle with tail present or absent"
+    }
+  ],
+  "atlasTargets": {
+    "Observed": "carrier + attached witness mark",
+    "Derived": "prior support + generated bounded result",
+    "Uncertain": "present elements + unresolved relation",
+    "Conflicted": "independent continuations + crossing relation",
+    "Changed": "carrier persistence + turn",
+    "Approaching": "carrier + near-boundary terminal without crossing",
+    "Ready": "carrier + available continuation through prior constraint",
+    "Blocked": "carrier + interrupting transverse structure",
+    "Protected": "entity + closed boundary",
+    "Escalated": "carrier + new outer/higher attachment",
+    "Decision Required": "carrier + branch",
+    "Transferred": "carrier + boundary crossing + persistence",
+    "Recurring": "closure + continuing terminal",
+    "Breach": "boundary + loss of closure",
+    "Resolved": "closure + no required outgoing terminal"
+  },
+  "calibration": {
+    "styles": ["identity", "rot90", "rot180", "mirror_x", "stretch_x", "stretch_y"],
+    "operationEvaluation": "leave-one-style-out nearest-centroid recovery",
+    "relationEvaluation": "hold one modifier shape out entirely, train on the other two, then recover attachment class",
+    "degreeEvaluation": "recover repeated-adjunct count from anonymous degree-3 attachment structure and score Spearman rank plus absolute error",
+    "closureEvaluation": "leave-one-style-out recovery with tail presence balanced",
+    "labelsAvailableToGeneratorOnly": true,
+    "extractorReceivesOnlyNodesEdgesAndGeometry": true
+  },
+  "physicalScreen": {
+    "source": "frozen v5 critical-edge observations only",
+    "provenanceAllowed": false,
+    "roleLabelsAllowed": false,
+    "semanticLabelsAllowed": false,
+    "measures": [
+      "critical-center graph support",
+      "junction-bearing observations",
+      "parallel-path multiplicity",
+      "critical-graph cycle rank",
+      "path turn-rate support"
+    ],
+    "caveat": "Critical-graph cycle rank cannot see a pure degree-2 pixel loop if the v5 projector contains no critical center on that loop."
+  },
+  "nullIterations": 128,
+  "seed": 240903,
+  "successGates": {
+    "operationAccuracy": 0.95,
+    "relationAccuracy": 0.85,
+    "relationAdvantageOverShape": 0.25,
+    "degreeSpearman": 0.95,
+    "degreeMae": 0.25,
+    "closureAccuracy": 0.95
+  },
+  "claimBoundary": {
+    "allowed": "The white-paint grammar is recoverable in a known synthetic system and its observables can be screened in frozen physical graphs.",
+    "forbidden": [
+      "historical glyph semantics",
+      "universal human grammar",
+      "Atlas meanings discovered in ancient marks",
+      "semantic promotion from physical support alone"
+    ]
+  },
+  "nextGateIfCalibrationPasses": "Freeze a separate blind witness-selection and scoring protocol before testing whether these axes recur across independent historical systems."
+}
