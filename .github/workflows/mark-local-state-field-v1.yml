@@ -1,0 +1,169 @@
+name: Mark Local State Field v1
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/src/bin/mark-observation-rule-atlas.rs"
+      - "scripts/discover-mark-local-state-field.py"
+      - "scripts/rejoin-mark-local-state-field.py"
+      - "research/mark/discovery-experiments/local-state-field-v1.protocol.json"
+      - ".github/workflows/mark-local-state-field-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_PARENT_STATE_RUN_ID: 33763572040
+  MARK_LOCAL_STATE_PROTOCOL: research/mark/discovery-experiments/local-state-field-v1.protocol.json
+  MARK_V7_MAX_RSS_KB: 524288
+
+jobs:
+  blind-local-state-field:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate protocol and analysis scripts
+        run: |
+          python3 -m json.tool "$MARK_LOCAL_STATE_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-local-state-field.py scripts/rejoin-mark-local-state-field.py
+      - name: Download sealed compiler evidence from the frozen parent run
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/blind-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download frozen source-rule atlas
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/parent-atlas
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download frozen relational-state discovery
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-relational-state-discovery-v1-frozen
+          path: artifact-staging/parent-state
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_STATE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Test and build frozen v7 compiler plus observation projector
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-observation-rule-atlas
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bins
+      - name: Reproduce the exact frozen physical event world under 512 MB
+        shell: bash
+        env:
+          MARK_V7_COMPILER_INPUT: artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_V7_OUT: artifacts/mark-local-state-compiler-v1
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_V7_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$MARK_V7_COMPILER_INPUT" \
+              --out "$MARK_V7_OUT" \
+              --tile 512 \
+              --overlap 32 \
+              --null-iterations 16 \
+              --min-sources 3
+          ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
+      - name: Project the two frozen rules to anonymous observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_merkle="$(python3 - <<'PY'
+          import json
+          print(json.load(open('artifact-staging/parent-atlas/source-rule-atlas/summary.json'))['physicalLedgerMerkleRoot'])
+          PY
+          )"
+          mkdir -p artifacts/mark-observation-rule-atlas-v1
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-observation-rule-atlas \
+              --events artifacts/mark-local-state-compiler-v1/events.jsonl \
+              --blind-discovery artifact-staging/parent-atlas/blind-discovery/blind-discovery.json \
+              --custody artifacts/mark-local-state-compiler-v1/custody.json \
+              --input artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
+              --expected-merkle "$expected_merkle" \
+              --out artifacts/mark-observation-rule-atlas-v1
+          ) 2> >(tee artifacts/mark-observation-rule-atlas-v1/runtime.txt >&2)
+      - name: Discover local states and test the state-system theory while provenance is sealed
+        env:
+          MARK_OBSERVATION_RULE_ATLAS: artifacts/mark-observation-rule-atlas-v1
+          MARK_SOURCE_RULE_ATLAS: artifact-staging/parent-atlas/source-rule-atlas
+          MARK_PARENT_RELATIONAL_STATE: artifact-staging/parent-state
+          MARK_LOCAL_STATE_OUT: artifacts/mark-local-state-field-v1
+        run: python3 scripts/discover-mark-local-state-field.py
+      - name: Free bulky physical ledgers after local state field freeze
+        run: rm -f artifacts/mark-local-state-compiler-v1/events.jsonl artifacts/mark-local-state-compiler-v1/grammar-contributions.jsonl
+      - name: Stage frozen local-state evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/local-state-field/observation-atlas artifact-staging/local-state-field/compiler-custody
+          cp -a artifacts/mark-local-state-field-v1/. artifact-staging/local-state-field/
+          cp -a artifacts/mark-observation-rule-atlas-v1/. artifact-staging/local-state-field/observation-atlas/
+          cp artifacts/mark-local-state-compiler-v1/custody.json artifact-staging/local-state-field/compiler-custody/
+      - name: Publish blind local-state summary
+        shell: bash
+        run: |
+          echo '### Mark local state field v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-local-state-field-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind local-state field
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-local-state-field-v1-frozen
+          path: artifact-staging/local-state-field/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: blind-local-state-field
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen local-state field first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-local-state-field-v1-frozen
+          path: artifact-staging/local-state-field
+      - name: Download source provenance only after local states are frozen
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-custody
+          path: artifact-staging/context-custody
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Rejoin provenance without altering local state assignments
+        env:
+          MARK_LOCAL_STATE_FIELD: artifact-staging/local-state-field
+          MARK_HARVEST_REJOIN: artifact-staging/context-custody/mark-harvest-rejoin-v1/mark-harvest-custody-rejoin-v1.json
+          MARK_LOCAL_STATE_REJOIN_OUT: artifacts/mark-local-state-field-context-v1
+        run: python3 scripts/rejoin-mark-local-state-field.py
+      - name: Publish local-state provenance summary
+        shell: bash
+        run: |
+          echo '### Mark local state field v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-local-state-field-context-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload contextual rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-local-state-field-v1-context-rejoin
+          path: artifacts/mark-local-state-field-context-v1/**
+          if-no-files-found: error
+          retention-days: 30
