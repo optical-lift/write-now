@@ -1,18 +1,7 @@
 name: Mark v7 10x Scale Gate
 
 on:
-  pull_request:
-    paths:
-      - "crates/mark-sparse-compiler/**"
-      - "scripts/harvest-mark-sources.mjs"
-      - "scripts/propose-mark-observables.mjs"
-      - "scripts/expand-mark-open-access-feed.mjs"
-      - "scripts/expand-mark-iiif-feed.mjs"
-      - "scripts/compose-mark-real-corpus-challenge.mjs"
-      - "research/mark/harvest-feeds/cleveland-firehose-train-10x.v1.json"
-      - "research/mark/harvest-feeds/bsb-iiif-holdout-10x.v1.json"
-      - "research/mark/harvest-feeds/loc-photos-control-10x.v1.json"
-      - ".github/workflows/mark-v7-10x-scale-gate.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
