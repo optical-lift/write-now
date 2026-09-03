@@ -1,0 +1,245 @@
+name: Mark Source Rule Atlas v1
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/src/bin/mark-source-rule-atlas.rs"
+      - "scripts/assert-mark-source-rule-atlas.py"
+      - "scripts/rejoin-mark-source-rule-atlas.py"
+      - "research/mark/discovery-experiments/source-rule-atlas-v1.protocol.json"
+      - ".github/workflows/mark-source-rule-atlas-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MARK_DISCOVERY_FEED_PLAN: research/mark/discovery-experiments/blind-discovery-v1.feeds.json
+  MARK_DISCOVERY_PROTOCOL: research/mark/discovery-experiments/blind-discovery-v1.protocol.json
+  MARK_SOURCE_RULE_PROTOCOL: research/mark/discovery-experiments/source-rule-atlas-v1.protocol.json
+  MARK_V7_MAX_RSS_KB: 524288
+  MARK_V7_MIN_LANE_SOURCES: 216
+  MARK_V7_MIN_OBSERVATIONS: 20000
+
+jobs:
+  seal-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate atlas protocol and Python gates
+        run: |
+          python3 -m json.tool "$MARK_SOURCE_RULE_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/assert-mark-source-rule-atlas.py scripts/rejoin-mark-source-rule-atlas.py
+      - name: Install acquisition dependencies
+        run: npm install
+      - name: Expand every registered feed box
+        run: node scripts/expand-mark-discovery-feed-plan.mjs
+      - name: Compose whole-institution sealed challenge
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifests="$(paste -sd, artifacts/mark-blind-discovery-feed-plan-v1/manifests.txt)"
+          MARK_CHALLENGE_MANIFESTS="$manifests" \
+          MARK_CHALLENGE_ID="mark:source-rule-atlas:v1" \
+          MARK_CHALLENGE_OUT="artifacts/mark-real-corpus-challenge-v1" \
+          node scripts/compose-mark-real-corpus-challenge.mjs
+      - name: Harvest physical evidence and separate contextual custody
+        env:
+          MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
+          MARK_HARVEST_OUT: artifacts/mark-harvest-v1
+          MARK_HARVEST_REJOIN_OUT: artifacts/mark-harvest-rejoin-v1
+          MARK_CONTINUITY_KEY: mark-source-rule-atlas-v1-${{ github.sha }}
+          MARK_BLIND_SALT: mark-source-rule-atlas-v1-${{ github.sha }}
+          MARK_NEAR_DUPLICATE_BITS: 2
+          MARK_HARVEST_MIN_PER_LANE: 216
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Propose category-blind multiscale observations
+        env:
+          MARK_HARVEST_BLIND: artifacts/mark-harvest-v1/mark-harvested-sources-blind-v1.json
+          MARK_PROPOSAL_OUT: artifacts/mark-conveyor-input-v1
+          MARK_MAX_COMPONENTS_PER_SOURCE: 32
+        run: node scripts/propose-mark-observables.mjs
+      - name: Normalize vector captures only at compiler boundary
+        env:
+          MARK_PROPOSAL_BLIND_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json
+          MARK_V7_COMPILER_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_V7_NORMALIZATION_CUSTODY: artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json
+        run: node scripts/normalize-mark-v7-compiler-input.mjs
+      - name: Verify sealed blind compiler evidence
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import crypto from "node:crypto";
+          const inputPath="artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json";
+          const value=JSON.parse(fs.readFileSync(inputPath,"utf8"));
+          const {blindInputSha256,...core}=value;
+          const computed=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex");
+          if(!blindInputSha256||blindInputSha256!==computed)throw new Error("compiler blind-input SHA-256 failed");
+          const normalization=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json","utf8"));
+          if(normalization.compilerBlindInputSha256!==blindInputSha256)throw new Error("normalization custody mismatch");
+          const allowedSourceKeys=new Set(["sourceGroupId","adapter","capturePath","captureMime","captureToken","continuityToken","lane"]);
+          for(const source of value.sources)for(const key of Object.keys(source))if(!allowedSourceKeys.has(key))throw new Error(`blind source leaked unexpected field ${key}`);
+          const lanes=Object.fromEntries(["train","holdout","control"].map(lane=>[lane,value.sources.filter(source=>source.lane===lane).length]));
+          const min=Number(process.env.MARK_V7_MIN_LANE_SOURCES);
+          for(const[lane,count]of Object.entries(lanes))if(count<min)throw new Error(`retained ${lane} lane below scientific gate: ${count}<${min}`);
+          if(value.observations.length<Number(process.env.MARK_V7_MIN_OBSERVATIONS))throw new Error(`observation gate failed: ${value.observations.length}`);
+          console.log(`sealed blind evidence ${blindInputSha256}; lanes=${JSON.stringify(lanes)} observations=${value.observations.length}`);
+          NODE
+      - name: Stage blind evidence separately from provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/blind-evidence artifact-staging/context-custody/mark-harvest-rejoin-v1 artifact-staging/context-custody/mark-real-corpus-challenge-v1 artifact-staging/context-custody/mark-feed-plan-v1
+          cp -a artifacts/mark-conveyor-input-v1 artifact-staging/blind-evidence/
+          cp artifacts/mark-harvest-rejoin-v1/mark-harvest-custody-rejoin-v1.json artifact-staging/context-custody/mark-harvest-rejoin-v1/
+          cp artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json artifact-staging/context-custody/mark-real-corpus-challenge-v1/
+          cp artifacts/mark-blind-discovery-feed-plan-v1/expanded-feed-plan.json artifact-staging/context-custody/mark-feed-plan-v1/
+      - name: Upload sealed blind evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/blind-evidence/**
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload contextual custody separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-custody
+          path: artifact-staging/context-custody/**
+          if-no-files-found: error
+          retention-days: 30
+
+  blind-atlas:
+    needs: seal-evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download sealed blind evidence only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/blind-evidence
+      - name: Test and build frozen v7 compiler plus atlas projector
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-source-rule-atlas
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bins
+      - name: Compile blind relational world under hard 512 MB ceiling
+        shell: bash
+        env:
+          MARK_V7_OUT: artifacts/mark-source-rule-compiler-v1
+          MARK_V7_COMPILER_INPUT: artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_V7_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$MARK_V7_COMPILER_INPUT" \
+              --out "$MARK_V7_OUT" \
+              --tile 512 \
+              --overlap 32 \
+              --null-iterations 16 \
+              --min-sources 3
+          ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
+      - name: Freeze every blind rule before source projection
+        env:
+          MARK_V7_OUT: artifacts/mark-source-rule-compiler-v1
+          MARK_V7_COMPILER_INPUT: artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_DISCOVERY_PROTOCOL: research/mark/discovery-experiments/blind-discovery-v1.protocol.json
+          MARK_DISCOVERY_OUT: artifacts/mark-blind-discovery-v1
+        run: python3 scripts/freeze-mark-v7-blind-discovery.py
+      - name: Project frozen rules to anonymous sources and freeze atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/mark-source-rule-atlas-v1
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-source-rule-atlas \
+              --events artifacts/mark-source-rule-compiler-v1/events.jsonl \
+              --blind-discovery artifacts/mark-blind-discovery-v1/blind-discovery.json \
+              --custody artifacts/mark-source-rule-compiler-v1/custody.json \
+              --input artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
+              --out artifacts/mark-source-rule-atlas-v1
+          ) 2> >(tee artifacts/mark-source-rule-atlas-v1/runtime.txt >&2)
+      - name: Prove source aggregates exactly equal frozen v7 grammar statistics
+        env:
+          MARK_SOURCE_RULE_ATLAS: artifacts/mark-source-rule-atlas-v1
+          MARK_V7_OUT: artifacts/mark-source-rule-compiler-v1
+          MARK_BLIND_DISCOVERY_PACKET: artifacts/mark-blind-discovery-v1/blind-discovery.json
+          MARK_SOURCE_RULE_ASSERTION: artifacts/mark-source-rule-atlas-v1/exactness.json
+        run: python3 scripts/assert-mark-source-rule-atlas.py
+      - name: Free bulky ledgers only after atlas freeze and exactness proof
+        shell: bash
+        run: rm -f artifacts/mark-source-rule-compiler-v1/events.jsonl artifacts/mark-source-rule-compiler-v1/grammar-contributions.jsonl
+      - name: Stage frozen blind atlas evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/blind-atlas/source-rule-atlas artifact-staging/blind-atlas/blind-discovery artifact-staging/blind-atlas/compiler artifact-staging/blind-atlas/normalization
+          cp -a artifacts/mark-source-rule-atlas-v1/. artifact-staging/blind-atlas/source-rule-atlas/
+          cp -a artifacts/mark-blind-discovery-v1/. artifact-staging/blind-atlas/blind-discovery/
+          cp artifacts/mark-source-rule-compiler-v1/summary.json artifact-staging/blind-atlas/compiler/
+          cp artifacts/mark-source-rule-compiler-v1/custody.json artifact-staging/blind-atlas/compiler/
+          cp artifacts/mark-source-rule-compiler-v1/evaluation.json artifact-staging/blind-atlas/compiler/
+          cp artifacts/mark-source-rule-compiler-v1/rules.jsonl artifact-staging/blind-atlas/compiler/
+          cp artifacts/mark-source-rule-compiler-v1/grammar-stats.sqlite artifact-staging/blind-atlas/compiler/
+          cp artifacts/mark-source-rule-compiler-v1/runtime.txt artifact-staging/blind-atlas/compiler/
+          cp artifact-staging/blind-evidence/mark-conveyor-input-v1/compiler-normalization-custody.json artifact-staging/blind-atlas/normalization/
+      - name: Publish frozen atlas summary while provenance is still sealed
+        shell: bash
+        run: |
+          echo '### Mark source-rule atlas v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-source-rule-atlas-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind source-rule atlas
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/blind-atlas/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: [seal-evidence, blind-atlas]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen blind atlas
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/blind-atlas
+      - name: Download contextual custody only after atlas freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-custody
+          path: artifact-staging/context-custody
+      - name: Rejoin exact source provenance against immutable atlas hash
+        env:
+          MARK_SOURCE_RULE_ATLAS: artifact-staging/blind-atlas/source-rule-atlas
+          MARK_HARVEST_REJOIN: artifact-staging/context-custody/mark-harvest-rejoin-v1/mark-harvest-custody-rejoin-v1.json
+          MARK_SOURCE_RULE_REJOIN_OUT: artifacts/mark-source-rule-atlas-context-v1
+        run: python3 scripts/rejoin-mark-source-rule-atlas.py
+      - name: Publish source-level contextual rejoin separately
+        shell: bash
+        run: |
+          echo '### Mark source-rule atlas v1 — provenance rejoined after atlas freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-source-rule-atlas-context-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload source-level contextual rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-rejoin
+          path: artifacts/mark-source-rule-atlas-context-v1/**
+          if-no-files-found: error
+          retention-days: 30
