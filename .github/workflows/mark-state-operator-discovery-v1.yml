@@ -1,0 +1,166 @@
+name: Mark State Operator Discovery v1
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/src/bin/mark-observation-topology-atlas.rs"
+      - "scripts/discover-mark-state-operators.py"
+      - "scripts/rejoin-mark-state-operators.py"
+      - "research/mark/discovery-experiments/state-operator-discovery-v1.protocol.json"
+      - ".github/workflows/mark-state-operator-discovery-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_LOCAL_STATE_RUN_ID: 33767475851
+  MARK_TRANSITION_RUN_ID: 33773740050
+  MARK_OPERATOR_PROTOCOL: research/mark/discovery-experiments/state-operator-discovery-v1.protocol.json
+  MARK_V7_MAX_RSS_KB: 524288
+
+jobs:
+  blind-operator-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate operator protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_OPERATOR_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-state-operators.py scripts/rejoin-mark-state-operators.py
+      - name: Download the exact sealed compiler evidence only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/blind-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download the frozen local-state field without provenance
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-local-state-field-v1-frozen
+          path: artifact-staging/local-state-field
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_LOCAL_STATE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download the frozen transition grammar without provenance
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-frozen
+          path: artifact-staging/transition-grammar
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_TRANSITION_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Test and build frozen v7 plus topology projector
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-observation-topology-atlas
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bins
+      - name: Reproduce the exact frozen physical event world under 512 MB
+        shell: bash
+        env:
+          MARK_V7_COMPILER_INPUT: artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_V7_OUT: artifacts/mark-state-operator-compiler-v1
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_V7_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$MARK_V7_COMPILER_INPUT" \
+              --out "$MARK_V7_OUT" \
+              --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
+          ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
+      - name: Project raw anonymous topology below the frozen states
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_merkle="$(python3 - <<'PY'
+          import json
+          print(json.load(open('artifact-staging/local-state-field/compiler-custody/custody.json'))['physicalLedger']['merkleRoot'])
+          PY
+          )"
+          mkdir -p artifacts/mark-observation-topology-atlas-v1
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-observation-topology-atlas \
+              --events artifacts/mark-state-operator-compiler-v1/events.jsonl \
+              --custody artifacts/mark-state-operator-compiler-v1/custody.json \
+              --input artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
+              --expected-merkle "$expected_merkle" \
+              --out artifacts/mark-observation-topology-atlas-v1
+          ) 2> >(tee artifacts/mark-observation-topology-atlas-v1/runtime.txt >&2)
+      - name: Discover State 2 branch operators with provenance sealed
+        env:
+          MARK_TOPOLOGY_ATLAS: artifacts/mark-observation-topology-atlas-v1
+          MARK_LOCAL_STATE_FIELD: artifact-staging/local-state-field
+          MARK_TRANSITION_GRAMMAR: artifact-staging/transition-grammar
+          MARK_OPERATOR_OUT: artifacts/mark-state-operator-discovery-v1
+        run: python3 scripts/discover-mark-state-operators.py
+      - name: Free bulky physical ledgers after operator freeze
+        run: rm -f artifacts/mark-state-operator-compiler-v1/events.jsonl artifacts/mark-state-operator-compiler-v1/grammar-contributions.jsonl
+      - name: Stage frozen blind operator evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/operator/topology-atlas artifact-staging/operator/compiler-custody
+          cp -a artifacts/mark-state-operator-discovery-v1/. artifact-staging/operator/
+          cp -a artifacts/mark-observation-topology-atlas-v1/. artifact-staging/operator/topology-atlas/
+          cp artifacts/mark-state-operator-compiler-v1/custody.json artifact-staging/operator/compiler-custody/
+      - name: Publish blind operator summary
+        shell: bash
+        run: |
+          echo '### Mark state operator discovery v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-state-operator-discovery-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind operator packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/operator/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: blind-operator-discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen operator packet first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/operator
+      - name: Download source provenance only after operator SHA exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-rejoin
+          path: artifact-staging/context
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Rejoin provenance without changing features or predictions
+        env:
+          MARK_OPERATOR_PACKET: artifact-staging/operator
+          MARK_SOURCE_CONTEXT: artifact-staging/context
+          MARK_OPERATOR_REJOIN_OUT: artifacts/mark-state-operator-discovery-v1-context
+        run: python3 scripts/rejoin-mark-state-operators.py
+      - name: Publish operator provenance summary
+        shell: bash
+        run: |
+          echo '### Mark state operator discovery v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-state-operator-discovery-v1-context/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload contextual operator rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-context-rejoin
+          path: artifacts/mark-state-operator-discovery-v1-context/**
+          if-no-files-found: error
+          retention-days: 30
