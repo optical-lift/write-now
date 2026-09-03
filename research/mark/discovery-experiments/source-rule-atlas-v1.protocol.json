@@ -1,0 +1,45 @@
+{
+  "schema": "mark_source_rule_atlas_protocol_v1",
+  "experimentId": "mark:source-rule-atlas:v1",
+  "parentExperimentId": "mark:blind-discovery:v1",
+  "purpose": "Project the complete already-frozen blind rule set back onto anonymous source objects without reopening provenance, so co-occurring relational programs can be studied at source level without retaining the full physical event ledger.",
+  "inputContract": {
+    "rules": "all train-derived rules from the immutable blind discovery packet, in frozen blind-rank order",
+    "sourceUniverse": "all sourceGroupIds from the sealed blind compiler input",
+    "physicalEvidence": "the exact append-only v7 physical event ledger whose chunk hashes and Merkle root are recorded in compiler custody",
+    "provenanceAvailable": false
+  },
+  "projectionContract": {
+    "sourcePixelsRemeasured": false,
+    "centerEventsOnly": true,
+    "unresolvedArmsExcludedFromGrammarMultiplicity": true,
+    "contextMultiplicity": "for a center with context-arm multiplicity c and resolved degree d, contextCount += c * (d - 1)",
+    "predictedMultiplicityDifferentArm": "contextArmCount * predictedOutcomeArmCount",
+    "predictedMultiplicitySameArm": "contextArmCount * (contextArmCount - 1)",
+    "sparseRowRule": "emit one anonymous source-rule row iff contextCount > 0",
+    "allFrozenRulesProjected": true,
+    "postHocRuleFiltering": false,
+    "postHocSourceFiltering": false
+  },
+  "custodyContract": {
+    "verifyPhysicalLedgerLineCount": true,
+    "verifyEveryPhysicalLedgerChunkHash": true,
+    "verifyPhysicalLedgerMerkleRoot": true,
+    "atlasHashWrittenBeforeProvenanceRejoin": true,
+    "bulkyPhysicalAndContributionLedgersMayBeDeletedOnlyAfterAtlasFreeze": true
+  },
+  "rejoinContract": {
+    "provenanceMayReopenOnlyAfterAtlasHashExists": true,
+    "sourceRuleCountsMayNotChangeAfterRejoin": true,
+    "blindRuleRanksMayNotChangeAfterRejoin": true,
+    "rejoinMayAttach": [
+      "institution",
+      "objectId",
+      "sourceUrl",
+      "rightsBasis",
+      "source context already present in custody"
+    ],
+    "semanticMeaningAssigned": false
+  },
+  "acceptanceCorpus": "same machine-enumerated 714-source Cleveland / Bavarian State Library / Library of Congress corpus used by blind-discovery v1; widening source diversity is a later experiment after this capability passes"
+}
