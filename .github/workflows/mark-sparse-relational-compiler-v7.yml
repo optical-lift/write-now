@@ -13,7 +13,6 @@ on:
       - "research/mark/harvest-feeds/**"
       - "research/mark/harvest-manifests/v5-fixture-**"
       - "research/mark/feed-fixtures/v5/**"
-      - "research/mark/live-v7-smoke.flag"
       - "docs/mark-sparse-relational-compiler-v7.md"
       - ".github/workflows/mark-sparse-relational-compiler-v7.yml"
   workflow_dispatch:
@@ -42,30 +41,38 @@ jobs:
           node --check scripts/assert-mark-sparse-compiler-v7.mjs
           cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
       - name: Expand live heterogeneous source feeds
-        if: github.event_name == 'workflow_dispatch' || hashFiles('research/mark/live-v7-smoke.flag') != ''
+        if: github.event_name == 'workflow_dispatch'
         run: |
-          MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/aic-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-aic node scripts/expand-mark-open-access-feed.mjs
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/cleveland-firehose-train.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-cleveland node scripts/expand-mark-open-access-feed.mjs
           MARK_IIIF_FEED_REQUEST=research/mark/harvest-feeds/bsb-iiif-holdout.v1.json MARK_IIIF_FEED_OUT=artifacts/v7-feed-bsb node scripts/expand-mark-iiif-feed.mjs
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-feed-loc node scripts/expand-mark-open-access-feed.mjs
       - name: Compose synthetic custody-safe CI packet
-        if: github.event_name != 'workflow_dispatch' && hashFiles('research/mark/live-v7-smoke.flag') == ''
+        if: github.event_name != 'workflow_dispatch'
         env:
           MARK_CHALLENGE_ID: mark:v7-fixture:sparse-relational-compiler
           MARK_CHALLENGE_MANIFESTS: research/mark/harvest-manifests/v5-fixture-train-a.v1.json,research/mark/harvest-manifests/v5-fixture-train-b.v1.json,research/mark/harvest-manifests/v5-fixture-holdout.v1.json,research/mark/harvest-manifests/v5-fixture-control.v1.json
         run: node scripts/compose-mark-real-corpus-challenge.mjs
       - name: Compose live sealed transfer packet
-        if: github.event_name == 'workflow_dispatch' || hashFiles('research/mark/live-v7-smoke.flag') != ''
+        if: github.event_name == 'workflow_dispatch'
         env:
-          MARK_CHALLENGE_ID: mark:v7:heterogeneous-sparse-smoke-v1
-          MARK_CHALLENGE_MANIFESTS: artifacts/v7-feed-aic/generated-harvest-manifest.v1.json,artifacts/v7-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v7-feed-bsb/generated-harvest-manifest.v1.json,artifacts/v7-feed-loc/generated-harvest-manifest.v1.json
+          MARK_CHALLENGE_ID: mark:v7:heterogeneous-sparse-live-v1
+          MARK_CHALLENGE_MANIFESTS: artifacts/v7-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v7-feed-bsb/generated-harvest-manifest.v1.json,artifacts/v7-feed-loc/generated-harvest-manifest.v1.json
         run: node scripts/compose-mark-real-corpus-challenge.mjs
-      - name: Harvest exact physical custody and audit exclusions
+      - name: Harvest live physical custody and audit exclusions
+        if: github.event_name == 'workflow_dispatch'
         env:
           MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
           MARK_CONTINUITY_KEY: mark-v7-${{ github.run_id }}-${{ github.sha }}
           MARK_NEAR_DUPLICATE_BITS: 2
           MARK_HARVEST_MIN_PER_LANE: 12
+        run: node scripts/harvest-mark-sources.mjs
+      - name: Harvest synthetic custody fixture
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          MARK_HARVEST_MANIFEST: artifacts/mark-real-corpus-challenge-v1/generated-challenge-harvest-manifest.v1.json
+          MARK_CONTINUITY_KEY: mark-v7-fixture-continuity-v1
+          MARK_NEAR_DUPLICATE_BITS: 2
+          MARK_HARVEST_MIN_PER_LANE: 1
         run: node scripts/harvest-mark-sources.mjs
       - name: Propose blind multiscale observations
         env:

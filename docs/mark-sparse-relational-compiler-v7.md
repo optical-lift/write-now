@@ -26,10 +26,18 @@ Masked grammar is computed from exact multiplicities. If a center has `a` arms o
 
 Within each observation and null iteration, arm tokens are deterministically permuted only among centers having the same center kind and degree. This preserves center inventory, center kind, degree sequence, arm-token inventory, source, observation and lane while breaking which arm tokens co-occur at a particular center.
 
-## Acceptance gate
+## Live architecture gate — passed
 
-The first v7 gate is architectural, not historical. The exact live v6 smoke acquisition is rerun. After audited retrieval exclusions, the compiler must process the surviving blind corpus under a hard 512 MB virtual-memory ceiling. CI also records maximum resident set size and fails if it exceeds 512 MB.
+The first v7 gate reran the exact live acquisition that repeatedly exhausted v6. It composed 96 source records and, after audited retrieval exclusions, retained 72 independent witnesses: 24 train, 24 holdout and 24 control. Those witnesses produced the same 2,497 machine-proposed blind observations.
 
-Passing this gate does not authorize a historical interpretation. It only establishes that Mark can ingest real heterogeneous physical evidence without requiring memory proportional to a fully materialized relational world.
+Under a hard 512 MB virtual-memory ceiling, the release compiler completed all 2,497 observations in 1 minute 37.50 seconds with a measured maximum resident set size of **32,316 KB**. It processed 5,118 bounded tiles, emitted 1,601,035 anonymous centers and 1,651,131 append-only events, reduced 36,081,360 sharded grammar rows representing 8,034,004 observed pair-weight without materializing those pairs, and sealed the ledger with Merkle root `8b1b1588d74dcffd18032cbbf94e773e8f34ace45413d9f3b5b92d55eb483c48`.
 
-After the live gate passes, the one-shot `research/mark/live-v7-smoke.flag` is removed and ordinary PR CI returns to the custody-safe synthetic fixture. The next scale gates are 10× and 100× before the genuinely heterogeneous world conveyor is treated as a scientific experiment.
+The architecture assertion passed. This is a scalability result, not historical evidence.
+
+The smoke discovered two recurrent training rules. Observed transfer accuracy exceeded the degree/kind-preserving null by only about 0.00188 in holdout and 0.00248 in control. Those tiny lifts are explicitly **not** treated as support for any historical hypothesis; the live run exists to prove the compiler can carry real heterogeneous physical evidence through the blind machinery without a memory model that collapses at world scale.
+
+## Permanent CI contract
+
+Pull-request CI uses the custody-safe synthetic fixture with a fixture-sized lane-retention minimum. Live heterogeneous acquisition is now explicit `workflow_dispatch` only and retains the 12-witness-per-lane minimum. Both routes compile through the same Rust binary and the same hard 512 MB memory gate.
+
+The next scale gates are 10× and 100× before the genuinely heterogeneous world conveyor is treated as a scientific experiment.

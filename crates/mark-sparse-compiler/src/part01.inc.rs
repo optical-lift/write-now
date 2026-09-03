@@ -70,10 +70,7 @@ fn default_threshold() -> Value {
 
 #[derive(Debug, Clone)]
 struct CenterEvidence {
-    id: String,
     kind: &'static str,
-    x: u32,
-    y: u32,
     arms: Vec<String>,
 }
 
