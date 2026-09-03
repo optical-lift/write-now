@@ -28,8 +28,16 @@ r1_topology = "r1TopologyTokenMutation"
 r2_topology = "r2TopologyTokenMutation"
 r1_length = "r1LengthAwareTokenMutation"
 r2_length = "r2LengthAwareTokenMutation"
-r1_transfer = cleveland_gate(r1_topology) and lane_gate("holdout", r1_topology)
-r2_transfer = cleveland_gate(r2_topology) and lane_gate("holdout", r2_topology)
+r1_primary_ids = [r1_topology, r1_length]
+r2_primary_ids = [r2_topology, r2_length]
+primary_bavaria_transfer = {
+    feature_id: cleveland_gate(feature_id) and lane_gate("holdout", feature_id)
+    for feature_id in primary_ids
+}
+r1_passing_primary = [feature_id for feature_id in r1_primary_ids if primary_bavaria_transfer[feature_id]]
+r2_passing_primary = [feature_id for feature_id in r2_primary_ids if primary_bavaria_transfer[feature_id]]
+r1_transfer = bool(r1_passing_primary)
+r2_transfer = bool(r2_passing_primary)
 if r2_transfer:
     structural_adjudication = "radius2_composes_candidate_structural_syllables"
 elif r1_transfer:
@@ -76,6 +84,9 @@ core = {
         "structural": structural_adjudication,
         "radius1Transfer": r1_transfer,
         "radius2Transfer": r2_transfer,
+        "primaryBavariaTransfers": primary_bavaria_transfer,
+        "radius1PassingPrimaryFeatures": r1_passing_primary,
+        "radius2PassingPrimaryFeatures": r2_passing_primary,
         "lengthRole": length_notes,
         "threeLanePrimaryClaims": three_lane,
     },
@@ -108,6 +119,8 @@ summary_lines = [
     f"eligible_pairs={len(pair_rows)}",
     f"eligible_train_pairs={len(train_rows)}",
     f"structural_adjudication={structural_adjudication}",
+    f"radius1_passing_primary={','.join(r1_passing_primary) if r1_passing_primary else 'none'}",
+    f"radius2_passing_primary={','.join(r2_passing_primary) if r2_passing_primary else 'none'}",
 ]
 for lane in sorted(results):
     for item in observables:
@@ -136,6 +149,8 @@ md = [
     f"- Parent V5 edge world: `{world_sha}`",
     f"- Eligible pairs: **{len(pair_rows)}** total / **{len(train_rows)}** Cleveland train",
     f"- Structural adjudication: **{structural_adjudication}**",
+    f"- Radius-1 primary features passing Cleveland + Bavaria: **{', '.join(r1_passing_primary) if r1_passing_primary else 'none'}**",
+    f"- Radius-2 primary features passing Cleveland + Bavaria: **{', '.join(r2_passing_primary) if r2_passing_primary else 'none'}**",
     "",
     "| Lane | Motif observable | Effect | Families | Pairs | Cleveland null ≥ |",
     "| --- | --- | ---: | ---: | ---: | ---: |",
