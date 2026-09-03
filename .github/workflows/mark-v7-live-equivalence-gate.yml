@@ -6,6 +6,7 @@ on:
       - "crates/mark-sparse-compiler/**"
       - "scripts/harvest-mark-sources.mjs"
       - "scripts/propose-mark-observables.mjs"
+      - "scripts/normalize-mark-v7-compiler-input.mjs"
       - "scripts/expand-mark-open-access-feed.mjs"
       - "scripts/expand-mark-iiif-feed.mjs"
       - "scripts/compose-mark-real-corpus-challenge.mjs"
@@ -66,6 +67,25 @@ jobs:
           if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("shared blind input SHA-256 verification failed");
           console.log(`shared sealed input ${blindInputSha256}`);
           NODE
+      - name: Normalize vector captures only at compiler boundary
+        env:
+          MARK_PROPOSAL_BLIND_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json
+          MARK_V7_COMPILER_INPUT: artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_V7_NORMALIZATION_CUSTODY: artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json
+        run: node scripts/normalize-mark-v7-compiler-input.mjs
+      - name: Verify normalized input custody
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import crypto from "node:crypto";
+          const input=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json","utf8"));
+          const {blindInputSha256,...core}=input;
+          const computed=crypto.createHash("sha256").update(JSON.stringify(core)).digest("hex");
+          if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("normalized compiler input SHA-256 verification failed");
+          const custody=JSON.parse(fs.readFileSync("artifacts/mark-conveyor-input-v1/compiler-normalization-custody.json","utf8"));
+          if(custody.compilerBlindInputSha256!==blindInputSha256) throw new Error("normalization custody does not match compiler input");
+          console.log(`normalized compiler input ${blindInputSha256}; captures=${custody.captures?.length ?? 0}`);
+          NODE
       - name: Build exact row baseline and rowless sufficient-statistics binary
         run: |
           set -euo pipefail
@@ -89,7 +109,7 @@ jobs:
           (
             ulimit -v "$MARK_V7_MAX_RSS_KB"
             /usr/bin/time -v /tmp/mark-v7-baseline compile \
-              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json \
+              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
               --out artifacts/mark-v7-equivalence-baseline \
               --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
           ) 2> >(tee artifacts/mark-v7-equivalence-baseline/runtime.txt >&2)
@@ -107,7 +127,7 @@ jobs:
           (
             ulimit -v "$MARK_V7_MAX_RSS_KB"
             /usr/bin/time -v /tmp/mark-v7-sufficient compile \
-              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json \
+              --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
               --out artifacts/mark-v7-equivalence-sufficient \
               --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
           ) 2> >(tee artifacts/mark-v7-equivalence-sufficient/runtime.txt >&2)
