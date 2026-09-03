@@ -1,13 +1,196 @@
-fn reduce_shards(shard_dir:&Path,out_dir:&Path,null_iterations:usize,min_sources:usize)->Result<Value>{
- let mut rule_writer=BufWriter::new(File::create(out_dir.join("rules.jsonl"))?);let mut rule_count=0u64;let mut observed=HashMap::<String,Score>::new();let mut null_scores:HashMap<(String,usize),Score>=HashMap::new();
- for shard in 0..SHARDS{let path=shard_dir.join(format!("grammar-{shard:02}.tsv"));let mut train:HashMap<String,HashMap<String,OutcomeAgg>>=HashMap::new();
-  {let reader=BufReader::new(File::open(&path)?);for line in reader.lines(){let line=line?;let parts:Vec<&str>=line.split('\t').collect();if parts.len()!=7{bail!("malformed grammar shard line in {}",path.display());}let iteration:i32=parts[0].parse()?;if iteration!=-1||parts[1]!="train"{continue;}let source=parts[2].to_string();let context=parts[4].to_string();let outcome=parts[5].to_string();let count:u64=parts[6].parse()?;let agg=train.entry(context).or_default().entry(outcome).or_default();agg.count+=count as u128;agg.sources.insert(source);}}
-  let mut rules=HashMap::<String,Rule>::new();for(context,outcomes)in train{let mut context_sources=HashSet::new();for agg in outcomes.values(){context_sources.extend(agg.sources.iter().cloned());}if context_sources.len()<min_sources{continue;}let mut ranked:Vec<(String,usize,u128)>=outcomes.into_iter().map(|(outcome,agg)|(outcome,agg.sources.len(),agg.count)).collect();ranked.sort_by(|a,b|b.1.cmp(&a.1).then_with(||b.2.cmp(&a.2)).then_with(||a.0.cmp(&b.0)));let Some(best)=ranked.first()else{continue;};let rule=Rule{outcome:best.0.clone(),distinct_sources:best.1,total_count:best.2,context_sources:context_sources.len()};serde_json::to_writer(&mut rule_writer,&json!({"schema":"mark_sparse_rule_v1","context":context,"predictedOutcome":rule.outcome,"distinctSourceObjects":rule.distinct_sources,"contextSourceObjects":rule.context_sources,"supportCount":rule.total_count.to_string()}))?;rule_writer.write_all(b"\n")?;rule_count+=1;rules.insert(context,rule);}
-  let reader=BufReader::new(File::open(&path)?);for line in reader.lines(){let line=line?;let parts:Vec<&str>=line.split('\t').collect();if parts.len()!=7{bail!("malformed grammar shard line in {}",path.display());}let iteration:i32=parts[0].parse()?;let lane=parts[1];if lane!="holdout"&&lane!="control"{continue;}let context=parts[4];let outcome=parts[5];let count:u64=parts[6].parse()?;let score=if iteration==-1{observed.entry(lane.to_string()).or_default()}else{if iteration<0||iteration as usize>=null_iterations{continue;}null_scores.entry((lane.to_string(),iteration as usize)).or_default()};score.examples+=count as u128;if let Some(rule)=rules.get(context){score.covered+=count as u128;if rule.outcome==outcome{score.correct+=count as u128;}}}
- }
- rule_writer.flush()?;let lane_summary=|lane:&str|{let obs=observed.get(lane).cloned().unwrap_or_default();let mut null_accuracy=Vec::new();let mut null_coverage=Vec::new();for i in 0..null_iterations{let s=null_scores.get(&(lane.to_string(),i)).cloned().unwrap_or_default();null_accuracy.push(ratio(s.correct,s.covered));null_coverage.push(ratio(s.covered,s.examples));}let mean_acc=mean(&null_accuracy);let mean_cov=mean(&null_coverage);json!({"examples":obs.examples.to_string(),"covered":obs.covered.to_string(),"correct":obs.correct.to_string(),"coverage":ratio(obs.covered,obs.examples),"accuracy":ratio(obs.correct,obs.covered),"nullMeanCoverage":mean_cov,"nullMeanAccuracy":mean_acc,"accuracyLift":ratio(obs.correct,obs.covered)-mean_acc,"nullIterations":null_iterations})};
- Ok(json!({"schema":"mark_sparse_transfer_evaluation_v1","rules":rule_count,"holdout":lane_summary("holdout"),"control":lane_summary("control"),"nullContract":"within each observation, arm tokens are deterministically permuted only among centers with identical center kind and degree; center inventory, degree sequence, arm-token inventory, lane, source and observation remain fixed"}))
+impl StatsStore {
+    fn commit_source(&mut self, source: &SourceGrammar) -> Result<u64> {
+        let transaction = self.connection.transaction()?;
+        let mut contexts = BTreeMap::<(i32, String, String), ()>::new();
+
+        {
+            let mut grammar = transaction.prepare(
+                "INSERT INTO grammar_stats(iteration,lane,context,outcome,count,source_count)
+                 VALUES(?1,?2,?3,?4,?5,1)
+                 ON CONFLICT(iteration,lane,context,outcome) DO UPDATE SET
+                   count = grammar_stats.count + excluded.count,
+                   source_count = grammar_stats.source_count + 1",
+            )?;
+            for ((iteration, lane, context, outcome), count) in source {
+                let count_i64 = i64::try_from(*count).map_err(|_| {
+                    anyhow!(
+                        "grammar count exceeds SQLite exact integer range for {iteration}/{lane}/{context}/{outcome}"
+                    )
+                })?;
+                grammar.execute(params![iteration, lane, context, outcome, count_i64])?;
+                contexts.insert((*iteration, lane.clone(), context.clone()), ());
+            }
+        }
+
+        {
+            let mut context = transaction.prepare(
+                "INSERT INTO context_stats(iteration,lane,context,source_count)
+                 VALUES(?1,?2,?3,1)
+                 ON CONFLICT(iteration,lane,context) DO UPDATE SET
+                   source_count = context_stats.source_count + 1",
+            )?;
+            for ((iteration, lane, context_key), _) in contexts {
+                context.execute(params![iteration, lane, context_key])?;
+            }
+        }
+
+        transaction.commit()?;
+        Ok(source.len() as u64)
+    }
+
+    fn build_rules(&mut self, out_dir: &Path, min_sources: usize) -> Result<u64> {
+        self.connection.execute("DELETE FROM rules", [])?;
+        self.connection.execute(
+            "INSERT INTO rules(context,outcome,distinct_sources,total_count,context_sources)
+             SELECT context,outcome,source_count,count,context_sources
+             FROM (
+               SELECT
+                 g.context AS context,
+                 g.outcome AS outcome,
+                 g.source_count AS source_count,
+                 g.count AS count,
+                 c.source_count AS context_sources,
+                 ROW_NUMBER() OVER (
+                   PARTITION BY g.context
+                   ORDER BY g.source_count DESC, g.count DESC, g.outcome ASC
+                 ) AS rank
+               FROM grammar_stats g
+               JOIN context_stats c
+                 ON c.iteration=g.iteration AND c.lane=g.lane AND c.context=g.context
+               WHERE g.iteration=-1 AND g.lane='train' AND c.source_count>=?1
+             ) ranked
+             WHERE rank=1",
+            params![i64::try_from(min_sources)?],
+        )?;
+
+        let mut writer = BufWriter::new(File::create(out_dir.join("rules.jsonl"))?);
+        let mut statement = self.connection.prepare(
+            "SELECT context,outcome,distinct_sources,total_count,context_sources
+             FROM rules ORDER BY context",
+        )?;
+        let mut rows = statement.query([])?;
+        let mut count = 0u64;
+        while let Some(row) = rows.next()? {
+            let context: String = row.get(0)?;
+            let outcome: String = row.get(1)?;
+            let distinct_sources: i64 = row.get(2)?;
+            let total_count: i64 = row.get(3)?;
+            let context_sources: i64 = row.get(4)?;
+            serde_json::to_writer(
+                &mut writer,
+                &json!({
+                    "schema":"mark_sparse_rule_v1",
+                    "context":context,
+                    "predictedOutcome":outcome,
+                    "distinctSourceObjects":distinct_sources,
+                    "contextSourceObjects":context_sources,
+                    "supportCount":total_count.to_string()
+                }),
+            )?;
+            writer.write_all(b"\n")?;
+            count += 1;
+        }
+        writer.flush()?;
+        Ok(count)
+    }
+
+    fn score_for(&self, lane: &str, iteration: i32) -> Result<Score> {
+        let mut statement = self.connection.prepare(
+            "SELECT g.count,g.outcome,r.outcome
+             FROM grammar_stats g
+             LEFT JOIN rules r ON r.context=g.context
+             WHERE g.lane=?1 AND g.iteration=?2",
+        )?;
+        let mut rows = statement.query(params![lane, iteration])?;
+        let mut score = Score::default();
+        while let Some(row) = rows.next()? {
+            let count: i64 = row.get(0)?;
+            if count < 0 {
+                bail!("negative grammar count in sufficient-statistics database");
+            }
+            let count = count as u128;
+            let actual: String = row.get(1)?;
+            let predicted: Option<String> = row.get(2)?;
+            score.examples += count;
+            if let Some(predicted) = predicted {
+                score.covered += count;
+                if predicted == actual {
+                    score.correct += count;
+                }
+            }
+        }
+        Ok(score)
+    }
+
+    fn evaluation(&self, null_iterations: usize, rule_count: u64) -> Result<Value> {
+        let lane_summary = |lane: &str| -> Result<Value> {
+            let observed = self.score_for(lane, -1)?;
+            let mut null_accuracy = Vec::with_capacity(null_iterations);
+            let mut null_coverage = Vec::with_capacity(null_iterations);
+            for iteration in 0..null_iterations {
+                let score = self.score_for(lane, iteration as i32)?;
+                null_accuracy.push(ratio(score.correct, score.covered));
+                null_coverage.push(ratio(score.covered, score.examples));
+            }
+            let mean_accuracy = mean(&null_accuracy);
+            let mean_coverage = mean(&null_coverage);
+            Ok(json!({
+                "examples":observed.examples.to_string(),
+                "covered":observed.covered.to_string(),
+                "correct":observed.correct.to_string(),
+                "coverage":ratio(observed.covered,observed.examples),
+                "accuracy":ratio(observed.correct,observed.covered),
+                "nullMeanCoverage":mean_coverage,
+                "nullMeanAccuracy":mean_accuracy,
+                "accuracyLift":ratio(observed.correct,observed.covered)-mean_accuracy,
+                "nullIterations":null_iterations
+            }))
+        };
+
+        Ok(json!({
+            "schema":"mark_sparse_transfer_evaluation_v1",
+            "rules":rule_count,
+            "holdout":lane_summary("holdout")?,
+            "control":lane_summary("control")?,
+            "nullContract":"within each observation, arm tokens are deterministically permuted only among centers with identical center kind and degree; center inventory, degree sequence, arm-token inventory, lane, source and observation remain fixed"
+        }))
+    }
+
+    fn storage_counts(&self) -> Result<(u64, u64)> {
+        let grammar: i64 = self
+            .connection
+            .query_row("SELECT COUNT(*) FROM grammar_stats", [], |row| row.get(0))?;
+        let contexts: i64 = self
+            .connection
+            .query_row("SELECT COUNT(*) FROM context_stats", [], |row| row.get(0))?;
+        Ok((grammar as u64, contexts as u64))
+    }
 }
-fn ratio(n:u128,d:u128)->f64{if d==0{0.0}else{n as f64/d as f64}}
-fn mean(values:&[f64])->f64{if values.is_empty(){0.0}else{values.iter().sum::<f64>()/values.len()as f64}}
-fn parse_arg(args:&[String],name:&str,default:Option<&str>)->Result<String>{if let Some(pos)=args.iter().position(|a|a==name){return args.get(pos+1).cloned().ok_or_else(||anyhow!("missing value for {name}"));}default.map(str::to_owned).ok_or_else(||anyhow!("required argument {name}"))}
+
+fn ratio(n: u128, d: u128) -> f64 {
+    if d == 0 {
+        0.0
+    } else {
+        n as f64 / d as f64
+    }
+}
+
+fn mean(values: &[f64]) -> f64 {
+    if values.is_empty() {
+        0.0
+    } else {
+        values.iter().sum::<f64>() / values.len() as f64
+    }
+}
+
+fn parse_arg(args: &[String], name: &str, default: Option<&str>) -> Result<String> {
+    if let Some(pos) = args.iter().position(|a| a == name) {
+        return args
+            .get(pos + 1)
+            .cloned()
+            .ok_or_else(|| anyhow!("missing value for {name}"));
+    }
+    default
+        .map(str::to_owned)
+        .ok_or_else(|| anyhow!("required argument {name}"))
+}
