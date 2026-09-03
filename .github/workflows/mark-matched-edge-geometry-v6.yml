@@ -3,7 +3,7 @@ name: Mark Matched Edge Geometry v6
 on:
   pull_request:
     paths:
-      - "scripts/evaluate-mark-matched-edge-geometry.py"
+      - "scripts/evaluate-mark-matched-edge-geometry*.py"
       - "research/mark/discovery-experiments/matched-edge-geometry-v6.protocol.json"
       - ".github/workflows/mark-matched-edge-geometry-v6.yml"
   workflow_dispatch:
@@ -30,6 +30,8 @@ jobs:
         run: |
           python3 -m json.tool "$MARK_MATCH_PROTOCOL" >/dev/null
           python3 -m py_compile scripts/evaluate-mark-matched-edge-geometry.py
+          cat scripts/evaluate-mark-matched-edge-geometry.part{0,1,2,3}.inc.py > /tmp/evaluate-mark-matched-edge-geometry-v6.py
+          python3 -m py_compile /tmp/evaluate-mark-matched-edge-geometry-v6.py
 
       - name: Install scalable center-correspondence dependency
         run: python3 -m pip install --disable-pip-version-check scipy
