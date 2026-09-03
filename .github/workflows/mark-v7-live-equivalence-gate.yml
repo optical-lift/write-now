@@ -66,16 +66,17 @@ jobs:
           if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("shared blind input SHA-256 verification failed");
           console.log(`shared sealed input ${blindInputSha256}`);
           NODE
-      - name: Materialize pre-compaction baseline source
+      - name: Build exact pre-compaction and compacted binaries
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$MARK_BASELINE_COMMIT"
-          cp crates/mark-sparse-compiler/src/part04.inc.rs /tmp/part04.compacted.rs
-          git show "$MARK_BASELINE_COMMIT:crates/mark-sparse-compiler/src/part04.inc.rs" > crates/mark-sparse-compiler/src/part04.inc.rs
-          cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
-          CARGO_TARGET_DIR=target/mark-v7-baseline cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
+          rm -rf /tmp/mark-v7-baseline-src
+          mkdir -p /tmp/mark-v7-baseline-src
+          git archive "$MARK_BASELINE_COMMIT" crates/mark-sparse-compiler \
+            | tar -x -C /tmp/mark-v7-baseline-src --strip-components=2
+          cargo check --manifest-path /tmp/mark-v7-baseline-src/Cargo.toml
+          CARGO_TARGET_DIR=target/mark-v7-baseline cargo build --release --manifest-path /tmp/mark-v7-baseline-src/Cargo.toml
           cp target/mark-v7-baseline/release/mark-sparse-compiler /tmp/mark-v7-baseline
-          mv /tmp/part04.compacted.rs crates/mark-sparse-compiler/src/part04.inc.rs
           cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
           CARGO_TARGET_DIR=target/mark-v7-compact cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
           cp target/mark-v7-compact/release/mark-sparse-compiler /tmp/mark-v7-compact
@@ -113,7 +114,6 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
-          import crypto from "node:crypto";
           const readJson = p => JSON.parse(fs.readFileSync(p,"utf8"));
           const baselineDir="artifacts/mark-v7-equivalence-proof/baseline";
           const compactDir="artifacts/mark-v7-equivalence-compact";
@@ -128,7 +128,6 @@ jobs:
             delete clone.grammarRows;
             return clone;
           };
-          const stable = value => JSON.stringify(value, Object.keys(value).sort());
           const deepEqual = (a,b) => JSON.stringify(a) === JSON.stringify(b);
           if(!deepEqual(normalizedSummary(baseline), normalizedSummary(compact))) throw new Error("compaction changed compiler summary evidence outside grammarRows");
           if(!deepEqual(baselineEval, compactEval)) throw new Error("compaction changed transfer evaluation");
@@ -139,16 +138,17 @@ jobs:
           if(!deepEqual(baselineRules, compactRules)) throw new Error("compaction changed learned rule sufficient statistics");
           if(!(compact.grammarRows * 10 < baseline.grammarRows)) throw new Error(`grammar row collapse below 10x: baseline=${baseline.grammarRows} compact=${compact.grammarRows}`);
           const rss = p => Number(fs.readFileSync(p,"utf8").match(/Maximum resident set size \(kbytes\):\s*(\d+)/)?.[1] ?? NaN);
+          const wall = p => fs.readFileSync(p,"utf8").match(/Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s*([^\n]+)/)?.[1]?.trim() ?? null;
+          const fsOut = p => Number(fs.readFileSync(p,"utf8").match(/File system outputs:\s*(\d+)/)?.[1] ?? NaN);
           const baselineRss=rss(`${baselineDir}/runtime.txt`), compactRss=rss(`${compactDir}/runtime.txt`);
           if(!Number.isFinite(baselineRss)||!Number.isFinite(compactRss)||compactRss>Number(process.env.MARK_V7_MAX_RSS_KB)) throw new Error("invalid or excessive compact RSS");
-          const proof={schema:"mark_v7_live_grammar_equivalence_v1",status:"passed",sourceBlindInputSha256:compact.sourceBlindInputSha256,sources:compact.sources,observations:compact.observations,centers:compact.centers,events:compact.events,observedPairWeight:compact.observedPairWeight,baselineGrammarRows:baseline.grammarRows,compactGrammarRows:compact.grammarRows,rowReduction:baseline.grammarRows/compact.grammarRows,baselineMaxRssKb:baselineRss,compactMaxRssKb:compactRss,ledgerMerkleRoot:compact.ledgerMerkleRoot,evaluation:compactEval};
+          const proof={schema:"mark_v7_live_grammar_equivalence_v1",status:"passed",baselineCommit:process.env.MARK_BASELINE_COMMIT,sourceBlindInputSha256:compact.sourceBlindInputSha256,sources:compact.sources,observations:compact.observations,centers:compact.centers,events:compact.events,observedPairWeight:compact.observedPairWeight,baselineGrammarRows:baseline.grammarRows,compactGrammarRows:compact.grammarRows,rowReduction:baseline.grammarRows/compact.grammarRows,baselineMaxRssKb:baselineRss,compactMaxRssKb:compactRss,baselineWallTime:wall(`${baselineDir}/runtime.txt`),compactWallTime:wall(`${compactDir}/runtime.txt`),baselineFilesystemOutputs:fsOut(`${baselineDir}/runtime.txt`),compactFilesystemOutputs:fsOut(`${compactDir}/runtime.txt`),ledgerMerkleRoot:compact.ledgerMerkleRoot,evaluation:compactEval};
           fs.mkdirSync("artifacts/mark-v7-equivalence-proof",{recursive:true});
           fs.writeFileSync("artifacts/mark-v7-equivalence-proof/equivalence.json",`${JSON.stringify(proof,null,2)}\n`);
           console.log(JSON.stringify(proof,null,2));
           NODE
       - name: Publish equivalence proof
-        run: |
-          cat artifacts/mark-v7-equivalence-proof/equivalence.json >> "$GITHUB_STEP_SUMMARY"
+        run: cat artifacts/mark-v7-equivalence-proof/equivalence.json >> "$GITHUB_STEP_SUMMARY"
       - name: Upload compact live equivalence evidence
         uses: actions/upload-artifact@v4
         with:
