@@ -1,6 +1,6 @@
 use anyhow::{anyhow, bail, Context, Result};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::json;
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, HashMap};
 use std::fs::{self, File};
@@ -149,23 +149,26 @@ fn merkle_root(hex_hashes: &[String]) -> Result<String> {
 }
 
 fn parse_rule(rule: FrozenRule) -> Result<RuleSpec> {
-    let rest = rule
-        .context
-        .strip_prefix("CENTER:")
-        .ok_or_else(|| anyhow!("unsupported frozen rule context {}", rule.context))?;
-    let (center_kind, context_arm) = rest
-        .split_once("|ARM:")
-        .ok_or_else(|| anyhow!("unsupported frozen rule context {}", rule.context))?;
-    if center_kind.is_empty() || context_arm.is_empty() || rule.predicted_outcome.is_empty() {
-        bail!("incomplete frozen rule {}", rule.context);
-    }
+    let context = rule.context;
+    let (center_kind, context_arm) = {
+        let rest = context
+            .strip_prefix("CENTER:")
+            .ok_or_else(|| anyhow!("unsupported frozen rule context {context}"))?;
+        let (center_kind, context_arm) = rest
+            .split_once("|ARM:")
+            .ok_or_else(|| anyhow!("unsupported frozen rule context {context}"))?;
+        if center_kind.is_empty() || context_arm.is_empty() || rule.predicted_outcome.is_empty() {
+            bail!("incomplete frozen rule {context}");
+        }
+        (center_kind.to_string(), context_arm.to_string())
+    };
     Ok(RuleSpec {
-        context: rule.context,
+        context,
         predicted_outcome: rule.predicted_outcome,
         blind_rank: rule.blind_rank,
         candidate_tier: rule.candidate_tier,
-        center_kind: center_kind.to_string(),
-        context_arm: context_arm.to_string(),
+        center_kind,
+        context_arm,
     })
 }
 
