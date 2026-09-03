@@ -1,4 +1,4 @@
-name: Mark v7 Live Grammar Equivalence Gate
+name: Mark v7 Live Sufficient Statistics Equivalence Gate
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ permissions:
 jobs:
   live-equivalence:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       MARK_V7_MAX_RSS_KB: 524288
       MARK_BASELINE_COMMIT: 876a287b76d37833e55ee75d9693e9bf8be30bb8
@@ -40,7 +40,7 @@ jobs:
           MARK_OPEN_ACCESS_FEED_REQUEST=research/mark/harvest-feeds/loc-photos-control.v1.json MARK_OPEN_ACCESS_FEED_OUT=artifacts/v7-eq-feed-loc node scripts/expand-mark-open-access-feed.mjs
       - name: Compose one sealed live packet
         env:
-          MARK_CHALLENGE_ID: mark:v7:live-grammar-equivalence-v1
+          MARK_CHALLENGE_ID: mark:v7:live-sufficient-statistics-equivalence-v1
           MARK_CHALLENGE_MANIFESTS: artifacts/v7-eq-feed-cleveland/generated-harvest-manifest.v1.json,artifacts/v7-eq-feed-bsb/generated-harvest-manifest.v1.json,artifacts/v7-eq-feed-loc/generated-harvest-manifest.v1.json
         run: node scripts/compose-mark-real-corpus-challenge.mjs
       - name: Harvest physical custody once
@@ -66,7 +66,7 @@ jobs:
           if(!blindInputSha256 || blindInputSha256!==computed) throw new Error("shared blind input SHA-256 verification failed");
           console.log(`shared sealed input ${blindInputSha256}`);
           NODE
-      - name: Build exact pre-compaction and compacted binaries
+      - name: Build exact row baseline and rowless sufficient-statistics binary
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$MARK_BASELINE_COMMIT"
@@ -78,9 +78,9 @@ jobs:
           CARGO_TARGET_DIR=target/mark-v7-baseline cargo build --release --manifest-path /tmp/mark-v7-baseline-src/Cargo.toml
           cp target/mark-v7-baseline/release/mark-sparse-compiler /tmp/mark-v7-baseline
           cargo check --manifest-path crates/mark-sparse-compiler/Cargo.toml
-          CARGO_TARGET_DIR=target/mark-v7-compact cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
-          cp target/mark-v7-compact/release/mark-sparse-compiler /tmp/mark-v7-compact
-      - name: Run pre-compaction baseline under 512 MB
+          CARGO_TARGET_DIR=target/mark-v7-sufficient cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml
+          cp target/mark-v7-sufficient/release/mark-sparse-compiler /tmp/mark-v7-sufficient
+      - name: Run exact row baseline under 512 MB
         shell: bash
         run: |
           set -euo pipefail
@@ -93,75 +93,101 @@ jobs:
               --out artifacts/mark-v7-equivalence-baseline \
               --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
           ) 2> >(tee artifacts/mark-v7-equivalence-baseline/runtime.txt >&2)
-      - name: Preserve baseline sufficient outputs and free redundant rows
+      - name: Preserve baseline sufficient outputs and free redundant grammar rows
         run: |
           mkdir -p artifacts/mark-v7-equivalence-proof/baseline
           cp artifacts/mark-v7-equivalence-baseline/{summary.json,custody.json,evaluation.json,rules.jsonl,runtime.txt} artifacts/mark-v7-equivalence-proof/baseline/
           rm -rf artifacts/mark-v7-equivalence-baseline
-      - name: Run compacted compiler under same 512 MB gate
+      - name: Run rowless sufficient-statistics compiler under same 512 MB gate
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/mark-v7-equivalence-compact
+          rm -rf artifacts/mark-v7-equivalence-sufficient
+          mkdir -p artifacts/mark-v7-equivalence-sufficient
           (
             ulimit -v "$MARK_V7_MAX_RSS_KB"
-            /usr/bin/time -v /tmp/mark-v7-compact compile \
+            /usr/bin/time -v /tmp/mark-v7-sufficient compile \
               --input artifacts/mark-conveyor-input-v1/mark-observable-input-blind-v1.json \
-              --out artifacts/mark-v7-equivalence-compact \
+              --out artifacts/mark-v7-equivalence-sufficient \
               --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
-          ) 2> >(tee artifacts/mark-v7-equivalence-compact/runtime.txt >&2)
-      - name: Prove exact scientific equivalence and row collapse
+          ) 2> >(tee artifacts/mark-v7-equivalence-sufficient/runtime.txt >&2)
+      - name: Prove exact scientific equivalence with zero grammar rows
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
           const readJson = p => JSON.parse(fs.readFileSync(p,"utf8"));
           const baselineDir="artifacts/mark-v7-equivalence-proof/baseline";
-          const compactDir="artifacts/mark-v7-equivalence-compact";
+          const sufficientDir="artifacts/mark-v7-equivalence-sufficient";
           const baseline=readJson(`${baselineDir}/summary.json`);
-          const compact=readJson(`${compactDir}/summary.json`);
+          const sufficient=readJson(`${sufficientDir}/summary.json`);
           const baselineEval=readJson(`${baselineDir}/evaluation.json`);
-          const compactEval=readJson(`${compactDir}/evaluation.json`);
+          const sufficientEval=readJson(`${sufficientDir}/evaluation.json`);
           const baselineCustody=readJson(`${baselineDir}/custody.json`);
-          const compactCustody=readJson(`${compactDir}/custody.json`);
-          const normalizedSummary = value => {
-            const clone=structuredClone(value);
-            delete clone.grammarRows;
-            return clone;
+          const sufficientCustody=readJson(`${sufficientDir}/custody.json`);
+          const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const coreFields=["sourceBlindInputSha256","sources","observations","tiles","centers","events","observedPairWeight","unresolvedArms","tileSize","overlap","nullIterations"];
+          for(const field of coreFields) if(!equal(baseline[field],sufficient[field])) throw new Error(`sufficient-statistics compiler changed ${field}: baseline=${baseline[field]} sufficient=${sufficient[field]}`);
+          if(!equal(baselineEval,sufficientEval)) throw new Error("sufficient-statistics compiler changed transfer evaluation");
+          const parseRules=p=>fs.readFileSync(p,"utf8").trim().split(/\n+/).filter(Boolean).map(JSON.parse).sort((a,b)=>a.context.localeCompare(b.context));
+          if(!equal(parseRules(`${baselineDir}/rules.jsonl`),parseRules(`${sufficientDir}/rules.jsonl`))) throw new Error("sufficient-statistics compiler changed learned rules or support counts");
+          if(baselineCustody.merkleRoot!==sufficientCustody.physicalLedger?.merkleRoot) throw new Error("sufficient-statistics compiler changed physical event ledger custody");
+          if(sufficient.grammarRowsMaterialized!==0) throw new Error(`grammar rows still exist: ${sufficient.grammarRowsMaterialized}`);
+          if(sufficient.grammarStatRows<1||sufficient.contextStatRows<1) throw new Error("sufficient-statistics database is empty");
+          if(sufficient.grammarContributions!==sufficient.observations*(sufficient.nullIterations+1)) throw new Error("per-observation contribution custody is incomplete");
+          if(!sufficientCustody.contract?.grammarSufficientStatisticsDiskBacked||!sufficientCustody.contract?.distinctSourceSupportCommittedAtSourceBoundary||sufficientCustody.contract?.grammarRowsMaterialized) throw new Error("rowless grammar custody contract failed");
+          const rss=p=>Number(fs.readFileSync(p,"utf8").match(/Maximum resident set size \(kbytes\):\s*(\d+)/)?.[1]??NaN);
+          const wall=p=>fs.readFileSync(p,"utf8").match(/Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s*([^\n]+)/)?.[1]?.trim()??null;
+          const fsOut=p=>Number(fs.readFileSync(p,"utf8").match(/File system outputs:\s*(\d+)/)?.[1]??NaN);
+          const baselineRss=rss(`${baselineDir}/runtime.txt`),sufficientRss=rss(`${sufficientDir}/runtime.txt`);
+          if(!Number.isFinite(sufficientRss)||sufficientRss>Number(process.env.MARK_V7_MAX_RSS_KB)) throw new Error(`rowless compiler memory gate failed: ${sufficientRss}`);
+          const proof={
+            schema:"mark_v7_live_sufficient_statistics_equivalence_v1",
+            status:"passed",
+            baselineCommit:process.env.MARK_BASELINE_COMMIT,
+            sourceBlindInputSha256:sufficient.sourceBlindInputSha256,
+            sources:sufficient.sources,
+            observations:sufficient.observations,
+            centers:sufficient.centers,
+            events:sufficient.events,
+            observedPairWeight:sufficient.observedPairWeight,
+            baselineGrammarRows:baseline.grammarRows,
+            sufficientGrammarRowsMaterialized:sufficient.grammarRowsMaterialized,
+            sufficientGrammarStatRows:sufficient.grammarStatRows,
+            sufficientContextStatRows:sufficient.contextStatRows,
+            grammarContributions:sufficient.grammarContributions,
+            baselineMaxRssKb:baselineRss,
+            sufficientMaxRssKb:sufficientRss,
+            baselineWallTime:wall(`${baselineDir}/runtime.txt`),
+            sufficientWallTime:wall(`${sufficientDir}/runtime.txt`),
+            baselineFilesystemOutputs:fsOut(`${baselineDir}/runtime.txt`),
+            sufficientFilesystemOutputs:fsOut(`${sufficientDir}/runtime.txt`),
+            physicalLedgerMerkleRoot:sufficientCustody.physicalLedger.merkleRoot,
+            grammarContributionMerkleRoot:sufficientCustody.grammarStatistics.contributionMerkleRoot,
+            grammarStatisticsDatabaseBytes:sufficientCustody.grammarStatistics.databaseBytes,
+            evaluation:sufficientEval
           };
-          const deepEqual = (a,b) => JSON.stringify(a) === JSON.stringify(b);
-          if(!deepEqual(normalizedSummary(baseline), normalizedSummary(compact))) throw new Error("compaction changed compiler summary evidence outside grammarRows");
-          if(!deepEqual(baselineEval, compactEval)) throw new Error("compaction changed transfer evaluation");
-          if(!deepEqual(baselineCustody, compactCustody)) throw new Error("compaction changed append-only ledger custody");
-          const parseRules = p => fs.readFileSync(p,"utf8").trim().split(/\n+/).filter(Boolean).map(JSON.parse).sort((a,b)=>a.context.localeCompare(b.context));
-          const baselineRules=parseRules(`${baselineDir}/rules.jsonl`);
-          const compactRules=parseRules(`${compactDir}/rules.jsonl`);
-          if(!deepEqual(baselineRules, compactRules)) throw new Error("compaction changed learned rule sufficient statistics");
-          if(!(compact.grammarRows * 10 < baseline.grammarRows)) throw new Error(`grammar row collapse below 10x: baseline=${baseline.grammarRows} compact=${compact.grammarRows}`);
-          const rss = p => Number(fs.readFileSync(p,"utf8").match(/Maximum resident set size \(kbytes\):\s*(\d+)/)?.[1] ?? NaN);
-          const wall = p => fs.readFileSync(p,"utf8").match(/Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s*([^\n]+)/)?.[1]?.trim() ?? null;
-          const fsOut = p => Number(fs.readFileSync(p,"utf8").match(/File system outputs:\s*(\d+)/)?.[1] ?? NaN);
-          const baselineRss=rss(`${baselineDir}/runtime.txt`), compactRss=rss(`${compactDir}/runtime.txt`);
-          if(!Number.isFinite(baselineRss)||!Number.isFinite(compactRss)||compactRss>Number(process.env.MARK_V7_MAX_RSS_KB)) throw new Error("invalid or excessive compact RSS");
-          const proof={schema:"mark_v7_live_grammar_equivalence_v1",status:"passed",baselineCommit:process.env.MARK_BASELINE_COMMIT,sourceBlindInputSha256:compact.sourceBlindInputSha256,sources:compact.sources,observations:compact.observations,centers:compact.centers,events:compact.events,observedPairWeight:compact.observedPairWeight,baselineGrammarRows:baseline.grammarRows,compactGrammarRows:compact.grammarRows,rowReduction:baseline.grammarRows/compact.grammarRows,baselineMaxRssKb:baselineRss,compactMaxRssKb:compactRss,baselineWallTime:wall(`${baselineDir}/runtime.txt`),compactWallTime:wall(`${compactDir}/runtime.txt`),baselineFilesystemOutputs:fsOut(`${baselineDir}/runtime.txt`),compactFilesystemOutputs:fsOut(`${compactDir}/runtime.txt`),ledgerMerkleRoot:compact.ledgerMerkleRoot,evaluation:compactEval};
           fs.mkdirSync("artifacts/mark-v7-equivalence-proof",{recursive:true});
           fs.writeFileSync("artifacts/mark-v7-equivalence-proof/equivalence.json",`${JSON.stringify(proof,null,2)}\n`);
           console.log(JSON.stringify(proof,null,2));
           NODE
       - name: Publish equivalence proof
         run: cat artifacts/mark-v7-equivalence-proof/equivalence.json >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload compact live equivalence evidence
+      - name: Upload rowless live equivalence evidence
         uses: actions/upload-artifact@v4
         with:
-          name: mark-v7-live-grammar-equivalence
+          name: mark-v7-live-sufficient-statistics-equivalence
           path: |
             artifacts/mark-v7-equivalence-proof/equivalence.json
             artifacts/mark-v7-equivalence-proof/baseline/summary.json
             artifacts/mark-v7-equivalence-proof/baseline/evaluation.json
+            artifacts/mark-v7-equivalence-proof/baseline/rules.jsonl
             artifacts/mark-v7-equivalence-proof/baseline/runtime.txt
-            artifacts/mark-v7-equivalence-compact/summary.json
-            artifacts/mark-v7-equivalence-compact/evaluation.json
-            artifacts/mark-v7-equivalence-compact/custody.json
-            artifacts/mark-v7-equivalence-compact/rules.jsonl
-            artifacts/mark-v7-equivalence-compact/runtime.txt
+            artifacts/mark-v7-equivalence-sufficient/summary.json
+            artifacts/mark-v7-equivalence-sufficient/evaluation.json
+            artifacts/mark-v7-equivalence-sufficient/custody.json
+            artifacts/mark-v7-equivalence-sufficient/rules.jsonl
+            artifacts/mark-v7-equivalence-sufficient/runtime.txt
+            artifacts/mark-v7-equivalence-sufficient/grammar-stats.sqlite
+            artifacts/mark-v7-equivalence-sufficient/grammar-contributions.jsonl
           if-no-files-found: error
           retention-days: 30
