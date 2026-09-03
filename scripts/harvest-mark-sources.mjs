@@ -8,6 +8,7 @@ const outDir = process.env.MARK_HARVEST_OUT ?? "artifacts/mark-harvest-v1";
 const rejoinOutDir = process.env.MARK_HARVEST_REJOIN_OUT ?? "artifacts/mark-harvest-rejoin-v1";
 const maxBytes = Number(process.env.MARK_HARVEST_MAX_BYTES ?? 25 * 1024 * 1024);
 const nearDuplicateBits = Math.max(0, Number(process.env.MARK_NEAR_DUPLICATE_BITS ?? 2));
+const minPerLane = Math.max(1, Number(process.env.MARK_HARVEST_MIN_PER_LANE ?? 2));
 const manifestBytes = await fs.readFile(manifestPath);
 const manifest = JSON.parse(manifestBytes);
 if (manifest.schema !== "mark_harvest_manifest_v1") throw new Error(`unsupported harvest manifest ${manifest.schema}`);
@@ -76,7 +77,9 @@ async function fetchImage(source, attempts = 3) {
     if (!retryable || attempt === attempts) break;
     await sleep(attempt * 900);
   }
-  throw new Error(`harvest failed ${lastStatus ?? "network"} for ${source.sourceId}`);
+  const error = new Error(`harvest failed ${lastStatus ?? "network"} for ${source.sourceId}`);
+  error.harvestStatus = lastStatus;
+  throw error;
 }
 
 async function bytesFor(source) {
@@ -110,12 +113,29 @@ const excludedSources = [];
 const exactHashes = new Map();
 const perceptualHashes = [];
 for (const source of manifest.sources) {
-  const { bytes, mime, ext, retrieval } = await bytesFor(source);
-  const exactSha256 = crypto.createHash("sha256").update(bytes).digest("hex");
   const sourceGroupId = opaque(source.sourceId);
   const contextual = structuredClone(source);
   delete contextual.capture?.syntheticRecipe;
   delete contextual.capture?.syntheticSvg;
+  let captureResult;
+  try {
+    captureResult = await bytesFor(source);
+  } catch (error) {
+    if (manifest.status !== "physical_evidence") throw error;
+    excludedSources.push({
+      sourceGroupId,
+      retrieval: "failed",
+      exclusion: {
+        reason: "retrieval_failed",
+        status: error?.harvestStatus ?? null,
+        message: String(error?.message ?? error),
+      },
+      ...contextual,
+    });
+    continue;
+  }
+  const { bytes, mime, ext, retrieval } = captureResult;
+  const exactSha256 = crypto.createHash("sha256").update(bytes).digest("hex");
   if (manifest.status === "physical_evidence") {
     const exactMatch = exactHashes.get(exactSha256);
     if (exactMatch) {
@@ -139,13 +159,16 @@ for (const source of manifest.sources) {
   blindSources.push({ sourceGroupId, adapter: "image_2d", capturePath, captureMime: mime, captureToken: token("capture", exactSha256), continuityToken: stableContinuityToken, ...(lane ? { lane } : {}) });
   custodySources.push({ sourceGroupId, exactCaptureSha256: exactSha256, continuityToken: stableContinuityToken, retrieval, ...contextual });
 }
-if (blindSources.length < 2) throw new Error(`harvest retained too few independent sources after deduplication: ${blindSources.length}`);
+const laneCounts = Object.fromEntries(["train", "holdout", "control"].map(lane => [lane, blindSources.filter(source => source.lane === lane).length]));
+const expectedLanes = [...new Set(manifest.sources.map(source => source.challengeLane).filter(Boolean))].sort();
+const retrievalFailedCount = excludedSources.filter(source => source.exclusion?.reason === "retrieval_failed").length;
 const blindCore = {
   schema: "mark_harvested_sources_blind_v1",
   corpusKind: manifest.status === "synthetic_fixture" ? "synthetic_pipeline_fixture_not_evidence" : "physical_observable_evidence",
   generatedAt: new Date().toISOString(),
   sources: blindSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
-  deduplicationContract: manifest.status === "physical_evidence" ? { exactBytes: true, perceptualDHash64: true, maxHammingDistance: nearDuplicateBits, excludedCount: excludedSources.length } : { exactBytes: false, perceptualDHash64: false, fixtureBypass: true },
+  deduplicationContract: manifest.status === "physical_evidence" ? { exactBytes: true, perceptualDHash64: true, maxHammingDistance: nearDuplicateBits, excludedCount: excludedSources.length, retrievalFailedCount } : { exactBytes: false, perceptualDHash64: false, fixtureBypass: true },
+  retrievalContract: manifest.status === "physical_evidence" ? { failedSourcesAuditedBeforeBlindAnalysis: true, minimumRetainedPerDeclaredLane: minPerLane, retainedLaneCounts: laneCounts } : { syntheticFixture: true },
   blindnessContract: { contextualMetadataPresent: false, unit: "source_capture", categoryLabelsAvailable: false, continuityToken: "HMAC-SHA256 over exact source bytes with private MARK_CONTINUITY_KEY", challengeLaneMayBePresent: true },
 };
 const blindSha256 = crypto.createHash("sha256").update(JSON.stringify(blindCore)).digest("hex");
@@ -157,9 +180,16 @@ const rejoin = {
   manifestSha256: crypto.createHash("sha256").update(manifestBytes).digest("hex"),
   harvestId: manifest.harvestId,
   status: manifest.status,
+  retrievalGate: { minimumRetainedPerDeclaredLane: minPerLane, retainedLaneCounts: laneCounts, retrievalFailedCount },
   sources: custodySources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
   excludedSources: excludedSources.sort((a,b)=>a.sourceGroupId.localeCompare(b.sourceGroupId)),
 };
 await fs.writeFile(path.join(rejoinOutDir, "mark-harvest-custody-rejoin-v1.json"), `${JSON.stringify(rejoin, null, 2)}\n`);
-console.log(`Harvested ${blind.sources.length} independent source objects; excluded ${excludedSources.length} exact/perceptual duplicates`);
+if (blindSources.length < 2) throw new Error(`harvest retained too few independent sources after audited exclusions: ${blindSources.length}`);
+if (manifest.status === "physical_evidence") {
+  const failedLanes = expectedLanes.filter(lane => (laneCounts[lane] ?? 0) < minPerLane);
+  if (failedLanes.length) throw new Error(`harvest retained-lane gate failed: ${failedLanes.map(lane => `${lane}=${laneCounts[lane] ?? 0}<${minPerLane}`).join(", ")}; retrieval_failed=${retrievalFailedCount}`);
+}
+console.log(`Harvested ${blind.sources.length} independent source objects; excluded ${excludedSources.length} unavailable/exact/perceptual witnesses`);
+console.log(`Retained lanes: ${Object.entries(laneCounts).map(([lane,count]) => `${lane}=${count}`).join(", ")}`);
 console.log(`Harvest blind SHA-256: ${blindSha256}`);
