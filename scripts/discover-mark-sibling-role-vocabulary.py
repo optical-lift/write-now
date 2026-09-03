@@ -159,7 +159,7 @@ for oid in ids:
 geo_features=sorted(role_geo[train[0]]); aug_features=geo_features+[x for f in selected_neighbor for x in ('peerMean:'+f,'nearestPeer:'+f)]
 clip=float(protocol['robustStandardization']['zClip'])
 geo_stats=fit_stats(train,role_geo,geo_features); aug_stats=fit_stats(train,role_aug,aug_features)
-geo_vec={i:vector(role_geo[i],geo_features,geo_stats,clip) for i in ids}; aug_vec={i:vector(role_aug[i],aug_features,aug_stats,clip) for i ids}
+geo_vec={i:vector(role_geo[i],geo_features,geo_stats,clip) for i in ids}; aug_vec={i:vector(role_aug[i],aug_features,aug_stats,clip) for i in ids}
 occ_cfg=protocol['occupantDiscovery']; occ_features=select_features({i:norm[i] for i in train},int(occ_cfg['minimumTrainObservationSupport']),int(occ_cfg['maximumFeatures']))
 occ_stats=fit_stats(train,norm,occ_features); occ_vec={i:vector(norm[i],occ_features,occ_stats,clip) for i in ids}
 cl=protocol['occupantClustering']
@@ -182,7 +182,7 @@ for k in cl['candidateK']:
 if not candidates:raise RuntimeError('no supported multi-family occupant clustering')
 best=max(candidates,key=lambda r:(r['silhouette'],-r['k'])); remap=stable_remap(best['centroids']); cents={remap[j]:best['centroids'][j] for j in range(best['k'])}
 def assign_centroid(vec):return min(cents,key=lambda f:(distance(vec,cents[f]),f))
-occ_assign={i:assign_centroid(occ_vec[i]) for i ids}
+occ_assign={i:assign_centroid(occ_vec[i]) for i in ids}
 out_dir.mkdir(parents=True,exist_ok=True)
 role_path=out_dir/'masked-sibling-role-vectors.jsonl'; occ_path=out_dir/'occupant-assignments.jsonl'; rh=hashlib.sha256(); oh=hashlib.sha256()
 with role_path.open('wb') as h:
