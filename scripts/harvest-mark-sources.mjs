@@ -18,6 +18,7 @@ if (!continuityKey) throw new Error("physical harvesting requires MARK_CONTINUIT
 const opaque = (value) => `S${crypto.createHash("sha256").update(`${salt}|${value}`).digest("hex").slice(0, 16).toUpperCase()}`;
 const token = (kind, value) => crypto.createHash("sha256").update(`${salt}|${kind}|${value}`).digest("hex");
 const continuityToken = (exactSha256) => crypto.createHmac("sha256", continuityKey).update(exactSha256).digest("hex");
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function mimeFromPath(filePath) {
   const ext = path.extname(filePath).toLowerCase();
@@ -58,6 +59,25 @@ function hamming64(a, b) {
   while (x) { count += Number(x & 1n); x >>= 1n; }
   return count;
 }
+async function fetchImage(source, attempts = 3) {
+  const capture = source.capture ?? {};
+  let lastStatus = null;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const headers = {
+      "user-agent": "Mozilla/5.0 (compatible; MarkResearchHarvester/2.0; research image custody)",
+      "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+      "accept-language": "en-US,en;q=0.8",
+    };
+    if (/^https:\/\//i.test(source.sourceUrl ?? "")) headers.referer = source.sourceUrl;
+    const response = await fetch(capture.assetUrl, { redirect: "follow", headers });
+    if (response.ok) return response;
+    lastStatus = response.status;
+    const retryable = response.status === 403 || response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500;
+    if (!retryable || attempt === attempts) break;
+    await sleep(attempt * 900);
+  }
+  throw new Error(`harvest failed ${lastStatus ?? "network"} for ${source.sourceId}`);
+}
 
 async function bytesFor(source) {
   const capture = source.capture ?? {};
@@ -74,8 +94,7 @@ async function bytesFor(source) {
     const type = mimeFromPath(absolute);
     return { bytes: await fs.readFile(absolute), ...type, retrieval: "local_file" };
   }
-  const response = await fetch(capture.assetUrl, { redirect: "follow", headers: { "user-agent": "MarkResearchHarvester/2.0" } });
-  if (!response.ok) throw new Error(`harvest failed ${response.status} for ${source.sourceId}`);
+  const response = await fetchImage(source);
   const bytes = Buffer.from(await response.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error(`capture exceeds ${maxBytes} bytes (${source.sourceId})`);
   const mime = (response.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
