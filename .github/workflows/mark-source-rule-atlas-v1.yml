@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "crates/mark-sparse-compiler/src/bin/mark-source-rule-atlas.rs"
+      - "scripts/assert-mark-source-rule-atlas.py"
       - "scripts/rejoin-mark-source-rule-atlas.py"
       - "research/mark/discovery-experiments/source-rule-atlas-v1.protocol.json"
       - ".github/workflows/mark-source-rule-atlas-v1.yml"
@@ -29,10 +30,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate atlas protocol and rejoin syntax
+      - name: Validate atlas protocol and Python gates
         run: |
           python3 -m json.tool "$MARK_SOURCE_RULE_PROTOCOL" >/dev/null
-          python3 -m py_compile scripts/rejoin-mark-source-rule-atlas.py
+          python3 -m py_compile scripts/assert-mark-source-rule-atlas.py scripts/rejoin-mark-source-rule-atlas.py
       - name: Install acquisition dependencies
         run: npm install
       - name: Expand every registered feed box
@@ -167,7 +168,14 @@ jobs:
               --input artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
               --out artifacts/mark-source-rule-atlas-v1
           ) 2> >(tee artifacts/mark-source-rule-atlas-v1/runtime.txt >&2)
-      - name: Free bulky ledgers only after atlas freeze
+      - name: Prove source aggregates exactly equal frozen v7 grammar statistics
+        env:
+          MARK_SOURCE_RULE_ATLAS: artifacts/mark-source-rule-atlas-v1
+          MARK_V7_OUT: artifacts/mark-source-rule-compiler-v1
+          MARK_BLIND_DISCOVERY_PACKET: artifacts/mark-blind-discovery-v1/blind-discovery.json
+          MARK_SOURCE_RULE_ASSERTION: artifacts/mark-source-rule-atlas-v1/exactness.json
+        run: python3 scripts/assert-mark-source-rule-atlas.py
+      - name: Free bulky ledgers only after atlas freeze and exactness proof
         shell: bash
         run: rm -f artifacts/mark-source-rule-compiler-v1/events.jsonl artifacts/mark-source-rule-compiler-v1/grammar-contributions.jsonl
       - name: Stage frozen blind atlas evidence
