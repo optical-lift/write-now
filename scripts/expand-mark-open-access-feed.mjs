@@ -125,21 +125,22 @@ async function metItems() {
   const ids = Array.isArray(listing.objectIDs) ? listing.objectIDs : [];
   const candidateIndexes = deterministicSpread(ids.length, Math.min(ids.length, Math.max(maxSources * 12, 200)), "met-objects");
   const items = [];
-  for (let i = 0; i < candidateIndexes.length && items.length < maxSources; i += 8) {
-    const batch = candidateIndexes.slice(i, i + 8).map(index => ids[index]);
-    const rows = await Promise.all(batch.map(id => fetchJson(`${base}/objects/${id}`).catch(() => null)));
-    for (const row of rows) {
-      if (!row || row.isPublicDomain !== true) continue;
-      const assetUrl = row.primaryImageSmall || row.primaryImage;
-      if (!assetUrl) continue;
-      items.push({
-        assetUrl,
-        sourceUrl: row.objectURL ?? `${base}/objects/${row.objectID}`,
-        objectId: row.objectID,
-        context: { title: row.title, objectName: row.objectName, department: row.department, classification: row.classification, culture: row.culture, period: row.period, date: row.objectDate, medium: row.medium, country: row.country },
-      });
-      if (items.length >= maxSources) break;
-    }
+  for (const index of candidateIndexes) {
+    const id = ids[index];
+    const row = await fetchJson(`${base}/objects/${id}`).catch(() => null);
+    // The Met API is currently protected by a burst-sensitive WAF despite its documented higher limit.
+    // Keep deterministic enumeration deliberately below the observed burst threshold instead of retry-hammering.
+    await sleep(1250);
+    if (!row || row.isPublicDomain !== true) continue;
+    const assetUrl = row.primaryImageSmall || row.primaryImage;
+    if (!assetUrl) continue;
+    items.push({
+      assetUrl,
+      sourceUrl: row.objectURL ?? `${base}/objects/${row.objectID}`,
+      objectId: row.objectID,
+      context: { title: row.title, objectName: row.objectName, department: row.department, classification: row.classification, culture: row.culture, period: row.period, date: row.objectDate, medium: row.medium, country: row.country },
+    });
+    if (items.length >= maxSources) return items;
   }
   return items;
 }
