@@ -1,14 +1,14 @@
 use anyhow::{anyhow, bail, Context, Result};
 use image::GrayImage;
+use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, BufWriter, Write};
+use std::io::{BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 
-const SHARDS: usize = 64;
 const LEDGER_CHUNK_LINES: u64 = 4096;
 
 #[derive(Debug, Deserialize)]
@@ -88,10 +88,14 @@ struct CompilerStats {
     tiles: u64,
     centers: u64,
     events: u64,
-    grammar_rows: u64,
+    grammar_stat_commits: u64,
+    grammar_contributions: u64,
     unresolved_arms: u64,
     observed_pair_weight: u128,
 }
+
+type LocalGrammar = BTreeMap<(String, String), u128>;
+type SourceGrammar = BTreeMap<(i32, String, String, String), u128>;
 
 struct ChunkedLedger {
     writer: BufWriter<File>,
@@ -142,51 +146,47 @@ impl ChunkedLedger {
     }
 }
 
-struct GrammarShards {
-    writers: Vec<BufWriter<File>>,
+struct StatsStore {
+    connection: Connection,
 }
 
-impl GrammarShards {
-    fn create(dir: &Path) -> Result<Self> {
-        fs::create_dir_all(dir)?;
-        let mut writers = Vec::with_capacity(SHARDS);
-        for i in 0..SHARDS {
-            writers.push(BufWriter::new(File::create(dir.join(format!("grammar-{i:02}.tsv")))?));
+impl StatsStore {
+    fn create(path: &Path) -> Result<Self> {
+        if path.exists() {
+            fs::remove_file(path)?;
         }
-        Ok(Self { writers })
-    }
-
-    fn write(
-        &mut self,
-        iteration: i32,
-        lane: &str,
-        source: &str,
-        observation: &str,
-        context: &str,
-        outcome: &str,
-        count: u64,
-    ) -> Result<()> {
-        if count == 0 {
-            return Ok(());
-        }
-        let shard = shard_for(context);
-        writeln!(
-            self.writers[shard],
-            "{iteration}\t{}\t{}\t{}\t{}\t{}\t{count}",
-            clean_tsv(lane),
-            clean_tsv(source),
-            clean_tsv(observation),
-            clean_tsv(context),
-            clean_tsv(outcome),
+        let connection = Connection::open(path)?;
+        connection.execute_batch(
+            "PRAGMA journal_mode=DELETE;
+             PRAGMA synchronous=FULL;
+             PRAGMA temp_store=FILE;
+             PRAGMA cache_size=-8192;
+             PRAGMA foreign_keys=ON;
+             CREATE TABLE grammar_stats (
+               iteration INTEGER NOT NULL,
+               lane TEXT NOT NULL,
+               context TEXT NOT NULL,
+               outcome TEXT NOT NULL,
+               count INTEGER NOT NULL CHECK(count >= 0),
+               source_count INTEGER NOT NULL CHECK(source_count >= 0),
+               PRIMARY KEY(iteration,lane,context,outcome)
+             ) WITHOUT ROWID;
+             CREATE TABLE context_stats (
+               iteration INTEGER NOT NULL,
+               lane TEXT NOT NULL,
+               context TEXT NOT NULL,
+               source_count INTEGER NOT NULL CHECK(source_count >= 0),
+               PRIMARY KEY(iteration,lane,context)
+             ) WITHOUT ROWID;
+             CREATE TABLE rules (
+               context TEXT PRIMARY KEY,
+               outcome TEXT NOT NULL,
+               distinct_sources INTEGER NOT NULL,
+               total_count INTEGER NOT NULL,
+               context_sources INTEGER NOT NULL
+             ) WITHOUT ROWID;",
         )?;
-        Ok(())
-    }
-
-    fn flush(&mut self) -> Result<()> {
-        for writer in &mut self.writers {
-            writer.flush()?;
-        }
-        Ok(())
+        Ok(Self { connection })
     }
 }
 
@@ -196,6 +196,20 @@ fn clean_tsv(s: &str) -> String {
 
 fn sha256_hex(bytes: &[u8]) -> String {
     hex::encode(Sha256::digest(bytes))
+}
+
+fn sha256_file(path: &Path) -> Result<String> {
+    let mut file = File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = [0u8; 64 * 1024];
+    loop {
+        let read = file.read(&mut buffer)?;
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..read]);
+    }
+    Ok(hex::encode(hasher.finalize()))
 }
 
 fn merkle_root(hex_hashes: &[String]) -> Result<String> {
@@ -219,8 +233,4 @@ fn merkle_root(hex_hashes: &[String]) -> Result<String> {
         layer = next;
     }
     Ok(hex::encode(&layer[0]))
-}
-
-fn shard_for(context: &str) -> usize {
-    Sha256::digest(context.as_bytes())[0] as usize % SHARDS
 }
