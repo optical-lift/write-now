@@ -27,6 +27,7 @@ function deterministicSpread(total, count, salt) {
 function normalizeHttpsUrl(value) {
   if (typeof value !== "string") return null;
   if (/^https:\/\//i.test(value)) return value;
+  if (/^http:\/\//i.test(value)) return `https://${value.slice(7)}`;
   if (/^\/\//.test(value)) return `https:${value}`;
   return null;
 }
@@ -159,12 +160,13 @@ async function locItems() {
     for (const row of locRows(payload, pageOrdinal)) {
       const rawUrls = Array.isArray(row?.image_url) ? row.image_url : typeof row?.image_url === "string" ? [row.image_url] : [];
       const urls = rawUrls.map(normalizeHttpsUrl).filter(Boolean);
-      const assetUrl = [...urls].reverse().find(url => /\.(jpe?g|png)(\?|$)/i.test(url)) ?? urls[0];
-      if (!assetUrl || !row?.id || seenIds.has(row.id)) continue;
-      seenIds.add(row.id);
+      const assetUrl = [...urls].reverse().find(url => /\.(jpe?g|png)(\?|#|$)/i.test(url)) ?? urls[0];
+      const sourceUrl = normalizeHttpsUrl(row?.id);
+      if (!assetUrl || !sourceUrl || seenIds.has(sourceUrl)) continue;
+      seenIds.add(sourceUrl);
       items.push({
         assetUrl,
-        sourceUrl: row.id,
+        sourceUrl,
         objectId: row.id,
         rightsBasis: request.rightsBasis ?? "source_rights_govern_research_analysis_only",
         context: { title: row.title, date: row.date, originalFormat: row.original_format, subject: row.subject, location: row.location, collection: row.partof, enumeration: "official_pagination_next_with_deterministic_within_page_spread", pageOrdinal },
