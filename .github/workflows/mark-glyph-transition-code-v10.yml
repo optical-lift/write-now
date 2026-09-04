@@ -1,0 +1,163 @@
+name: Mark Glyph Transition Code v10
+
+on:
+  pull_request:
+    paths:
+      - "scripts/seal-mark-glyph-transition-v10.py"
+      - "scripts/mark_glyph_transition_v10_core.py"
+      - "scripts/induce-mark-glyph-transition-v10.py"
+      - "scripts/evaluate-mark-glyph-transition-v10.py"
+      - "research/mark/discovery-experiments/OPERATIONAL_CODE_HYPOTHESIS.md"
+      - "research/mark/discovery-experiments/glyph-transition-code-v10.protocol.json"
+      - ".github/workflows/mark-glyph-transition-code-v10.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_V10_PROTOCOL: research/mark/discovery-experiments/glyph-transition-code-v10.protocol.json
+  MARK_V10_SOURCE_COMMIT: 43fe7cf1abc8e6bb1ea3228c3a1bd5938709620a
+  MARK_V10_SOURCE_BLOB: ef41c58802a3135f295072ba60fc0df39450a10c
+
+jobs:
+  seal-corpus:
+    name: Seal raw inscription sequence corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen protocol and scripts
+        run: |
+          python3 -m json.tool "$MARK_V10_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/seal-mark-glyph-transition-v10.py \
+            scripts/mark_glyph_transition_v10_core.py \
+            scripts/induce-mark-glyph-transition-v10.py \
+            scripts/evaluate-mark-glyph-transition-v10.py
+
+      - name: Download exact pinned Linear A corpus source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/v10-source
+          curl --fail --location --retry 3 \
+            "https://raw.githubusercontent.com/mwenge/lineara.xyz/${MARK_V10_SOURCE_COMMIT}/LinearAInscriptions.js" \
+            -o artifact-staging/v10-source/LinearAInscriptions.js
+          test "$(git hash-object artifact-staging/v10-source/LinearAInscriptions.js)" = "$MARK_V10_SOURCE_BLOB"
+
+      - name: Strip semantics and deterministically split inscriptions
+        run: python3 scripts/seal-mark-glyph-transition-v10.py
+
+      - name: Publish train-only blind packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: |
+            artifact-staging/v10-split/train.jsonl
+            artifact-staging/v10-split/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Seal untouched evaluation lanes
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: |
+            artifact-staging/v10-split/holdout.jsonl
+            artifact-staging/v10-split/control.jsonl
+            artifact-staging/v10-split/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  induce-train:
+    name: Freeze finite glyph machine before holdout
+    needs: seal-corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download train-only packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/v10-split
+
+      - name: Prove evaluation lanes are absent during induction
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f artifact-staging/v10-split/train.jsonl
+          test -f artifact-staging/v10-split/split-manifest.json
+          test ! -e artifact-staging/v10-split/holdout.jsonl
+          test ! -e artifact-staging/v10-split/control.jsonl
+          test ! -e artifact-staging/v10-source/LinearAInscriptions.js
+
+      - name: Induce residual glyph kernels and finite functional classes
+        run: python3 scripts/induce-mark-glyph-transition-v10.py
+
+      - name: Publish pre-holdout freeze summary
+        run: |
+          echo '### V10 finite glyph machine — frozen before holdout' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-glyph-transition-code-v10-freeze/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable train freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-freeze
+          path: artifacts/mark-glyph-transition-code-v10-freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate-sealed:
+    name: Run frozen glyph machine on unseen inscriptions
+    needs:
+      - seal-corpus
+      - induce-train
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download immutable train freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-freeze
+          path: artifacts/mark-glyph-transition-code-v10-freeze
+
+      - name: Open untouched holdout and control after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/v10-sealed
+
+      - name: Prove raw source and train rows are absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e artifact-staging/v10-source/LinearAInscriptions.js
+          test ! -e artifact-staging/v10-sealed/train.jsonl
+          test -f artifact-staging/v10-sealed/holdout.jsonl
+          test -f artifact-staging/v10-sealed/control.jsonl
+
+      - name: Evaluate frozen finite machine unchanged
+        run: python3 scripts/evaluate-mark-glyph-transition-v10.py
+
+      - name: Publish sealed result
+        run: cat artifacts/mark-glyph-transition-code-v10/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen V10 result packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-frozen
+          path: |
+            artifacts/mark-glyph-transition-code-v10-freeze/**
+            artifacts/mark-glyph-transition-code-v10/**
+            artifact-staging/v10-sealed/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
