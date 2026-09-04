@@ -25,6 +25,7 @@
     "normalizedPathLengthBinWidth": 0.05,
     "minimumResidualGeometrySeparation": 0.15,
     "maximumNewChordBinShift": 1,
+    "minimumAffectedMappedNonEndpointRoots": 2,
     "candidateOrder": "lexicographically first valid pair after deterministic bucket ordering",
     "relationshipTwin": "degree-preserving double-edge swap: (u,v),(x,y) -> (u,y),(x,v), with four distinct endpoints and absent cross-edges",
     "renderingTwin": "keep adjacency fixed and swap only the two edge bundles' mean turn-rate and tortuosity profiles",
@@ -50,7 +51,7 @@
   },
   "primaryOutcome": {
     "radius": 2,
-    "representation": "length-aware local wiring motif tokens from v7: endpoint/junction kind, capped degree, adjacency, exact parallel multiplicity class, and 0.05 normalized path-length bin",
+    "representation": "length-aware local wiring motif tokens from v7: endpoint/junction kind, capped degree, adjacency, parallel multiplicity class, and 0.05 normalized path-length bin",
     "editedEndpointsExcludedFromScoring": true,
     "affectedRoots": "mapped roots in the source graph within graph distance <=2 of any edited endpoint, excluding the four edited endpoints themselves",
     "pairStatistic": "mean over affected roots of [motif_distance(relationship_twin,target) - motif_distance(rendering_twin,target)]",
@@ -65,7 +66,7 @@
     "minimumInterventionsTrain": 80,
     "minimumInterventionsHoldout": 140,
     "minimumInterventionsControl": 60,
-    "note": "These counts were set from label-blind feasibility only; no role label or outcome was consulted."
+    "note": "Thresholds and the later minimum-two-root eligibility repair were set from label-blind feasibility only. The first blind screen showed that endpoint exclusion could leave an otherwise valid swap with no neighboring mapped root; no role label or scientific outcome was opened before adding this eligibility requirement."
   },
   "null": {
     "worlds": 128,
