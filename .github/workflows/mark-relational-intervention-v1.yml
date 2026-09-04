@@ -1,0 +1,72 @@
+name: Mark Relational Intervention v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/relational-intervention-v1.protocol.json"
+      - "scripts/test-mark-relational-intervention-v1.py"
+      - ".github/workflows/mark-relational-intervention-v1.yml"
+      - "scripts/mark_graph_compression_v8_core.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_RELATIONAL_PROTOCOL: research/mark/discovery-experiments/relational-intervention-v1.protocol.json
+  MARK_RELATIONAL_V5: artifact-staging/relational/v5
+  MARK_RELATIONAL_V8: artifact-staging/relational/v8
+  MARK_RELATIONAL_OUT: artifacts/mark-relational-intervention-v1
+
+jobs:
+  relational-intervention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen intervention before evidence
+        run: |
+          python3 -m json.tool "$MARK_RELATIONAL_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_graph_compression_v8_core.py scripts/test-mark-relational-intervention-v1.py
+
+      - name: Download frozen V8 blind grammar only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hierarchical-graph-compression-v8-grammar-freeze
+          path: artifact-staging/relational/v8
+          repository: optical-lift/write-now
+          run-id: 33821017246
+          github-token: ${{ github.token }}
+
+      - name: Download exact frozen V5 graph world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/relational/v5
+          repository: optical-lift/write-now
+          run-id: 33807154154
+          github-token: ${{ github.token }}
+
+      - name: Run matched relationship-versus-realization intervention
+        run: python3 scripts/test-mark-relational-intervention-v1.py
+
+      - name: Publish frozen result
+        run: cat "$MARK_RELATIONAL_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_RELATIONAL_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen intervention packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-relational-intervention-v1-frozen
+          path: artifacts/mark-relational-intervention-v1/**
+          if-no-files-found: error
+          retention-days: 30
