@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 
 PROTOCOL_PATH = Path(os.environ.get(
@@ -23,6 +24,25 @@ def sha256_bytes(data):
 def git_blob_sha1(data):
     header = f"blob {len(data)}\0".encode("ascii")
     return hashlib.sha1(header + data).hexdigest()
+
+
+def normalize_js_unicode_codepoint_escapes(js_text):
+    """Normalize ES6 ``\\u{...}`` escapes to the literal Unicode codepoint.
+
+    The pinned source uses this JavaScript string syntax in the raw inscription
+    data. JSON accepts only ``\\uXXXX`` escapes. We do not execute JavaScript;
+    we convert this one pinned syntax feature to the exact character JavaScript
+    would place in the string before handing the data to the JSON decoder.
+    """
+    pattern = re.compile(r"\\u\{([0-9A-Fa-f]{1,6})\}")
+
+    def replace(match):
+        value = int(match.group(1), 16)
+        if value > 0x10FFFF:
+            raise RuntimeError(f"invalid JavaScript Unicode codepoint U+{value:X}")
+        return chr(value)
+
+    return pattern.sub(replace, js_text)
 
 
 def strip_trailing_commas(js_text):
@@ -73,7 +93,9 @@ def parse_inscription_map(data):
     if start < 0:
         raise RuntimeError("could not locate inscriptions Map")
     start += len(marker)
-    payload = strip_trailing_commas(text[start:].lstrip())
+    payload = text[start:].lstrip()
+    payload = normalize_js_unicode_codepoint_escapes(payload)
+    payload = strip_trailing_commas(payload)
     decoder = json.JSONDecoder()
     value, _consumed = decoder.raw_decode(payload)
     if not isinstance(value, list):
