@@ -1,0 +1,41 @@
+{
+  "schema": "mark_state_memory_protocol_v1",
+  "experimentId": "mark:state-memory:v1",
+  "parentSynthesis": {
+    "branch": "mark-typed-construction-grammar-v1",
+    "synthesisSha256": "d8a8826783f3f4b305e495f9d99e686f69faf23440f0a13443b0a7273575fcf6"
+  },
+  "question": "Does the immediately prior structural state improve prediction of the next state beyond the current state alone, with a model fit only in Cleveland and transferred unchanged to Bavaria and LOC?",
+  "input": {
+    "runId": 33773740050,
+    "artifact": "mark-state-transition-grammar-v1-frozen",
+    "expectedDiscoverySha256": "979d097dcdfc8df8007f6c3b4ef7d1b16950c56cb2287a46ff77b480cd2635d8"
+  },
+  "models": {
+    "firstOrder": "P(next | current)",
+    "secondOrder": "P(next | previous,current)",
+    "trainLane": "train",
+    "transferLanes": ["holdout", "control"],
+    "smoothing": "Jeffreys/Laplace-like additive alpha=0.5 to each of three possible next states",
+    "metric": "bits of predictive log loss per observed length-3 program; positive delta means second-order history improves prediction"
+  },
+  "bootstrap": {
+    "iterations": 512,
+    "seed": 309032027,
+    "unit": "source transition profile",
+    "method": "resample sources with replacement within lane; keep Cleveland-frozen model probabilities fixed",
+    "successFraction": 0.95
+  },
+  "gates": {
+    "positiveAggregateDeltaAllLanes": true,
+    "minimumBootstrapPositiveFractionAllLanes": 0.95
+  },
+  "descriptiveOnly": [
+    "P(next state | current state)",
+    "P(next state | previous,current)",
+    "2->1->1 and 2->3->3 commitment behavior versus current-state-only expectation"
+  ],
+  "falsifier": "If previous-state context fails to improve out-of-lane prediction, or its source-bootstrap support falls below 95% in either independent lane, the current frozen evidence does not support memory/hysteresis beyond current state alone.",
+  "scientificFailureIsGreen": true,
+  "claimBoundary": "A pass establishes predictive second-order dependence in this frozen nested-state process. It does not prove psychological memory, temporal chronology, or semantic meanings for States 1-3."
+}
