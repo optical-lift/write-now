@@ -1,0 +1,53 @@
+{
+  "schema": "mark_operator_port_arity_protocol_v1",
+  "experimentId": "mark:operator-port-arity:v1",
+  "parentSynthesis": {
+    "branch": "mark-typed-construction-grammar-v1",
+    "synthesisSha256": "d8a8826783f3f4b305e495f9d99e686f69faf23440f0a13443b0a7273575fcf6"
+  },
+  "question": "Do role-preserving pairs carry more transferable information in operator/port/arity structure than in residual geometric realization?",
+  "inputs": {
+    "runId": 33804063784,
+    "correspondenceArtifact": "mark-v4-critical-center-correspondence-frozen",
+    "expectedCorrespondenceSha256": "7e22902649fe00f9ed7a68585d1457ef396d157c968d4a1cddb27a4b296e958d",
+    "labelsArtifact": "mark-v4-labels-sealed",
+    "expectedLabelsSha256": "675a4acf95418b7c553362e659b6c753edadacfe993833f00ffabe8375d8982e"
+  },
+  "typedFeatures": [
+    "unmatchedCenterFraction",
+    "kindSwitchFraction",
+    "degreeChangeFraction",
+    "meanAbsDegreeChange",
+    "endpointArmChangeMean",
+    "junctionArmChangeMean",
+    "unresolvedArmChangeMean"
+  ],
+  "geometryComparatorFeatures": [
+    "medianMatchedDisplacement",
+    "p90MatchedDisplacement",
+    "endpointMedianDisplacement",
+    "junctionMedianDisplacement",
+    "nonIdentityTransform",
+    "reflectionTransform",
+    "quarterTurnTransform"
+  ],
+  "model": {
+    "trainLane": "train",
+    "transferLanes": ["holdout", "control"],
+    "standardization": "train means and population standard deviations only",
+    "classifier": "deterministic class-balanced logistic regression implemented in-script",
+    "iterations": 4000,
+    "baseLearningRate": 0.03,
+    "learningRateDecay": "lr/(1+iteration/1500)",
+    "selection": "none; feature families frozen before fit"
+  },
+  "gates": {
+    "typedHoldoutAucMinimum": 0.60,
+    "typedControlAucMinimum": 0.60,
+    "typedMinusGeometryHoldoutMinimum": 0.05,
+    "typedMinusGeometryControlMinimum": 0.05
+  },
+  "falsifier": "If the typed feature family fails either independent-lane AUC gate or does not beat the geometry comparator in both lanes, operator/port/arity is not supported as the stronger transferable representation by this test.",
+  "scientificFailureIsGreen": true,
+  "claimBoundary": "A pass supports a transferable typed-structure predictor of already-frozen role preservation. It does not establish historical semantics or prove that junctions literally encode verbs or endpoints literal arguments."
+}

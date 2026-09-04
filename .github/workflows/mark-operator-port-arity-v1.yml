@@ -1,0 +1,64 @@
+name: Mark Operator Port Arity v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/operator-port-arity-v1.protocol.json"
+      - "scripts/test-mark-operator-port-arity.py"
+      - ".github/workflows/mark-operator-port-arity-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_OPERATOR_PROTOCOL: research/mark/discovery-experiments/operator-port-arity-v1.protocol.json
+  MARK_OPERATOR_CORR: artifact-staging/operator-port/correspondence
+  MARK_OPERATOR_LABELS: artifact-staging/operator-port/labels
+  MARK_OPERATOR_OUT: artifacts/mark-operator-port-arity-v1
+
+jobs:
+  operator-port-arity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen test
+        run: |
+          python3 -m json.tool "$MARK_OPERATOR_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/test-mark-operator-port-arity.py
+      - name: Download label-blind critical-center correspondence
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-critical-center-correspondence-frozen
+          path: artifact-staging/operator-port/correspondence
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+      - name: Download frozen role labels separately
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-labels-sealed
+          path: artifact-staging/operator-port/labels
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+      - name: Run frozen operator-port-arity test
+        run: python3 scripts/test-mark-operator-port-arity.py
+      - name: Publish result
+        run: cat "$MARK_OPERATOR_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Comment result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_OPERATOR_OUT/summary.md" --edit-last --create-if-none
+      - name: Upload frozen result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-port-arity-v1-frozen
+          path: artifacts/mark-operator-port-arity-v1/**
+          if-no-files-found: error
+          retention-days: 30
