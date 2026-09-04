@@ -1,0 +1,121 @@
+{
+  "schema": "mark_state_operator_separation_protocol_v12",
+  "experimentId": "mark:state-operator-separation:v12",
+  "question": "After replacing literal predecessor identity with a train-induced anonymous predictive state that excludes the current glyph, do recurring glyph identities act as transferable state transformations, do those transformations compose, and does the resulting machine explain unseen sequence consequences beyond ordinary n-gram prediction?",
+  "parent": {
+    "v10RunId": 33905459943,
+    "v10FreezeArtifact": "mark-glyph-transition-code-v10-freeze",
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "expectedV10FreezeSha256": "d5fc4fd6be89002514a0f7cd0c7561e5a2a3c152945912a4ed2e1da2fb4cf48a",
+    "v10Adjudication": "operatorCodeWithoutFiniteQuotient",
+    "v11MechanisticResultKnownBeforeV12": "GLYPH_SPECIFIC_COUNTERFACTUAL_CONSEQUENCE_TRANSFERS"
+  },
+  "provenance": {
+    "evaluationLanesAlreadyOpened": true,
+    "freshIndependentHoldout": false,
+    "claimClass": "post-V10/V11 mechanistic follow-up on reused evaluation inscriptions",
+    "rule": "No V12 evaluation score may change state construction, candidate state counts, smoothing constants, substitution selection, composition rules, gates, or adjudication after this protocol is committed."
+  },
+  "representation": {
+    "variant": "lineOnly",
+    "reason": "Remove inherited word-boundary information and force the machine to operate on raw glyph order plus line/document boundaries.",
+    "currentGlyphExcludedFromIncomingState": true,
+    "historyLength": 2,
+    "history": "The two mapped stream items immediately preceding the current glyph. The current glyph is not present in the incoming-state feature vector.",
+    "rareToken": "OTHER",
+    "tokenVocabulary": "Reuse V10 lineOnly common states plus OTHER, <DOC>, and <LINE>; operator identity remains the raw V10 eligible glyph codepoint.",
+    "stateMeaning": "An anonymous predictive equivalence class of past histories, not a transliteration, semantic category, glyph class, or literal predecessor identity."
+  },
+  "stateInduction": {
+    "fingerprint": "Train-only hierarchically smoothed distribution of the next mapped stream token given the two-item past history.",
+    "fingerprintOutcomeDimensions": 24,
+    "fingerprintTail": "All mapped outcomes outside the 24 most frequent train outcomes are summed into one residual dimension.",
+    "clustering": "Deterministic weighted k-means with weighted farthest-first initialization, squared Euclidean distance, six Lloyd iterations, history occurrence count as weight, and deterministic lexical/index tie breaking.",
+    "candidateStateCounts": [12, 24, 36, 48],
+    "selection": "Three-fold anonymous-inscription-hash cross-validation on train only. Choose the smallest state count within 0.005 bits/event of the minimum operator-machine next-token log loss.",
+    "cvFolds": 3,
+    "selectionToleranceBitsPerEvent": 0.005,
+    "kmeansIterations": 6,
+    "unseenHistory": "Compute its frozen train n-gram fingerprint and assign it to the nearest frozen centroid; no evaluation outcome contributes to assignment."
+  },
+  "probabilityModel": {
+    "globalAdditiveAlpha": 0.5,
+    "hierarchicalBackoffPseudoCount": 8.0,
+    "transitionBackoffPseudoCount": 8.0,
+    "emissionBackoffPseudoCount": 8.0,
+    "directPairBackoffPseudoCount": 8.0,
+    "ngramOrders": [1, 2, 3, 4],
+    "bestNgram": "For each evaluation lane, report every frozen train n-gram order and use the lowest log-loss order as the conventional-sequence comparator."
+  },
+  "operatorMachine": {
+    "state": "S_t = frozen cluster of the two mapped tokens before glyph g_t.",
+    "transition": "T_g(S_{t+1} | S_t), learned only from train occurrences of V10-eligible glyph g.",
+    "emission": "E(x_{t+1} | S_{t+1}), learned from train gap states.",
+    "oneStepPrediction": "Q_g(x_{t+1}|S_t) = sum_{S'} T_g(S'|S_t) E(x_{t+1}|S').",
+    "stateOnlyBaseline": "E(x_{t+1}|S_t), with no current-glyph transformation.",
+    "minimumEvaluationEvents": {"holdout": 200, "control": 80},
+    "minimumDistinctEvaluationInscriptions": {"holdout": 20, "control": 10},
+    "minimumGainOverStateOnlyBitsPerEvent": 0.05
+  },
+  "counterfactualSubstitution": {
+    "selectionLane": "train only",
+    "minimumTrainStateGlyphOccurrences": 12,
+    "minimumConsequenceKernelTv": 0.10,
+    "substitute": "For each supported (state, actual glyph), select a different glyph supported in the same state whose frozen Q consequence kernel differs by at least the TV threshold; minimize absolute log2 support ratio, then deterministic SHA-256 tie break.",
+    "outcome": "log2 Q_actual(observed next mapped token | fixed state) - log2 Q_substitute(observed next mapped token | fixed state).",
+    "independentUnit": "anonymous inscription mean",
+    "minimumEligibleInscriptions": {"holdout": 20, "control": 10},
+    "minimumPositiveInscriptionFraction": 0.60,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-state-operator-separation-v12-counterfactual"
+  },
+  "composition": {
+    "event": "Two consecutive V10-eligible glyphs A,B followed by an observed mapped token z.",
+    "factorized": "Q_AB(z|S) = sum_{S1,S2} T_A(S1|S) T_B(S2|S1) E(z|S2).",
+    "stateOnly": "Replace both operator transitions by the frozen state-only transition T0.",
+    "firstOnly": "Use T_A followed by T0.",
+    "secondOnly": "Use T0 followed by T_B.",
+    "directPair": "Train-only P(z|S,A,B), hierarchically smoothed to the factorized Q_AB; diagnostic for irreducible pair interaction.",
+    "minimumEvaluationEvents": {"holdout": 100, "control": 40},
+    "minimumGainOverStateOnlyBitsPerEvent": 0.05,
+    "minimumGainOverEachOneSidedBitsPerEvent": 0.01,
+    "maximumDirectPairAdvantageBitsPerEvent": 0.10,
+    "minimumInscriptionFractionCompositionBeatsStateOnly": 0.60
+  },
+  "ngramChallenge": {
+    "primaryComparison": "one-step operator-machine log loss versus the best of frozen train n-gram orders 1-4 on the same eligible events",
+    "independentUnit": "anonymous inscription mean machine-minus-best-ngram log-probability advantage",
+    "strongGate": "Both reused evaluation lanes must have positive mean inscription advantage and one-sided deterministic sign-flip p <= 0.05.",
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-state-operator-separation-v12-ngram"
+  },
+  "adjudication": {
+    "latentStateOperatorMachineBeatsNgramAndComposes": "Operator-machine, counterfactual, composition, and n-gram challenge gates all pass on both reused evaluation lanes.",
+    "latentOperatorMachineButNgramSufficient": "Operator-machine, counterfactual, and composition gates pass, but the frozen machine does not significantly beat the best ordinary n-gram on both lanes.",
+    "latentOperatorConsequenceWithoutComposition": "Operator-machine and counterfactual gates pass but first-order transition composition fails.",
+    "noStateOperatorSeparationUnderV12": "The separated-state operator machine fails its one-step or counterfactual transfer gates."
+  },
+  "claimLimits": {
+    "positiveDoesSupport": [
+      "a compact anonymous predictive state distinct from literal current-glyph identity",
+      "glyph-conditioned transferable transformations of that state",
+      "first-order composition only if the frozen composition gate passes",
+      "structure beyond ordinary local n-gram prediction only if the explicit n-gram challenge passes"
+    ],
+    "positiveDoesNotByItselfSupply": [
+      "translation or phonetic values",
+      "historical intent",
+      "physical causal intervention",
+      "proof of conscious software-like design",
+      "fresh independent confirmation"
+    ]
+  },
+  "falsifiers": {
+    "stateLeakage": "Abort if current glyph identity enters incoming-state history or fingerprint assignment.",
+    "evaluationLeakage": "Abort if holdout/control participates in centroid induction, state-count selection, transition/emission estimation, substitute selection, or direct-pair estimation.",
+    "ngramSufficiency": "If ordinary n-grams match or beat the separated machine, retain the operational regularity but do not claim hidden-state explanatory superiority.",
+    "compositionFailure": "If one-sided or direct-pair models materially beat factorized transitions, do not claim first-order compositional state algebra."
+  }
+}
