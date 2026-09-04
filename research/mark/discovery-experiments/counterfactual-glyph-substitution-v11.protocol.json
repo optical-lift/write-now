@@ -1,0 +1,92 @@
+{
+  "schema": "mark_counterfactual_glyph_substitution_protocol_v11",
+  "experimentId": "mark:counterfactual-glyph-substitution:v11",
+  "question": "When the anonymous incoming sequence state is held fixed, does replacing the observed glyph operator with a train-matched alternative predict a systematically different next state, such that unseen outcomes preferentially fit the frozen kernel of the glyph actually present?",
+  "designContext": {
+    "parentV10RunId": 33905459943,
+    "parentV10Adjudication": "operatorCodeWithoutFiniteQuotient",
+    "parentV10ResultSha256": "1193ba183b7145e5b4f546de0b1cba911a5c61113cb45d71f36fd702653a7ed2",
+    "designedAfterParentResult": true,
+    "evaluationLanesWereOpenedByParentV10": true,
+    "freshIndependentHoldout": false,
+    "interpretiveStatus": "post-result mechanistic counterfactual-prediction test using the unchanged frozen V10 transition machine and reused V10 evaluation inscriptions",
+    "causalLimit": "The historical corpus cannot be physically intervened on. This is a frozen counterfactual discrimination test, not proof of causal intervention."
+  },
+  "parentV10": {
+    "branch": "mark-glyph-transition-code-v10",
+    "headSha": "f142ba8b98b735332a14d5802828a9444eba5c38",
+    "runId": 33905459943,
+    "freezeArtifactName": "mark-glyph-transition-code-v10-freeze",
+    "sealedEvaluationArtifactName": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "expectedProtocolSha256": "5394ec176313c6706877669f94e84f69ff88765b18e32dd69e1225663215a2d3",
+    "expectedFreezeSha256": "d5fc4fd6be89002514a0f7cd0c7561e5a2a3c152945912a4ed2e1da2fb4cf48a",
+    "sourceCommit": "43fe7cf1abc8e6bb1ea3228c3a1bd5938709620a",
+    "sourceGitBlobSha1": "ef41c58802a3135f295072ba60fc0df39450a10c",
+    "trainInscriptions": 1226,
+    "eligibleGlyphs": 73
+  },
+  "representation": {
+    "primaryVariant": "lineOnly",
+    "replicationVariant": "boundaryAware",
+    "primaryReason": "lineOnly removes inherited word boundaries, so the starting state is the immediately preceding anonymous glyph/line/document state rather than an editorial word-boundary cue",
+    "incomingState": "exact frozen V10 mapped immediately preceding stream item",
+    "outgoingState": "exact frozen V10 mapped immediately following stream item",
+    "operator": "the raw recurring Unicode glyph at the current position",
+    "semanticFieldsForbidden": true
+  },
+  "counterfactualPanel": {
+    "constructedFrom": "frozen V10 train counts and kernels only; no holdout/control outcomes participate",
+    "minimumTrainOccurrencesPerGlyphIncomingState": 10,
+    "minimumFrozenKernelTotalVariation": 0.10,
+    "candidateSubstitute": "a different V10-eligible glyph with at least the same minimum train support under the identical incoming state and frozen kernel TV >= minimum",
+    "selection": "for each actual (glyph,inputState), choose the candidate with smallest absolute log2 train-support ratio; break ties by SHA-256 of variant|inputState|actualGlyph|candidateGlyph",
+    "trainOnlyFeasibilityBeforeFreeze": {
+      "lineOnlyMappings": 115,
+      "lineOnlyDistinctGlyphs": 49,
+      "lineOnlyDistinctIncomingStates": 19,
+      "lineOnlyCoveredTrainEvents": 3433,
+      "boundaryAwareMappings": 107,
+      "boundaryAwareDistinctGlyphs": 56,
+      "boundaryAwareDistinctIncomingStates": 13,
+      "boundaryAwareCoveredTrainEvents": 4049
+    }
+  },
+  "outcome": {
+    "perEvent": "log2 K_actual(observedOutgoing|incoming) - log2 K_substitute(observedOutgoing|incoming)",
+    "positiveMeaning": "with starting state fixed, the observed next state is more compatible with the frozen consequence law of the glyph actually present than with its train-matched counterfactual substitute",
+    "independenceUnit": "anonymous inscription",
+    "primaryPerInscription": "mean per-event substitution advantage among eligible events in that inscription",
+    "primaryLaneStatistic": "unweighted mean of inscription-level advantages",
+    "secondary": [
+      "event-weighted mean substitution advantage",
+      "fraction of eligible inscriptions with positive mean advantage",
+      "fraction of eligible events where actual glyph kernel assigns higher probability than substitute",
+      "boundaryAware replication under independently frozen matched substitutes"
+    ]
+  },
+  "null": {
+    "iterations": 4096,
+    "test": "deterministic one-sided sign flips of inscription-level mean substitution advantages within lane",
+    "seedSalt": "mark-counterfactual-glyph-substitution-v11-signflip"
+  },
+  "gates": {
+    "minimumEligibleHoldoutInscriptions": 40,
+    "minimumEligibleControlInscriptions": 25,
+    "minimumEligibleHoldoutEvents": 100,
+    "minimumEligibleControlEvents": 50,
+    "holdoutMeanInscriptionAdvantageMinimumBits": 0.0,
+    "controlMeanInscriptionAdvantageMinimumBits": 0.0,
+    "holdoutPositiveInscriptionFractionMinimum": 0.60,
+    "controlPositiveInscriptionFractionMinimum": 0.55,
+    "holdoutSignFlipPMaximum": 0.05,
+    "controlSignFlipPMaximum": 0.05
+  },
+  "adjudication": {
+    "GLYPH_SPECIFIC_COUNTERFACTUAL_CONSEQUENCE_TRANSFERS": "primary lineOnly holdout and control both clear support, sign, positive-inscription-fraction, and sign-flip gates",
+    "COUNTERFACTUAL_CONSEQUENCE_NOT_DISTINGUISHED": "primary support is sufficient but at least one frozen primary gate fails",
+    "INFEASIBLE": "either primary evaluation lane misses its frozen inscription or event support minimum"
+  },
+  "falsifier": "If, under the identical frozen incoming state, unseen outgoing states do not preferentially fit the actual glyph's frozen V10 kernel over a train-matched alternative glyph kernel in both reused evaluation lanes, V11 does not support a glyph-specific counterfactual consequence claim under this representation.",
+  "claimBoundary": "A pass supports a narrow mechanistic prediction claim: conditional on the frozen anonymous incoming state, changing glyph identity changes the distribution of predicted next states in a way that transfers to reused unseen inscriptions. It does not establish a physical causal intervention, phonetic reading, lexical meaning, historical intent, conscious software design, or fresh independent confirmation.",
+  "scientificFailureIsGreen": true
+}

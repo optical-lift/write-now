@@ -1,0 +1,74 @@
+name: Mark Counterfactual Glyph Substitution v11
+
+on:
+  pull_request:
+    paths:
+      - 'research/mark/discovery-experiments/counterfactual-glyph-substitution-v11.protocol.json'
+      - 'scripts/evaluate-mark-counterfactual-glyph-substitution-v11.py'
+      - '.github/workflows/mark-counterfactual-glyph-substitution-v11.yml'
+      - 'scripts/mark_glyph_transition_v10_core.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  counterfactual-glyph-substitution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen V11 before evidence
+        run: |
+          python3 -m json.tool research/mark/discovery-experiments/counterfactual-glyph-substitution-v11.protocol.json >/dev/null
+          python3 -m py_compile scripts/evaluate-mark-counterfactual-glyph-substitution-v11.py scripts/mark_glyph_transition_v10_core.py
+
+      - name: Download immutable V10 train freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-freeze
+          path: artifact-staging/v11-parent/freeze
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: optical-lift/write-now
+          run-id: 33905459943
+
+      - name: Download reused V10 sealed evaluation lanes
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/v11-parent/evaluation
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: optical-lift/write-now
+          run-id: 33905459943
+
+      - name: Prove V11 consumes no train rows or raw source
+        run: |
+          test -f artifact-staging/v11-parent/freeze/glyph-transition-code-freeze.json
+          test -f artifact-staging/v11-parent/evaluation/holdout.jsonl
+          test -f artifact-staging/v11-parent/evaluation/control.jsonl
+          test ! -e artifact-staging/v11-parent/evaluation/train.jsonl
+          test ! -e LinearAInscriptions.js
+
+      - name: Run frozen counterfactual substitution test
+        run: python3 scripts/evaluate-mark-counterfactual-glyph-substitution-v11.py
+
+      - name: Publish result summary
+        run: cat artifacts/mark-counterfactual-glyph-substitution-v11/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file artifacts/mark-counterfactual-glyph-substitution-v11/summary.md
+
+      - name: Upload frozen V11 packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-counterfactual-glyph-substitution-v11-frozen
+          path: artifacts/mark-counterfactual-glyph-substitution-v11/**
+          if-no-files-found: error
+          retention-days: 30
