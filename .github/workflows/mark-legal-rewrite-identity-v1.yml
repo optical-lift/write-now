@@ -1,0 +1,73 @@
+name: Mark Legal Rewrite Identity v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/legal-rewrite-identity-v1.protocol.json"
+      - "scripts/test-mark-legal-rewrite-identity.py"
+      - ".github/workflows/mark-legal-rewrite-identity-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_REWRITE_PROTOCOL: research/mark/discovery-experiments/legal-rewrite-identity-v1.protocol.json
+  MARK_REWRITE_CORR: artifact-staging/legal-rewrite/correspondence
+  MARK_REWRITE_LABELS: artifact-staging/legal-rewrite/labels
+  MARK_REWRITE_TOPO: artifact-staging/legal-rewrite/topology
+  MARK_REWRITE_OUT: artifacts/mark-legal-rewrite-identity-v1
+
+jobs:
+  legal-rewrite-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen test
+        run: |
+          python3 -m json.tool "$MARK_REWRITE_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/test-mark-legal-rewrite-identity.py
+      - name: Download label-blind correspondence
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-critical-center-correspondence-frozen
+          path: artifact-staging/legal-rewrite/correspondence
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+      - name: Download frozen role labels
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-labels-sealed
+          path: artifact-staging/legal-rewrite/labels
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+      - name: Download frozen anonymous topology atlas
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-discovery-v1-frozen
+          path: artifact-staging/legal-rewrite/topology
+          repository: optical-lift/write-now
+          run-id: 33791958187
+          github-token: ${{ github.token }}
+      - name: Run frozen rewrite-composition test
+        run: python3 scripts/test-mark-legal-rewrite-identity.py
+      - name: Publish result
+        run: cat "$MARK_REWRITE_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Comment result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_REWRITE_OUT/summary.md" --edit-last --create-if-none
+      - name: Upload frozen result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-legal-rewrite-identity-v1-frozen
+          path: artifacts/mark-legal-rewrite-identity-v1/**
+          if-no-files-found: error
+          retention-days: 30
