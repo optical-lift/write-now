@@ -1,0 +1,122 @@
+name: Mark Structural Role Factorization v14
+
+on:
+  pull_request:
+    paths:
+      - 'research/mark/discovery-experiments/structural-role-factorization-v14.protocol.json'
+      - 'scripts/mark_structural_role_factorization_v14_core.py'
+      - 'scripts/freeze-mark-structural-role-factorization-v14.py'
+      - 'scripts/evaluate-mark-structural-role-factorization-v14.py'
+      - '.github/workflows/mark-structural-role-factorization-v14.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  MARK_V10_RUN_ID: '33905459943'
+  MARK_V12_RUN_ID: '33924264305'
+  MARK_V14_PROTOCOL: research/mark/discovery-experiments/structural-role-factorization-v14.protocol.json
+
+jobs:
+  freeze-structural-role:
+    name: Freeze train-only anonymous roles and matrix holdout
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen V14 protocol and code
+        run: |
+          python3 -m json.tool "$MARK_V14_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_structural_role_factorization_v14_core.py scripts/freeze-mark-structural-role-factorization-v14.py scripts/evaluate-mark-structural-role-factorization-v14.py
+      - name: Download immutable V12 state freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/v12-freeze
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V12_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download V10 train-only packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/v10-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent during V14 freeze
+        run: |
+          test -f artifacts/v12-freeze/state-operator-freeze.json
+          test -f artifact-staging/v10-train/train.jsonl
+          test ! -e artifact-staging/v10-eval/holdout.jsonl
+          test ! -e artifact-staging/v10-eval/control.jsonl
+          test ! -e LinearAInscriptions.js
+      - name: Freeze anonymous roles, masked cells, factor model, switches, and n-gram order
+        run: python3 scripts/freeze-mark-structural-role-factorization-v14.py
+      - name: Publish pre-evaluation freeze summary
+        run: |
+          echo '### V14 structural role factorization — frozen before evaluation' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-structural-role-factorization-v14-freeze/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable V14 freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-structural-role-factorization-v14-freeze
+          path: artifacts/mark-structural-role-factorization-v14-freeze/**
+          retention-days: 30
+
+  evaluate-structural-role:
+    name: Evaluate frozen role conditioning and unseen combinations
+    needs: freeze-structural-role
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V14 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-structural-role-factorization-v14-freeze
+          path: artifacts/mark-structural-role-factorization-v14-freeze
+      - name: Download immutable V12 state freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/v12-freeze
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V12_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Open reused V10 evaluation lanes only after V14 freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/v10-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove train rows and raw source are absent during evaluation
+        run: |
+          test -f artifacts/mark-structural-role-factorization-v14-freeze/structural-role-freeze.json
+          test -f artifacts/v12-freeze/state-operator-freeze.json
+          test -f artifact-staging/v10-eval/holdout.jsonl
+          test -f artifact-staging/v10-eval/control.jsonl
+          test ! -e artifact-staging/v10-train/train.jsonl
+          test ! -e LinearAInscriptions.js
+      - name: Run frozen role transfer, matrix completion, role-switch, and n-gram challenge
+        run: python3 scripts/evaluate-mark-structural-role-factorization-v14.py
+      - name: Publish result summary
+        run: cat artifacts/mark-structural-role-factorization-v14/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file artifacts/mark-structural-role-factorization-v14/summary.md
+      - name: Upload frozen V14 result packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-structural-role-factorization-v14-frozen
+          path: |
+            artifacts/mark-structural-role-factorization-v14-freeze/**
+            artifacts/mark-structural-role-factorization-v14/**
+          retention-days: 30
