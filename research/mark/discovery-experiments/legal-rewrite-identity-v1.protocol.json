@@ -1,0 +1,45 @@
+{
+  "schema": "mark_legal_rewrite_identity_protocol_v1",
+  "experimentId": "mark:legal-rewrite-identity:v1",
+  "parentSynthesis": {
+    "branch": "mark-typed-construction-grammar-v1",
+    "synthesisSha256": "d8a8826783f3f4b305e495f9d99e686f69faf23440f0a13443b0a7273575fcf6"
+  },
+  "question": "Do pairwise role-preserving rewrites compose into transitive functional-identity classes whose previously unpaired multi-hop members remain topology-coherent?",
+  "inputs": {
+    "correspondenceRunId": 33804063784,
+    "correspondenceArtifact": "mark-v4-critical-center-correspondence-frozen",
+    "expectedCorrespondenceSha256": "7e22902649fe00f9ed7a68585d1457ef396d157c968d4a1cddb27a4b296e958d",
+    "labelsArtifact": "mark-v4-labels-sealed",
+    "expectedLabelsSha256": "675a4acf95418b7c553362e659b6c753edadacfe993833f00ffabe8375d8982e",
+    "topologyRunId": 33791958187,
+    "topologyArtifact": "mark-state-operator-discovery-v1-frozen",
+    "expectedTopologyRowsSha256": "b1912ded9bfdb8693c593263ebd9cd69e3906c14fa8fec54d7dff099d1a9f96b"
+  },
+  "identityConstruction": {
+    "legalEdge": "frozen role-preserved pair",
+    "candidateIdentityClass": "connected component of legal edges within one lane",
+    "compositionTarget": "pair of observations in the same legal component connected by at least two legal edges and not themselves a direct legal edge",
+    "consistencyFalsifier": "any already-scored broken pair whose endpoints fall inside one legal connected component"
+  },
+  "topologyVector": [
+    "log1p(centerCount)",
+    "center:ENDPOINT", "center:JUNCTION",
+    "degree:ENDPOINT:0", "degree:ENDPOINT:1",
+    "degree:JUNCTION:2", "degree:JUNCTION:3", "degree:JUNCTION:4", "degree:JUNCTION:5plus",
+    "arm:ENDPOINT:PATH_TO_ENDPOINT", "arm:ENDPOINT:PATH_TO_JUNCTION", "arm:ENDPOINT:UNRESOLVED",
+    "arm:JUNCTION:PATH_TO_ENDPOINT", "arm:JUNCTION:PATH_TO_JUNCTION", "arm:JUNCTION:UNRESOLVED"
+  ],
+  "normalization": "Counts except centerCount are divided by centerCount; train observations alone define feature means and population standard deviations.",
+  "comparison": "Within each lane and physical-family-pair stratum, compare topology distance of multi-hop same-component pairs against cross-component pairs with the same physical-family pair. Smaller same-component distance is positive evidence. Equal-weight family-pair effects are averaged.",
+  "gates": {
+    "minimumMultiHopPairsPerLane": 10,
+    "maximumBrokenWithinLegalComponent": 0,
+    "trainBalancedEffectMinimum": 0.10,
+    "holdoutBalancedEffectMinimum": 0.05,
+    "controlBalancedEffectMinimum": 0.05
+  },
+  "falsifier": "If legal edges do not compose transitively in an independent lane, or multi-hop members are not more topology-coherent than family-matched cross-component controls, functional identity is not supported as an equivalence class under these rewrites.",
+  "scientificFailureIsGreen": true,
+  "claimBoundary": "This tests transitive composition of already-frozen role-preserving relations. It does not prove that every member of a component has identical semantics or that all legal rewrites have been discovered."
+}
