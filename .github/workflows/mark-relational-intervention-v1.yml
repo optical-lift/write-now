@@ -5,6 +5,7 @@ on:
     paths:
       - "research/mark/discovery-experiments/relational-intervention-v1.protocol.json"
       - "scripts/test-mark-relational-intervention-v1.py"
+      - "scripts/test-mark-relational-intervention-v1-optimized.py"
       - ".github/workflows/mark-relational-intervention-v1.yml"
       - "scripts/mark_graph_compression_v8_core.py"
   workflow_dispatch:
@@ -30,7 +31,7 @@ jobs:
       - name: Validate frozen intervention before evidence
         run: |
           python3 -m json.tool "$MARK_RELATIONAL_PROTOCOL" >/dev/null
-          python3 -m py_compile scripts/mark_graph_compression_v8_core.py scripts/test-mark-relational-intervention-v1.py
+          python3 -m py_compile scripts/mark_graph_compression_v8_core.py scripts/test-mark-relational-intervention-v1-optimized.py
 
       - name: Download frozen V8 blind grammar only
         uses: actions/download-artifact@v4
@@ -51,7 +52,7 @@ jobs:
           github-token: ${{ github.token }}
 
       - name: Run matched relationship-versus-realization intervention
-        run: python3 scripts/test-mark-relational-intervention-v1.py
+        run: python3 scripts/test-mark-relational-intervention-v1-optimized.py
 
       - name: Publish frozen result
         run: cat "$MARK_RELATIONAL_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
