@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/mark_graph_compression_v8_core.py"
+      - "scripts/test-mark-graph-compression-v8-losslessness.py"
       - "scripts/induce-mark-hierarchical-graph-grammar-v8.py"
       - "scripts/evaluate-mark-hierarchical-graph-grammar-v8.py"
       - "research/mark/discovery-experiments/hierarchical-graph-compression-v8.protocol.json"
@@ -34,6 +35,7 @@ jobs:
         run: |
           python3 -m json.tool "$MARK_COMPRESSION_PROTOCOL" >/dev/null
           python3 -m py_compile scripts/mark_graph_compression_v8_core.py
+          python3 -m py_compile scripts/test-mark-graph-compression-v8-losslessness.py
           python3 -m py_compile scripts/induce-mark-hierarchical-graph-grammar-v8.py
           python3 -m py_compile scripts/evaluate-mark-hierarchical-graph-grammar-v8.py
 
@@ -47,6 +49,7 @@ jobs:
           assert synthetic_roundtrip_tests()
           print("synthetic_lossless_roundtrip=passed")
           PY
+          PYTHONPATH=scripts python3 scripts/test-mark-graph-compression-v8-losslessness.py
 
       - name: Download frozen v5 graph world only
         uses: actions/download-artifact@v4
