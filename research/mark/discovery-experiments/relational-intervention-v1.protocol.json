@@ -1,0 +1,86 @@
+{
+  "schema": "mark_relational_intervention_protocol_v1",
+  "experimentId": "mark:relational-intervention:v1",
+  "question": "When low-order graph statistics and edit budget are held fixed, does changing which nodes are related disrupt a previously frozen blind hierarchical grammar more than reassigning edge realization attributes while preserving those relationships?",
+  "parentV8": {
+    "runId": 33821017246,
+    "artifactName": "mark-hierarchical-graph-compression-v8-grammar-freeze",
+    "expectedGrammarFreezeSha256": "917fd07f604334f96548df0fa05e7fd3d130066854acf380eb695396b551ae81",
+    "grammarLearnedWithoutRoleLabels": true,
+    "primaryVariant": "lengthAware",
+    "primaryModel": "hierarchical",
+    "flatComparator": true,
+    "topologyDiagnostic": true
+  },
+  "parentV5": {
+    "runId": 33807154154,
+    "artifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedProjectorRowsSha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e"
+  },
+  "population": {
+    "usePairEligibleObservationsOnly": true,
+    "primaryLane": "holdout",
+    "replicationLane": "control",
+    "trainLaneExcludedFromPrimaryAdjudication": true
+  },
+  "matchedIntervention": {
+    "unit": "one observation primitive graph",
+    "edgeBudget": 2,
+    "candidateEdgeLimitPerMultiplicityClass": 256,
+    "candidateSelection": "deterministic minimum SHA-256 among valid candidates",
+    "eligibility": [
+      "two distinct primitive non-self edges",
+      "four distinct endpoint nodes",
+      "same parallel-multiplicity class",
+      "different normalized path-length bins",
+      "at least one degree-preserving double-edge swap creates two nonduplicate non-self relationships",
+      "rewire preserves connected-component count"
+    ],
+    "attributeSwap": "keep both endpoint relationships fixed and exchange the two complete edge labels; because multiplicity class is matched, this reassigns normalized length realization while preserving adjacency",
+    "relationshipRewire": "keep each complete edge label but perform one canonical degree-preserving double-edge swap across the same two edges",
+    "requiredExactInvariantsAcrossOriginalAttributeAndRewire": [
+      "node IDs and terminal labels",
+      "node count",
+      "edge count",
+      "per-node graph degree",
+      "full edge-label multiset",
+      "connected-component count",
+      "cycle rank",
+      "raw V8 structural code length"
+    ]
+  },
+  "outcome": {
+    "instrument": "frozen V8 grammar; no rule refit, reordering, or selection",
+    "primaryPerObservation": "hierarchical selective penalty = hierarchicalDataBits(relationshipRewire) - hierarchicalDataBits(attributeSwap)",
+    "normalizedPrimary": "primary selective penalty divided by max(1, hierarchicalDataBits(original))",
+    "positiveMeaning": "the relationship rewrite is less compatible with the frozen grammar than the equally budgeted attribute reassignment",
+    "flatComparator": "same selective penalty under the frozen V8 flat dictionary",
+    "topologyDiagnostic": "same original versus relationship-rewire penalty under the frozen topology-only hierarchical grammar; attribute swap is intentionally invisible to topology-only labels and is not a primary matched comparison"
+  },
+  "null": {
+    "iterations": 512,
+    "unit": "eligible observation",
+    "test": "deterministic sign flips of each observation's normalized primary selective penalty within lane",
+    "seedSalt": "mark-relational-intervention-v1-signflip"
+  },
+  "gates": {
+    "minimumEligibleHoldoutObservations": 40,
+    "minimumEligibleControlObservations": 40,
+    "holdoutPositiveFractionMinimum": 0.60,
+    "controlPositiveFractionMinimum": 0.55,
+    "holdoutMeanNormalizedSelectivePenaltyMinimum": 0.0,
+    "controlMeanNormalizedSelectivePenaltyMinimum": 0.0,
+    "holdoutSignFlipPMaximum": 0.05,
+    "controlSignFlipPMaximum": 0.05
+  },
+  "adjudication": {
+    "RELATIONSHIP_CODE_SUPPORTED": "all holdout and control support, sign, fraction, and sign-flip gates pass",
+    "RELATIONSHIP_EFFECT_NOT_DISTINGUISHED": "support is sufficient but at least one preregistered gate fails; do not rescue by redefining rendering, context, or code after the result",
+    "INFEASIBLE": "either primary lane has fewer than its frozen minimum eligible matched interventions"
+  },
+  "falsifier": "If a degree/component/cycle/label-inventory matched relationship rewire does not damage frozen heldout grammar fit more than the same-budget realization-attribute reassignment in both untouched lanes, this experiment does not support the claim that protected relationships are the code-bearing layer.",
+  "claimBoundary": "A pass would support a causal distinction inside the current Mark graph representation between relationship organization and edge realization assignment, using a grammar learned before this intervention. It would not prove historical semantics, conscious machine encoding, universality, or that every glyph is executable code.",
+  "scientificFailureIsGreen": true
+}
