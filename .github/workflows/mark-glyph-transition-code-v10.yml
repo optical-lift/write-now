@@ -1,5 +1,9 @@
 name: Mark Glyph Transition Code v10
 
+concurrency:
+  group: mark-glyph-transition-code-v10-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:
