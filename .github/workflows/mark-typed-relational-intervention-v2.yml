@@ -5,6 +5,8 @@ on:
     paths:
       - "research/mark/discovery-experiments/typed-relational-intervention-v2.protocol.json"
       - "scripts/test-mark-typed-relational-intervention-v2.py"
+      - "scripts/run-mark-typed-relational-intervention-v2-shard.py"
+      - "scripts/aggregate-mark-typed-relational-intervention-v2.py"
       - ".github/workflows/mark-typed-relational-intervention-v2.yml"
       - "scripts/mark_graph_compression_v8_core.py"
   workflow_dispatch:
@@ -21,16 +23,26 @@ env:
   MARK_TYPED_RELATIONAL_OUT: artifacts/mark-typed-relational-intervention-v2
 
 jobs:
-  typed-relational-intervention:
+  typed-relational-shards:
+    name: typed-relational-shard-${{ matrix.shard }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate frozen intervention before evidence
+      - name: Validate frozen intervention and execution wrappers before evidence
         run: |
           python3 -m json.tool "$MARK_TYPED_RELATIONAL_PROTOCOL" >/dev/null
-          python3 -m py_compile scripts/mark_graph_compression_v8_core.py scripts/test-mark-typed-relational-intervention-v2.py
+          python3 -m py_compile \
+            scripts/mark_graph_compression_v8_core.py \
+            scripts/test-mark-typed-relational-intervention-v2.py \
+            scripts/run-mark-typed-relational-intervention-v2-shard.py \
+            scripts/aggregate-mark-typed-relational-intervention-v2.py
 
       - name: Download frozen V8 blind grammar only
         uses: actions/download-artifact@v4
@@ -50,8 +62,65 @@ jobs:
           run-id: 33807154154
           github-token: ${{ github.token }}
 
-      - name: Run typed relationship-class intervention
-        run: python3 scripts/test-mark-typed-relational-intervention-v2.py
+      - name: Run unchanged V2 scorer on deterministic shard
+        env:
+          MARK_TYPED_RELATIONAL_SHARD_INDEX: ${{ matrix.shard }}
+          MARK_TYPED_RELATIONAL_SHARD_COUNT: 20
+          MARK_TYPED_RELATIONAL_OUT: artifacts/mark-typed-relational-intervention-v2/shard-${{ matrix.shard }}
+        run: python3 scripts/run-mark-typed-relational-intervention-v2-shard.py
+
+      - name: Upload deterministic shard packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-typed-relational-v2-shard-${{ matrix.shard }}
+          path: |
+            artifacts/mark-typed-relational-intervention-v2/shard-${{ matrix.shard }}/worker.json
+            artifacts/mark-typed-relational-intervention-v2/shard-${{ matrix.shard }}/interventions.jsonl
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate-typed-relational-intervention:
+    name: aggregate-typed-relational-intervention
+    needs: typed-relational-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate aggregation code
+        run: |
+          python3 -m json.tool "$MARK_TYPED_RELATIONAL_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_graph_compression_v8_core.py scripts/aggregate-mark-typed-relational-intervention-v2.py
+
+      - name: Download frozen V8 blind grammar only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hierarchical-graph-compression-v8-grammar-freeze
+          path: artifact-staging/typed-relational/v8
+          repository: optical-lift/write-now
+          run-id: 33821017246
+          github-token: ${{ github.token }}
+
+      - name: Download exact frozen V5 graph world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/typed-relational/v5
+          repository: optical-lift/write-now
+          run-id: 33807154154
+          github-token: ${{ github.token }}
+
+      - name: Download all completed shard packets
+        uses: actions/download-artifact@v4
+        with:
+          pattern: mark-typed-relational-v2-shard-*
+          path: artifact-staging/typed-relational/shards
+          merge-multiple: false
+
+      - name: Reconstruct monolithic order and adjudicate once
+        env:
+          MARK_TYPED_RELATIONAL_SHARDS: artifact-staging/typed-relational/shards
+        run: python3 scripts/aggregate-mark-typed-relational-intervention-v2.py
 
       - name: Publish frozen result
         run: cat "$MARK_TYPED_RELATIONAL_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
