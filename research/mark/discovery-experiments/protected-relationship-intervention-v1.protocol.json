@@ -1,0 +1,90 @@
+{
+  "schema": "mark_protected_relationship_intervention_protocol_v1",
+  "experimentId": "mark:protected-relationship-intervention:v1",
+  "parentSynthesis": {
+    "branch": "mark-typed-construction-grammar-v1",
+    "synthesisSha256": "d8a8826783f3f4b305e495f9d99e686f69faf23440f0a13443b0a7273575fcf6"
+  },
+  "question": "When edit budget and low-order graph statistics are held fixed, does changing a mapped relationship damage compatibility with a role-equivalent target more selectively than changing residual path realization?",
+  "inputs": {
+    "v5RunId": 33807154154,
+    "v5Artifact": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "v4RunId": 33804063784,
+    "unlabeledPairsArtifact": "mark-v4-unlabeled-pairs",
+    "expectedPairWorldFreezeSha256": "439cc57b03ac802a5d70ba249f85b467cf7dcdab8db72dbec220b6c58c7499c6",
+    "labelsArtifact": "mark-v4-labels-sealed",
+    "expectedLabelsSha256": "675a4acf95418b7c553362e659b6c753edadacfe993833f00ffabe8375d8982e"
+  },
+  "blindIntervention": {
+    "centerAlignment": "same label-blind D4 selection plus deterministic sparse kind-preserving nearest-center mapping used by local-wiring motif v7",
+    "mappedEndpointsOnly": true,
+    "collapsedParallelEdgeBundles": true,
+    "degreeCapForMatching": 6,
+    "normalizedPathLengthBinWidth": 0.05,
+    "minimumResidualGeometrySeparation": 0.15,
+    "maximumNewChordBinShift": 1,
+    "minimumAffectedMappedNonEndpointRoots": 2,
+    "candidateOrder": "lexicographically first valid pair after deterministic bucket ordering",
+    "relationshipTwin": "degree-preserving double-edge swap: (u,v),(x,y) -> (u,y),(x,v), with four distinct endpoints and absent cross-edges",
+    "renderingTwin": "keep adjacency fixed and swap only the two edge bundles' mean turn-rate and tortuosity profiles",
+    "preservedByConstruction": [
+      "node identities",
+      "node endpoint/junction kinds",
+      "exact node degree sequence under the relationship twin",
+      "collapsed edge count",
+      "exact parallel multiplicity of the two edited bundles",
+      "coarse normalized path-length class of the edited bundles",
+      "endpoint kind plus degree-class edge stratum",
+      "global residual-geometry profile inventory under the rendering twin"
+    ],
+    "forbiddenDuringFreeze": [
+      "preserved/broken role labels",
+      "State 1/2/3 vocabulary",
+      "transition grammar",
+      "provenance",
+      "culture",
+      "language",
+      "historical semantics"
+    ]
+  },
+  "primaryOutcome": {
+    "radius": 2,
+    "representation": "length-aware local wiring motif tokens from v7: endpoint/junction kind, capped degree, adjacency, parallel multiplicity class, and 0.05 normalized path-length bin",
+    "editedEndpointsExcludedFromScoring": true,
+    "affectedRoots": "mapped roots in the source graph within graph distance <=2 of any edited endpoint, excluding the four edited endpoints themselves",
+    "pairStatistic": "mean over affected roots of [motif_distance(relationship_twin,target) - motif_distance(rendering_twin,target)]",
+    "interpretation": "positive means the relationship edit damages surrounding target compatibility more than the residual-geometry edit"
+  },
+  "ablations": [
+    "radius-2 topology-only motif spillover",
+    "direct-root score including the four edited endpoints",
+    "raw residual geometry separation and new-chord shift as nuisance diagnostics"
+  ],
+  "feasibility": {
+    "minimumInterventionsTrain": 80,
+    "minimumInterventionsHoldout": 140,
+    "minimumInterventionsControl": 60,
+    "note": "Thresholds and the later minimum-two-root eligibility repair were set from label-blind feasibility only. The first blind screen showed that endpoint exclusion could leave an otherwise valid swap with no neighboring mapped root; no role label or scientific outcome was opened before adding this eligibility requirement."
+  },
+  "null": {
+    "worlds": 128,
+    "seed": 2409041,
+    "shuffle": "within exact occupant-family pair in Cleveland/train, shuffle preserved/broken labels over already-frozen intervention scores"
+  },
+  "gates": {
+    "trainFamilyBalancedEffectMinimum": 0.08,
+    "trainMaximumAbsoluteNullsAtLeastObserved": 16,
+    "holdoutEffectMinimum": 0.08,
+    "controlEffectForThreeLaneClaim": 0.05
+  },
+  "adjudication": {
+    "THREE_LANE_PROTECTED_RELATIONSHIP": "feasible; train and holdout gates pass; control effect is same-direction and >=0.05",
+    "TWO_LANE_PROTECTED_RELATIONSHIP": "feasible; train and holdout gates pass; control does not reach the three-lane threshold",
+    "GENERIC_GRAPH_DAMAGE_COMPATIBLE": "feasible but train or holdout primary gate fails; relationship rewiring is not selectively more damaging in role-preserved pairs under the frozen test",
+    "INFEASIBLE": "any lane falls below its predeclared intervention count; measurement failure only"
+  },
+  "scientificFailureIsGreen": true,
+  "claimBoundary": "A protected-relationship result would show that, within Mark's frozen anonymous correspondence world, low-order-matched relationship rewiring selectively disrupts compatibility with targets already labeled role-preserved more than an equally localized residual-geometry intervention. It would not prove historical semantics, cognition, chronology, or literal machine execution; synthetic graph counterfactuals are not pixel-realized marks."
+}

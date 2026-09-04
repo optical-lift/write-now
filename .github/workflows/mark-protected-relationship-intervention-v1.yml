@@ -1,0 +1,117 @@
+name: Mark Protected Relationship Intervention v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/protected-relationship-intervention-v1.protocol.json"
+      - "scripts/mark_protected_relationship_intervention_common.py"
+      - "scripts/freeze-mark-protected-relationship-intervention.py"
+      - "scripts/score-mark-protected-relationship-intervention.py"
+      - ".github/workflows/mark-protected-relationship-intervention-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_REL_PROTOCOL: research/mark/discovery-experiments/protected-relationship-intervention-v1.protocol.json
+  MARK_REL_V5: artifact-staging/protected-relationship/v5
+  MARK_REL_PAIRS: artifact-staging/protected-relationship/pairs
+  MARK_REL_LABELS: artifact-staging/protected-relationship/labels
+  MARK_REL_FREEZE: artifacts/mark-protected-relationship-intervention-v1/frozen
+  MARK_REL_OUT: artifacts/mark-protected-relationship-intervention-v1/result
+
+jobs:
+  protected-relationship-intervention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen intervention contract before evidence exists
+        run: |
+          python3 -m json.tool "$MARK_REL_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_protected_relationship_intervention_common.py
+          python3 -m py_compile scripts/freeze-mark-protected-relationship-intervention.py
+          python3 -m py_compile scripts/score-mark-protected-relationship-intervention.py
+
+      - name: Install blind graph dependency
+        run: python3 -m pip install --disable-pip-version-check scipy
+
+      - name: Download frozen v5 graph world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/protected-relationship/v5
+          repository: optical-lift/write-now
+          run-id: 33807154154
+          github-token: ${{ github.token }}
+
+      - name: Remove combined v5 role labels before intervention selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$MARK_REL_V5" -name role-pair-labels.jsonl -type f -delete
+          if find "$MARK_REL_V5" -name role-pair-labels.jsonl -type f | grep -q .; then
+            echo "role labels remain in blind graph world" >&2
+            exit 1
+          fi
+
+      - name: Download frozen unlabeled pair world only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-unlabeled-pairs
+          path: artifact-staging/protected-relationship/pairs
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+
+      - name: Freeze interventions while role labels are unavailable
+        run: python3 scripts/freeze-mark-protected-relationship-intervention.py
+
+      - name: Publish blind intervention freeze
+        run: |
+          echo '### Protected relationship intervention v1 — role labels still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat "$MARK_REL_FREEZE/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload blind intervention manifest before labels open
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-protected-relationship-intervention-v1-blind
+          path: artifacts/mark-protected-relationship-intervention-v1/frozen/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Download separately sealed role labels only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-v4-labels-sealed
+          path: artifact-staging/protected-relationship/labels
+          repository: optical-lift/write-now
+          run-id: 33804063784
+          github-token: ${{ github.token }}
+
+      - name: Score frozen counterfactuals against role labels
+        run: python3 scripts/score-mark-protected-relationship-intervention.py
+
+      - name: Publish scientific result
+        run: cat "$MARK_REL_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_REL_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen scored result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-protected-relationship-intervention-v1-result
+          path: artifacts/mark-protected-relationship-intervention-v1/result/**
+          if-no-files-found: error
+          retention-days: 30
