@@ -1,0 +1,168 @@
+name: Mark Operator Composition Algebra v9
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_operator_algebra_v9_core.py"
+      - "scripts/split-mark-operator-algebra-v9.py"
+      - "scripts/induce-mark-operator-algebra-v9.py"
+      - "scripts/evaluate-mark-operator-algebra-v9.py"
+      - "scripts/test-mark-operator-algebra-v9.py"
+      - "research/mark/discovery-experiments/operator-composition-algebra-v9.README.md"
+      - "research/mark/discovery-experiments/operator-composition-algebra-v9.protocol.json"
+      - ".github/workflows/mark-operator-composition-algebra-v9.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_V5_RUN_ID: 33807154154
+  MARK_V5_ARTIFACT: mark-critical-edge-correspondence-v5-frozen
+  MARK_V9_PROTOCOL: research/mark/discovery-experiments/operator-composition-algebra-v9.protocol.json
+
+jobs:
+  custody-split:
+    name: V9 custody split
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen V9 protocol and custody splitter
+        run: |
+          python3 -m json.tool "$MARK_V9_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_operator_algebra_v9_core.py \
+            scripts/split-mark-operator-algebra-v9.py
+
+      - name: Download exact frozen V5 parent packet
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.MARK_V5_ARTIFACT }}
+          path: artifact-staging/v5
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V5_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Verify parent hashes and split lanes without feature computation
+        run: python3 scripts/split-mark-operator-algebra-v9.py
+
+      - name: Publish Cleveland-only induction packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-cleveland-train
+          path: |
+            artifact-staging/v9-split/train.jsonl
+            artifact-staging/v9-split/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Seal Bavaria and LOC evaluation packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-sealed-evaluation
+          path: |
+            artifact-staging/v9-split/holdout.jsonl
+            artifact-staging/v9-split/control.jsonl
+            artifact-staging/v9-split/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  induce-cleveland:
+    name: Freeze Cleveland operator algebra
+    needs: custody-split
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate V9 engine and invariance tests
+        run: |
+          python3 -m json.tool "$MARK_V9_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_operator_algebra_v9_core.py \
+            scripts/induce-mark-operator-algebra-v9.py \
+            scripts/test-mark-operator-algebra-v9.py
+          python3 scripts/test-mark-operator-algebra-v9.py
+
+      - name: Download Cleveland induction packet only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-cleveland-train
+          path: artifact-staging/v9-split
+
+      - name: Prove sealed evaluation lanes are absent during induction
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f artifact-staging/v9-split/train.jsonl
+          test -f artifact-staging/v9-split/split-manifest.json
+          test ! -e artifact-staging/v9-split/holdout.jsonl
+          test ! -e artifact-staging/v9-split/control.jsonl
+
+      - name: Induce and hash Cleveland-only operator algebra
+        run: python3 scripts/induce-mark-operator-algebra-v9.py
+
+      - name: Publish pre-holdout freeze summary
+        run: |
+          echo '### Mark operator composition algebra v9 — Cleveland freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-operator-composition-algebra-v9-freeze/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Bavaria and LOC evaluation packets were not present in this job.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable Cleveland freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-freeze
+          path: artifacts/mark-operator-composition-algebra-v9-freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate-sealed:
+    name: Open Bavaria after freeze and evaluate
+    needs:
+      - custody-split
+      - induce-cleveland
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen evaluator
+        run: |
+          python3 -m json.tool "$MARK_V9_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_operator_algebra_v9_core.py \
+            scripts/evaluate-mark-operator-algebra-v9.py
+
+      - name: Download immutable Cleveland freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-freeze
+          path: artifacts/mark-operator-composition-algebra-v9-freeze
+
+      - name: Open sealed Bavaria and LOC packet only after freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-sealed-evaluation
+          path: artifact-staging/v9-split
+
+      - name: Evaluate frozen composition and frozen law candidates unchanged
+        run: python3 scripts/evaluate-mark-operator-algebra-v9.py
+
+      - name: Publish sealed V9 result
+        run: cat artifacts/mark-operator-composition-algebra-v9/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen V9 result packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-composition-algebra-v9-frozen
+          path: |
+            artifacts/mark-operator-composition-algebra-v9-freeze/**
+            artifacts/mark-operator-composition-algebra-v9/**
+            artifact-staging/v9-split/split-manifest.json
+          if-no-files-found: error
+          retention-days: 30
