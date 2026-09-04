@@ -1,0 +1,101 @@
+name: Mark Symbolic Specificity v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/symbolic-specificity-v1.protocol.json"
+      - "scripts/capture-mark-symbolic-critical-graphs.mjs"
+      - "scripts/test-mark-symbolic-specificity.py"
+      - ".github/workflows/mark-symbolic-specificity-v1.yml"
+      - "app/glyph-atlas/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_SYMBOLIC_SPECIFICITY_PROTOCOL: research/mark/discovery-experiments/symbolic-specificity-v1.protocol.json
+  MARK_SYMBOLIC_GRAPH_OUT: artifacts/mark-symbolic-specificity-v1/glyphs
+  MARK_SYMBOLIC_GRAPH_CORPUS: artifacts/mark-symbolic-specificity-v1/glyphs/symbolic-critical-graphs.json
+  MARK_SYMBOLIC_SPECIFICITY_OUT: artifacts/mark-symbolic-specificity-v1/result
+  MARK_V5_EDGE_WORLD: artifact-staging/critical-edge-v5/mark-critical-edge-projector-v5/critical-edge-observations.jsonl
+  MARK_V5_WORLD_SUMMARY: artifact-staging/critical-edge-v5/mark-critical-edge-world-v5/critical-edge-world.json
+
+jobs:
+  matched-symbolic-specificity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate frozen inverse-test contract
+        run: |
+          python3 -m json.tool "$MARK_SYMBOLIC_SPECIFICITY_PROTOCOL" >/dev/null
+          node --check scripts/capture-mark-symbolic-critical-graphs.mjs
+          python3 -m py_compile scripts/test-mark-symbolic-specificity.py
+
+      - name: Install app, browser and governed glyph fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core fonts-noto-extra
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          fc-cache -f
+
+      - name: Start existing Glyph Atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run dev -- --hostname 127.0.0.1 > "$RUNNER_TEMP/glyph-atlas-symbolic-specificity.log" 2>&1 &
+          for attempt in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/glyph-atlas >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/glyph-atlas-symbolic-specificity.log"
+          exit 1
+
+      - name: Freeze anonymous symbolic critical graphs
+        env:
+          GLYPH_ATLAS_URL: http://127.0.0.1:3000/glyph-atlas
+        run: node scripts/capture-mark-symbolic-critical-graphs.mjs
+
+      - name: Download exact frozen critical-edge photo-control world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/critical-edge-v5
+          repository: optical-lift/write-now
+          run-id: 33807154154
+          github-token: ${{ github.token }}
+
+      - name: Run graph-matched inverse falsification
+        run: python3 scripts/test-mark-symbolic-specificity.py
+
+      - name: Publish inverse-test result
+        run: cat "$MARK_SYMBOLIC_SPECIFICITY_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_SYMBOLIC_SPECIFICITY_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen symbolic-specificity packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-symbolic-specificity-v1-frozen
+          path: |
+            artifacts/mark-symbolic-specificity-v1/glyphs/**
+            artifacts/mark-symbolic-specificity-v1/result/**
+          if-no-files-found: error
+          retention-days: 30
