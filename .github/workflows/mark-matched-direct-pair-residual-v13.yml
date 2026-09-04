@@ -1,0 +1,122 @@
+name: Mark Matched Direct Pair Residual v13
+
+on:
+  pull_request:
+    paths:
+      - 'research/mark/discovery-experiments/matched-direct-pair-residual-v13.protocol.json'
+      - 'scripts/mark_matched_direct_pair_residual_v13_core.py'
+      - 'scripts/freeze-mark-matched-direct-pair-residual-v13.py'
+      - 'scripts/evaluate-mark-matched-direct-pair-residual-v13.py'
+      - '.github/workflows/mark-matched-direct-pair-residual-v13.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  MARK_V10_RUN_ID: '33905459943'
+  MARK_V12_RUN_ID: '33924264305'
+  MARK_V13_PROTOCOL: research/mark/discovery-experiments/matched-direct-pair-residual-v13.protocol.json
+
+jobs:
+  freeze-matched-residual:
+    name: Freeze train-only matched residual panel
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen V13 protocol and code
+        run: |
+          python3 -m json.tool "$MARK_V13_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_matched_direct_pair_residual_v13_core.py scripts/freeze-mark-matched-direct-pair-residual-v13.py scripts/evaluate-mark-matched-direct-pair-residual-v13.py
+      - name: Download immutable V12 state freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/v12-freeze
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V12_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download V10 train-only packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/v10-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent during V13 freeze
+        run: |
+          test -f artifacts/v12-freeze/state-operator-freeze.json
+          test -f artifact-staging/v10-train/train.jsonl
+          test ! -e artifact-staging/v10-eval/holdout.jsonl
+          test ! -e artifact-staging/v10-eval/control.jsonl
+          test ! -e LinearAInscriptions.js
+      - name: Freeze matched residual panel and exact-history diagnostic
+        run: python3 scripts/freeze-mark-matched-direct-pair-residual-v13.py
+      - name: Publish pre-evaluation freeze summary
+        run: |
+          echo '### V13 matched direct-pair residual — frozen before evaluation' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-matched-direct-pair-residual-v13-freeze/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable V13 freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-matched-direct-pair-residual-v13-freeze
+          path: artifacts/mark-matched-direct-pair-residual-v13-freeze/**
+          retention-days: 30
+
+  evaluate-matched-residual:
+    name: Evaluate frozen matched residual decomposition
+    needs: freeze-matched-residual
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V13 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-matched-direct-pair-residual-v13-freeze
+          path: artifacts/mark-matched-direct-pair-residual-v13-freeze
+      - name: Download immutable V12 state freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/v12-freeze
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V12_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Open reused V10 evaluation lanes only after V13 freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/v10-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove train rows and raw source are absent during evaluation
+        run: |
+          test -f artifacts/mark-matched-direct-pair-residual-v13-freeze/matched-pair-freeze.json
+          test -f artifacts/v12-freeze/state-operator-freeze.json
+          test -f artifact-staging/v10-eval/holdout.jsonl
+          test -f artifact-staging/v10-eval/control.jsonl
+          test ! -e artifact-staging/v10-train/train.jsonl
+          test ! -e LinearAInscriptions.js
+      - name: Run frozen residual, local-context, and state-compression tests
+        run: python3 scripts/evaluate-mark-matched-direct-pair-residual-v13.py
+      - name: Publish result summary
+        run: cat artifacts/mark-matched-direct-pair-residual-v13/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file artifacts/mark-matched-direct-pair-residual-v13/summary.md
+      - name: Upload frozen V13 result packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-matched-direct-pair-residual-v13-frozen
+          path: |
+            artifacts/mark-matched-direct-pair-residual-v13-freeze/**
+            artifacts/mark-matched-direct-pair-residual-v13/**
+          retention-days: 30
