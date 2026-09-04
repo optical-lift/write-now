@@ -100,7 +100,22 @@ def parse_inscription_map(data):
     value, _consumed = decoder.raw_decode(payload)
     if not isinstance(value, list):
         raise RuntimeError("inscriptions Map payload is not an array")
-    return value
+
+    # Reproduce ECMAScript Map construction exactly for duplicate keys:
+    # a later entry overwrites the value associated with the existing key while
+    # the key retains its original insertion position. Python dict assignment
+    # has the same order behavior.
+    resolved = {}
+    raw_entry_count = 0
+    for entry in value:
+        raw_entry_count += 1
+        if not isinstance(entry, list) or len(entry) != 2:
+            raise RuntimeError("malformed inscriptions Map entry")
+        key, obj = entry
+        if not isinstance(key, str) or not isinstance(obj, dict):
+            raise RuntimeError("malformed inscription key/object")
+        resolved[key] = obj
+    return [[key, obj] for key, obj in resolved.items()], raw_entry_count
 
 
 def lane_for(key, lanes):
@@ -126,7 +141,7 @@ def main():
     if actual_blob != expected_blob:
         raise RuntimeError(f"source blob drift: expected {expected_blob}, got {actual_blob}")
 
-    entries = parse_inscription_map(raw)
+    entries, raw_entry_count = parse_inscription_map(raw)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     handles = {
         lane: (OUT_DIR / f"{lane}.jsonl").open("w", encoding="utf-8")
@@ -138,11 +153,7 @@ def main():
 
     try:
         for entry in entries:
-            if not isinstance(entry, list) or len(entry) != 2:
-                raise RuntimeError("malformed inscriptions Map entry")
             key, obj = entry
-            if not isinstance(key, str) or not isinstance(obj, dict):
-                raise RuntimeError("malformed inscription key/object")
             words = obj.get("words")
             if not isinstance(words, list) or not all(isinstance(x, str) for x in words):
                 raise RuntimeError(f"inscription {key!r} has invalid words array")
@@ -150,7 +161,7 @@ def main():
             lane, bucket = lane_for(key, protocol["lanes"])
             anonymous_id = "I" + hashlib.sha256(key.encode("utf-8")).hexdigest()[:20]
             if anonymous_id in seen_anon:
-                raise RuntimeError("anonymous inscription id collision")
+                raise RuntimeError("anonymous inscription id collision after Map resolution")
             seen_anon.add(anonymous_id)
 
             row = {
@@ -188,6 +199,9 @@ def main():
         "sourcePath": protocol["source"]["path"],
         "sourceGitBlobSha1": actual_blob,
         "sourceSha256": sha256_bytes(raw),
+        "rawMapEntryCount": raw_entry_count,
+        "resolvedMapKeyCount": len(entries),
+        "duplicateMapEntryCount": raw_entry_count - len(entries),
         "inscriptionCounts": lane_counts,
         "rawWordCounts": word_counts,
         "laneFileSha256": file_hashes,
