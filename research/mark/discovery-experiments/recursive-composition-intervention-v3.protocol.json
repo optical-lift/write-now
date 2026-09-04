@@ -1,0 +1,128 @@
+{
+  "schema": "mark_recursive_composition_intervention_protocol_v3",
+  "experimentId": "mark:recursive-composition-intervention:v3",
+  "question": "When primitive boundary types and the complete local typed-edge inventory are held fixed, does breaking the frozen relation class between learned depth-1 V8 modules damage hierarchical compression more than a matched module-instance rewire that preserves that recursive relation class?",
+  "designContext": {
+    "priorV2RunId": 33904945195,
+    "priorV2ResultSha256": "74c84d448139946a43ec7e1db8d3ae39255efc3d980d55a6436e5178fed38b40",
+    "priorV2Adjudication": "TYPED_RELATION_CLASS_NOT_DISTINGUISHED",
+    "priorV2Pattern": "both reused evaluation lanes had positive mean typed-selective penalties and significant sign-flip tests, while the frozen flat comparator moved in the opposite direction; holdout missed the preregistered positive-fraction gate",
+    "designLearnedAfterPriorResults": true,
+    "evaluationLanesAlreadyOpenedByV1AndV2": true,
+    "freshIndependentHoldout": false,
+    "interpretiveStatus": "post-result mechanistic follow-up under the unchanged frozen V8 grammar; not fresh independent validation",
+    "refinement": "V3 asks whether the divergence between hierarchical and flat behavior is specifically carried by composition among learned nonterminal modules rather than by primitive typed-edge inventory alone."
+  },
+  "trainFeasibilityPilot": {
+    "lane": "train",
+    "pairEligibleObservations": 84,
+    "candidateEdgeLimitPerCompleteLabel": 64,
+    "eligibleMatchedInterventions": 70,
+    "evaluationLanesInspectedForPilot": false,
+    "purpose": "freeze feasibility and support requirements before V3 evaluation"
+  },
+  "parentV8": {
+    "runId": 33821017246,
+    "artifactName": "mark-hierarchical-graph-compression-v8-grammar-freeze",
+    "expectedGrammarFreezeSha256": "917fd07f604334f96548df0fa05e7fd3d130066854acf380eb695396b551ae81",
+    "grammarLearnedWithoutRoleLabels": true,
+    "primaryVariant": "lengthAware",
+    "fullHierarchicalModel": true,
+    "flatComparator": true,
+    "depth1Closure": "apply every frozen hierarchical rule with depth=1 in original grammar order while skipping deeper rules",
+    "upperGrammar": "after depth1 closure, apply every frozen hierarchical rule with depth>=2 in original grammar order"
+  },
+  "parentV5": {
+    "runId": 33807154154,
+    "artifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedProjectorRowsSha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e"
+  },
+  "population": {
+    "usePairEligibleObservationsOnly": true,
+    "primaryLane": "holdout",
+    "replicationLane": "control",
+    "trainLaneExcludedFromPrimaryAdjudication": true,
+    "laneReuseNote": "holdout/control were opened by prior experiments before V3 was designed; V3 reuses them only as frozen mechanistic evaluation lanes"
+  },
+  "matchedIntervention": {
+    "unit": "one observation after frozen depth-1 closure",
+    "edgeBudget": 2,
+    "candidateEdgeLimitPerCompleteLabel": 64,
+    "candidateSelection": "deterministic minimum SHA-256 among valid candidates",
+    "endpointRequirement": "all four selected residual endpoints must be learned nonterminal symbols whose frozen derivation depth is exactly 1",
+    "selectedResidualEdgeRequirement": "each selected residual node pair must contain exactly one residual edge so its frozen pair key is unambiguous",
+    "edgePairCriteria": [
+      "two distinct residual non-self edges",
+      "four distinct residual endpoint nodes",
+      "same complete length-aware edge label",
+      "both canonical degree-preserving half-edge rewires create nonduplicate non-self residual relationships",
+      "both rewires preserve connected-component count",
+      "both rewires preserve the selected primitive boundary typed-edge signature",
+      "exactly one rewire preserves the selected frozen depth-1 residual pair-key signature and the other breaks it"
+    ],
+    "primitiveBoundaryTypedEdgeSignature": "multiset over the two selected edges of (complete edge label, unordered terminal-leaf symbol pair reached by the frozen residual ports)",
+    "recursiveRelationSignature": "multiset over the two selected edges of the exact canonical V8 residual pair key: endpoint depth-1 nonterminal symbols plus complete edge label plus endpoint port paths",
+    "compositionPreservingRewire": "change exact module-instance adjacency while preserving both primitive boundary typed-edge signature and recursive relation signature",
+    "compositionBreakingRewire": "change exact module-instance adjacency while preserving primitive boundary typed-edge signature but changing the recursive relation signature",
+    "requiredExactLocalStageInvariantsAcrossOriginalPreservingAndBreaking": [
+      "residual node IDs and symbols",
+      "residual node count",
+      "residual edge count",
+      "per-residual-node graph degree",
+      "complete residual edge-label multiset",
+      "complete residual half-edge inventory of node, port path, and edge label",
+      "connected-component count",
+      "cycle rank",
+      "raw local-stage V8 code length"
+    ],
+    "requiredExactExpandedPrimitiveInvariants": [
+      "expanded terminal leaf identities and terminal symbols",
+      "expanded primitive node count",
+      "expanded primitive edge count",
+      "per-expanded-leaf degree",
+      "complete primitive edge-label multiset",
+      "complete primitive typed-edge signature multiset",
+      "connected-component count",
+      "cycle rank",
+      "raw primitive V8 code length"
+    ]
+  },
+  "outcome": {
+    "instrument": "unchanged frozen V8 grammar; no rule refit, reordering, threshold tuning, or candidate redefinition after evaluation",
+    "fullHierarchicalSelectivePenalty": "fullHierarchicalDataBits(compositionBreakingExpandedPrimitive) - fullHierarchicalDataBits(compositionPreservingExpandedPrimitive)",
+    "flatSelectivePenalty": "flatDataBits(compositionBreakingExpandedPrimitive) - flatDataBits(compositionPreservingExpandedPrimitive)",
+    "primaryPerObservation": "hierarchy increment = full hierarchical selective penalty - flat selective penalty",
+    "normalizedPrimary": "hierarchy increment divided by max(1, fullHierarchicalDataBits(originalExpandedPrimitive))",
+    "upperOnlyDiagnostic": "after frozen depth-1 closure, upperGrammarDataBits(compositionBreaking) - upperGrammarDataBits(compositionPreserving)",
+    "positiveMeaning": "breaking relations among learned depth-1 modules selectively harms recursive hierarchical compression beyond the frozen flat/local dictionary",
+    "localRawSelectivePenalty": "must be exactly zero by invariant before any upper-order grammar is applied"
+  },
+  "null": {
+    "iterations": 512,
+    "unit": "eligible observation",
+    "test": "deterministic sign flips of each observation's normalized hierarchy increment within lane",
+    "seedSalt": "mark-recursive-composition-intervention-v3-signflip"
+  },
+  "gates": {
+    "minimumEligibleHoldoutObservations": 40,
+    "minimumEligibleControlObservations": 40,
+    "holdoutPositiveFractionMinimum": 0.60,
+    "controlPositiveFractionMinimum": 0.55,
+    "holdoutMeanNormalizedHierarchyIncrementMinimum": 0.0,
+    "controlMeanNormalizedHierarchyIncrementMinimum": 0.0,
+    "holdoutMeanUpperOnlySelectivePenaltyMinimumBits": 0.0,
+    "controlMeanUpperOnlySelectivePenaltyMinimumBits": 0.0,
+    "holdoutSignFlipPMaximum": 0.05,
+    "controlSignFlipPMaximum": 0.05
+  },
+  "adjudication": {
+    "RECURSIVE_COMPOSITION_SUPPORTED": "all holdout and control support, direction, hierarchy-increment, upper-only, fraction, and sign-flip gates pass",
+    "RECURSIVE_COMPOSITION_NOT_DISTINGUISHED": "support is sufficient but at least one preregistered gate fails; do not rescue by changing module depth, local signature, recursive signature, grammar, comparator, or thresholds after the result",
+    "INFEASIBLE": "either evaluation lane has fewer than its frozen minimum eligible matched interventions"
+  },
+  "falsifier": "If breaking the exact frozen relation class among learned depth-1 modules does not create a positive hierarchical-over-flat penalty while primitive boundary types and local typed-edge inventory remain fixed in both reused evaluation lanes, V3 does not support a recursive-composition layer beyond local typed relationships.",
+  "claimBoundary": "A pass would support the mechanistic claim that the frozen V8 representation contains reusable composition among learned local modules that carries compression value beyond the flat/local dictionary on these reused evaluation lanes. It would not be fresh independent confirmation, establish historical semantics, prove conscious encoding, establish universality, or show that the learned modules are a final ontology.",
+  "scientificFailureIsGreen": true
+}
