@@ -1,0 +1,132 @@
+{
+  "schema": "mark_structural_role_factorization_protocol_v14",
+  "experimentId": "mark:structural-role-factorization:v14",
+  "question": "Does an anonymous structural role, defined without semantic labels or future outcomes, condition a glyph's transferable consequence law, and can independently learned glyph and role factors reconstruct glyph-role combinations deliberately withheld from training beyond strong local n-gram baselines?",
+  "lineage": {
+    "v8RationaleOnly": {
+      "runId": 33821017246,
+      "grammarFreezeSha256": "917fd07f604334f96548df0fa05e7fd3d130066854acf380eb695396b551ae81",
+      "resultSha256": "c1d3147ba20be382487876b7a8807b26582d84cc127a35ea6b298079b8504f2b",
+      "knownResult": "hierarchical_generative_architecture_tracks_preserved_role",
+      "consumedAsData": false,
+      "reason": "V8 establishes that anonymous hierarchical graph structure can track preserved role, but its visual critical-edge observations are not occurrence roles in the Linear A inscription stream. V14 carries forward the methodological principle, not V8 role labels or graph observations."
+    },
+    "v12StateParent": {
+      "runId": 33924264305,
+      "artifact": "mark-state-operator-separation-v12-freeze",
+      "expectedFreezeSha256": "c07a39bf7c9474e3f5d7fb91d4e44b4c2437e2eb7492c6a49397345343a69091",
+      "knownResult": "LATENT_OPERATOR_CONSEQUENCE_WITHOUT_COMPOSITION"
+    },
+    "v13RationaleOnly": {
+      "runId": 33926617649,
+      "expectedResultSha256": "8698a91778679776c1a6f86b51d102e0bac405e7512d41ef61cae9819d0312f4",
+      "knownResult": "NO_TRANSFERABLE_MATCHED_PAIR_RESIDUAL",
+      "consumedAsData": false,
+      "reason": "V13 rejects ordered pair identity as a stable missing law and rejects exact two-token history as the explanation, motivating a relational-role test."
+    },
+    "v10SequenceParent": {
+      "runId": 33905459943,
+      "trainArtifact": "mark-glyph-transition-code-v10-train",
+      "evaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+    }
+  },
+  "provenance": {
+    "evaluationLanesAlreadyOpenedByPriorExperiments": true,
+    "freshIndependentHoldout": false,
+    "claimClass": "post-V13 mechanistic test on reused evaluation inscriptions",
+    "rule": "All role definitions, eligibility, masked glyph-role cells, smoothing, n-gram order, role-switch substitutions, gates, and adjudication are frozen using V10 train plus the already-frozen V12 state map before holdout/control are made available to the evaluation job."
+  },
+  "roleDefinition": {
+    "name": "anonymous recurrence-topology role",
+    "windowIncludingCurrentGlyph": 6,
+    "surfaceCanonicalization": "Within the six-item past-through-current window, every non-boundary glyph identity is replaced by its first-occurrence index; <DOC> and <LINE> remain typed boundaries. Actual glyph identities are not part of the role key.",
+    "lineDistanceBucketCap": 4,
+    "suffixRecurrenceDepthCap": 4,
+    "priorSameGlyphCountBucketCap": 2,
+    "futureOutcomeExcluded": true,
+    "nextGlyphExcluded": true,
+    "semanticLabelsExcluded": true,
+    "minimumTrainRoleOccurrences": 12,
+    "minimumDistinctTrainGlyphsPerRole": 3
+  },
+  "matrixHoldout": {
+    "unit": "glyph x anonymous-role combination, globally across train inscriptions",
+    "minimumTrainCombinationOccurrences": 8,
+    "minimumDistinctRolesForGlyph": 3,
+    "minimumDistinctGlyphsForRole": 4,
+    "maximumCombinationFractionOfGlyph": 0.3,
+    "maximumCombinationFractionOfRole": 0.3,
+    "minimumResidualStateGlyphSupport": 3,
+    "minimumResidualStateRoleSupport": 3,
+    "maskRule": "Among eligible combinations, mask exactly those whose SHA-256 of glyph + canonical role key has first 64 bits modulo 4 equal to 0. Mask selection uses support and structure only, never next-token outcomes.",
+    "fitExclusion": "Every train prediction event belonging to a masked glyph-role cell is excluded from glyph, role, factorized, direct, and n-gram consequence estimation. The frozen V12 state map itself is not refit.",
+    "trainOnlyFeasibility": "With the frozen role definition and support rules, train contains 27 deterministically masked glyph-role cells covering 387 prediction events. This was established from train only before evaluation lanes were opened."
+  },
+  "models": {
+    "state": "Frozen V12 48-state anonymous incoming state S; current glyph remains excluded from state assignment.",
+    "stateOnly": "P(y|S), estimated after masked-cell removal with hierarchical backoff to the global outcome distribution.",
+    "glyphOnly": "P(y|S,g), estimated after masked-cell removal and smoothed to stateOnly.",
+    "roleOnlyLeaveGlyphOut": "P(y|S,R,-g): the role consequence is estimated from train events occupying role R after subtracting every contribution from the glyph g being scored; it hierarchically backs off through role-only and state-only distributions.",
+    "factorized": "F(y|S,g,R) proportional to glyphOnly(y|S,g) * roleOnlyLeaveGlyphOut(y|S,R,-g) / stateOnly(y|S). This is normalized over the frozen V12 outcome vocabulary.",
+    "directDiagnostic": "P(y|S,g,R) on unmasked train cells, smoothed to F. It is diagnostic only and cannot rescue the matrix-completion gate.",
+    "ngramOrders": [2,4,6,8],
+    "ngramSelection": "Three-fold anonymous-inscription-hash cross-validation on train only after masked target events are removed. Freeze the lowest-log-loss order, tie broken toward lower order.",
+    "ngramTraining": "The n-gram sees literal mapped glyph identities and up to eight previous mapped stream items. It is trained on every available train target position except the deliberately masked glyph-role target events, so the local-sequence baseline is not intentionally starved."
+  },
+  "probabilityModel": {
+    "globalAdditiveAlpha": 0.5,
+    "backoffPseudoCount": 8.0,
+    "directBackoffPseudoCount": 8.0
+  },
+  "generalRoleTransfer": {
+    "comparison": "factorized versus glyphOnly on every evaluation event whose role is in the frozen eligible-role inventory; role evidence for glyph g is always learned leave-glyph-out from other glyphs.",
+    "independentUnit": "anonymous inscription mean log2 probability advantage",
+    "minimumEvaluationEvents": {"holdout":250,"control":100},
+    "minimumEligibleInscriptions": {"holdout":25,"control":10},
+    "minimumPositiveInscriptionFraction": 0.55,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-structural-role-factorization-v14-general"
+  },
+  "matrixCompletion": {
+    "primaryPopulation": "Evaluation events whose exact glyph-role combination was deliberately masked from every V14 consequence model during train fitting.",
+    "comparisons": ["factorized_vs_glyphOnly","factorized_vs_roleOnlyLeaveGlyphOut","factorized_vs_frozenBestNgram"],
+    "strongInterpretation": "A pass means the consequence of a never-trained glyph-role combination can be reconstructed from independently learned glyph and structural-role factors, including against a literal local-sequence model trained with contexts up to order 8.",
+    "minimumEvaluationEvents": {"holdout":25,"control":10},
+    "minimumEligibleInscriptions": {"holdout":15,"control":6},
+    "minimumPositiveInscriptionFraction": 0.55,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-structural-role-factorization-v14-matrix"
+  },
+  "roleSwitchCounterfactual": {
+    "selectionLane": "train only after masked-cell removal",
+    "selection": "For a supported (S,g,R), choose R' != R observed with the same S and g. Both roles must have support >= 6, support ratio <= 2, and frozen factorized consequence kernels separated by TV >= 0.10. Minimize support-ratio distance, then maximize TV, then SHA-256 tie break.",
+    "outcome": "log2 F(observed y|S,g,R) - log2 F(observed y|S,g,R').",
+    "independentUnit": "anonymous inscription mean",
+    "minimumEvaluationEvents": {"holdout":20,"control":8},
+    "minimumEligibleInscriptions": {"holdout":12,"control":5},
+    "minimumPositiveInscriptionFraction": 0.6,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-structural-role-factorization-v14-switch"
+  },
+  "adjudication": {
+    "structuralRoleConditionsGlyphOperationAndComposesUnseenCombinations": "General role transfer, matrix completion against glyph-only and role-only, matrix completion against the frozen best n-gram, and role-switch counterfactual all pass in both reused evaluation lanes.",
+    "unseenRoleFactorCompositionWithoutCounterfactualSwitch": "General role transfer and all three matrix-completion comparisons pass in both reused lanes, but the frozen same-glyph role-switch counterfactual does not pass in both lanes.",
+    "roleFactorTransfersButLocalSequenceSufficient": "General role transfer and matrix factorization beat the one-factor baselines in both lanes, but the matrix factorization does not beat the frozen best n-gram in both lanes.",
+    "roleSignalWithoutCompositionalMatrixTransfer": "General leave-glyph-out role transfer passes in both lanes, but deliberately masked glyph-role cells are not reconstructed strongly enough in both lanes.",
+    "noTransferableStructuralRoleConditioning": "The leave-glyph-out structural-role factor does not pass the frozen transfer gates in both lanes."
+  },
+  "claimLimits": {
+    "positiveDoesSupport": ["an anonymous occurrence-level structural role that conditions glyph consequence prediction","cross-glyph transfer of the role effect because the role estimator excludes the glyph being scored","compositional reconstruction of deliberately unseen glyph-role combinations only if the matrix gate passes","structure beyond literal local sequence only if the frozen n-gram challenge passes"],
+    "positiveDoesNotByItselfSupply": ["translation or phonetic values","historical intent","semantic names for the recovered roles","physical causal intervention","proof of conscious software-like design","fresh independent confirmation"]
+  },
+  "falsifiers": {
+    "surfaceIdentityLeakageIntoRole": "Abort if any actual glyph codepoint or transliteration is serialized into the role key rather than first-occurrence canonical indices and typed boundaries.",
+    "futureLeakage": "Abort if the predicted next mapped token or any later token contributes to role assignment.",
+    "matrixLeakage": "Abort if a masked glyph-role event contributes to V14 consequence estimation or n-gram target counts.",
+    "sameGlyphRoleLeakage": "Role probabilities for a scored glyph must subtract all train contribution from that glyph, not only the masked cell.",
+    "evaluationLeakage": "Abort if holdout/control participates in role eligibility, mask selection, n-gram order selection, role-switch selection, thresholds, or smoothing."
+  }
+}
