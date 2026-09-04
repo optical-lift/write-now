@@ -1,0 +1,55 @@
+name: Mark State Memory v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/state-memory-v1.protocol.json"
+      - "scripts/test-mark-state-memory.py"
+      - ".github/workflows/mark-state-memory-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_MEMORY_PROTOCOL: research/mark/discovery-experiments/state-memory-v1.protocol.json
+  MARK_MEMORY_STATE: artifact-staging/state-memory/state
+  MARK_MEMORY_OUT: artifacts/mark-state-memory-v1
+
+jobs:
+  state-memory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen test
+        run: |
+          python3 -m json.tool "$MARK_MEMORY_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/test-mark-state-memory.py
+      - name: Download frozen state-transition world
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-transition-grammar-v1-frozen
+          path: artifact-staging/state-memory/state
+          repository: optical-lift/write-now
+          run-id: 33773740050
+          github-token: ${{ github.token }}
+      - name: Compare current-state versus history-aware prediction
+        run: python3 scripts/test-mark-state-memory.py
+      - name: Publish result
+        run: cat "$MARK_MEMORY_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Comment result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_MEMORY_OUT/summary.md" --edit-last --create-if-none
+      - name: Upload frozen result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-memory-v1-frozen
+          path: artifacts/mark-state-memory-v1/**
+          if-no-files-found: error
+          retention-days: 30
