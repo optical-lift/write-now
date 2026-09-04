@@ -1,0 +1,113 @@
+name: Mark State Operator Separation v12
+
+on:
+  pull_request:
+    paths:
+      - 'research/mark/discovery-experiments/state-operator-separation-v12.protocol.json'
+      - 'scripts/mark_state_operator_separation_v12_core.py'
+      - 'scripts/induce-mark-state-operator-separation-v12.py'
+      - 'scripts/evaluate-mark-state-operator-separation-v12.py'
+      - '.github/workflows/mark-state-operator-separation-v12.yml'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  MARK_V10_RUN_ID: '33905459943'
+  MARK_V12_PROTOCOL: research/mark/discovery-experiments/state-operator-separation-v12.protocol.json
+
+jobs:
+  freeze-state-machine:
+    name: Freeze train-only predictive state machine
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen V12 protocol and code
+        run: |
+          python3 -m json.tool "$MARK_V12_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_state_operator_separation_v12_core.py scripts/induce-mark-state-operator-separation-v12.py scripts/evaluate-mark-state-operator-separation-v12.py
+      - name: Download immutable V10 train freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-freeze
+          path: artifacts/v10-freeze
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download V10 train-only packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/v10-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent during state induction
+        run: |
+          test -f artifact-staging/v10-train/train.jsonl
+          test ! -e artifact-staging/v10-train/holdout.jsonl
+          test ! -e artifact-staging/v10-train/control.jsonl
+          test ! -e artifact-staging/v10-eval/holdout.jsonl
+          test ! -e artifact-staging/v10-eval/control.jsonl
+      - name: Induce and freeze V12 states before evaluation
+        run: python3 scripts/induce-mark-state-operator-separation-v12.py
+      - name: Publish pre-evaluation freeze summary
+        run: |
+          echo '### V12 predictive state machine — frozen before evaluation' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-state-operator-separation-v12-freeze/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable V12 state freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/mark-state-operator-separation-v12-freeze/**
+          retention-days: 30
+
+  evaluate-state-machine:
+    name: Evaluate frozen separated state/operator machine
+    needs: freeze-state-machine
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V12 state freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-freeze
+          path: artifacts/mark-state-operator-separation-v12-freeze
+      - name: Open reused V10 evaluation lanes only after V12 freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/v10-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove train rows and raw source are absent during evaluation
+        run: |
+          test -f artifacts/mark-state-operator-separation-v12-freeze/state-operator-freeze.json
+          test -f artifact-staging/v10-eval/holdout.jsonl
+          test -f artifact-staging/v10-eval/control.jsonl
+          test ! -e artifact-staging/v10-train/train.jsonl
+          test ! -e LinearAInscriptions.js
+      - name: Run frozen state/operator, counterfactual, composition, and n-gram tests
+        run: python3 scripts/evaluate-mark-state-operator-separation-v12.py
+      - name: Publish result summary
+        run: cat artifacts/mark-state-operator-separation-v12/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file artifacts/mark-state-operator-separation-v12/summary.md
+      - name: Upload frozen V12 result packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-state-operator-separation-v12-frozen
+          path: |
+            artifacts/mark-state-operator-separation-v12-freeze/**
+            artifacts/mark-state-operator-separation-v12/**
+          retention-days: 30
