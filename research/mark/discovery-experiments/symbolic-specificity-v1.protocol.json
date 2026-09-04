@@ -1,0 +1,106 @@
+{
+  "schema": "mark_symbolic_specificity_protocol_v1",
+  "experimentId": "mark:symbolic-specificity:v1",
+  "phase": "inverse_falsification_of_generic_visual_structure_explanation",
+  "question": "After low-order critical-graph structure is neutralized by within-graph degree/type/cycle/edge-length-preserving rewiring, do standardized symbolic glyph graphs retain more higher-order relational organization than low-order-matched ordinary-photography control graphs?",
+  "inverseTheory": "If Mark's current signals are only generic visual-graph statistics, symbolic glyphs should not exhibit reliably greater excess higher-order organization than equally structured ordinary visual graphs after each graph is compared with its own matched rewiring null.",
+  "parentEvidence": {
+    "glyphAtlas": "existing 300-sign standardized display proxy corpus",
+    "criticalEdgeRunId": 33807154154,
+    "criticalEdgeArtifact": "mark-critical-edge-correspondence-v5-frozen",
+    "criticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "photoControlLane": "control"
+  },
+  "eligibility": {
+    "minimumCriticalNodes": 6,
+    "maximumCriticalNodes": 100,
+    "minimumTraceResolution": 0.95,
+    "minimumActiveHigherOrderMetrics": 3,
+    "photoReplicationUnit": "one deterministic smallest eligible observation per frozen LOC sourceGroupId",
+    "symbolicReplicationUnit": "one standardized glyph proxy",
+    "scientificCaveat": "Glyph proxies are not independent historical cultures; this is a symbolic-specificity screen, not a universality test."
+  },
+  "matching": {
+    "description": "Greedy one-to-one matching uses only low-order graph descriptors and never the higher-order organization score.",
+    "lowOrderFeatures": [
+      "log critical-node count",
+      "endpoint fraction",
+      "degree-3 node fraction",
+      "degree-4-plus node fraction",
+      "edge-per-node ratio",
+      "cycle-rank-per-node",
+      "junction-junction edge fraction",
+      "self-loop edge fraction",
+      "median normalized chord length"
+    ],
+    "robustScaling": "median and 1.4826*MAD over the combined eligible symbolic + photo pool",
+    "maximumRobustDistance": 4.0,
+    "minimumMatchedPairs": 12,
+    "edgeLengthBins": [0.0, 0.05, 0.1, 0.2, 0.35, 0.55, 0.8, 1.1, 1000000.0]
+  },
+  "rewireNull": {
+    "preservesExactly": [
+      "critical node identities and coordinates",
+      "node degree sequence",
+      "endpoint/junction node kinds",
+      "edge count",
+      "connected-component count",
+      "cycle rank",
+      "self-loop count",
+      "degree-3 repetition inventory",
+      "edge endpoint-kind pair by edge",
+      "normalized chord-length bin by edge",
+      "global parallel-edge surplus"
+    ],
+    "doesNotPreserve": [
+      "which named critical nodes are adjacent",
+      "higher-order degree mixing",
+      "triadic closure",
+      "bridge/articulation placement",
+      "2-core organization",
+      "endpoint-to-junction graph distance"
+    ]
+  },
+  "higherOrderMetrics": [
+    "degree assortativity",
+    "graph transitivity",
+    "bridge-edge fraction",
+    "2-core node fraction",
+    "mean endpoint-to-nearest-junction hop distance"
+  ],
+  "organizationScore": "root mean square of observed-vs-own-rewire-null z-scores over finite nondegenerate higher-order metrics; each z is clipped to +/-8",
+  "null": {
+    "rewireWorldsPerGraph": 64,
+    "acceptedSwapsPerEdge": 3.0,
+    "minimumAcceptedSwaps": 6,
+    "pairedSignFlipWorlds": 512,
+    "seed": 2409034
+  },
+  "adjudication": {
+    "symbolicSpecificity": {
+      "minimumMeanPairedDifference": 0.25,
+      "minimumPositivePairFraction": 0.65,
+      "maximumOneSidedP": 0.05,
+      "meaning": "Symbolic glyph graphs retain more higher-order organization than low-order-matched photo graphs beyond both classes' own strict rewiring nulls."
+    },
+    "nonSymbolicMoreOrganized": {
+      "maximumMeanPairedDifference": -0.25,
+      "maximumPositivePairFraction": 0.35,
+      "maximumOneSidedP": 0.05,
+      "meaning": "Ordinary photo graphs are more organized than symbolic proxies under this representation, directly opposing symbolic specificity."
+    },
+    "otherwise": {
+      "status": "GENERIC_STRUCTURE_COMPATIBLE",
+      "meaning": "No preregistered symbolic-specificity advantage. This supports the inverse explanation that current Mark graph constraints may be generic visual organization rather than symbol-specific grammar."
+    },
+    "infeasible": "Fewer than 12 low-order-matched pairs is a measurement-feasibility result, not evidence for either theory."
+  },
+  "claimLimits": [
+    "No historical semantics are tested.",
+    "No cognitive universal is tested.",
+    "The symbolic side uses standardized display proxies rather than physical witnesses.",
+    "The non-symbolic side uses the existing LOC ordinary-photography control lane selected previously without provenance-based role labels.",
+    "A symbolic-specificity pass would show additional graph organization, not prove that Mark's proposed operator names are correct.",
+    "A generic-structure-compatible result must not be rescued post hoc as context sensitivity."
+  ]
+}
