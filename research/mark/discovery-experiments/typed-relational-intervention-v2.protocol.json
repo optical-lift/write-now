@@ -7,6 +7,9 @@
     "priorV1ResultSha256": "60ea3d7dc3c3c4ab52c8dfa41c37e820fff4929335f96fe00f4277a94c599fa8",
     "priorV1Adjudication": "RELATIONSHIP_EFFECT_NOT_DISTINGUISHED",
     "designLearnedAfterPriorResult": true,
+    "evaluationLanesWereOpenedByPriorV1": true,
+    "freshIndependentHoldout": false,
+    "interpretiveStatus": "post-result mechanistic follow-up under an unchanged frozen V8 grammar, not a fresh independent holdout replication",
     "refinement": "V1 tested literal node-identity adjacency against realization assignment. V8 rules do not encode literal node IDs; they encode structural symbols and edge descriptors. V2 therefore tests the representational level the frozen grammar can actually protect: endpoint structural-type relation class versus exact node identity."
   },
   "parentV8": {
@@ -30,7 +33,8 @@
     "usePairEligibleObservationsOnly": true,
     "primaryLane": "holdout",
     "replicationLane": "control",
-    "trainLaneExcludedFromPrimaryAdjudication": true
+    "trainLaneExcludedFromPrimaryAdjudication": true,
+    "laneReuseNote": "holdout/control were untouched when V1 began but were opened by V1 before V2 was designed; V2 reuses them as frozen evaluation lanes and must not be described as fresh independent validation"
   },
   "matchedIntervention": {
     "unit": "one observation primitive graph",
@@ -88,7 +92,7 @@
     "TYPED_RELATION_CLASS_NOT_DISTINGUISHED": "support is sufficient but at least one preregistered gate fails; do not rescue by redefining type, relation, realization, or grammar after the result",
     "INFEASIBLE": "either primary lane has fewer than its frozen minimum eligible matched interventions"
   },
-  "falsifier": "If a matched type-breaking rewire does not damage frozen heldout grammar fit more than an exact-identity rewire that preserves the same endpoint structural-type relation inventory in both untouched lanes, this experiment does not support the claim that V8 protects typed relationship classes beyond node identity.",
-  "claimBoundary": "A pass would support the narrower claim that the frozen blind V8 grammar protects relations among structural symbol classes rather than literal node identities. It would not establish historical semantics, conscious machine encoding, universality, or that the terminal classes are the final functional ontology.",
+  "falsifier": "If a matched type-breaking rewire does not damage frozen evaluation-lane grammar fit more than an exact-identity rewire that preserves the same endpoint structural-type relation inventory in both reused V1 evaluation lanes, this experiment does not support the claim that V8 protects typed relationship classes beyond node identity.",
+  "claimBoundary": "A pass would support the narrower mechanistic claim, on the reused V1 evaluation lanes under the unchanged frozen blind V8 grammar, that V8 protects relations among structural symbol classes rather than literal node identities. Because V2 was designed after V1 opened those lanes, a pass is not fresh independent holdout confirmation. It would not establish historical semantics, conscious machine encoding, universality, or that the terminal classes are the final functional ontology.",
   "scientificFailureIsGreen": true
 }
