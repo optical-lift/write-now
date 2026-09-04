@@ -1,0 +1,131 @@
+name: Mark Hierarchical Graph Compression v8
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_graph_compression_v8_core.py"
+      - "scripts/induce-mark-hierarchical-graph-grammar-v8.py"
+      - "scripts/evaluate-mark-hierarchical-graph-grammar-v8.py"
+      - "research/mark/discovery-experiments/hierarchical-graph-compression-v8.protocol.json"
+      - ".github/workflows/mark-hierarchical-graph-compression-v8.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V5_RUN_ID: 33807154154
+  MARK_V5_PACKET: artifact-staging/v5
+  MARK_COMPRESSION_PROTOCOL: research/mark/discovery-experiments/hierarchical-graph-compression-v8.protocol.json
+  MARK_COMPRESSION_GRAMMAR_OUT: artifacts/mark-hierarchical-graph-compression-v8/grammar
+  MARK_COMPRESSION_GRAMMAR: artifacts/mark-hierarchical-graph-compression-v8/grammar
+  MARK_COMPRESSION_OUT: artifacts/mark-hierarchical-graph-compression-v8/result
+
+jobs:
+  hierarchical-graph-compression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen compression machinery before evidence exists
+        run: |
+          python3 -m json.tool "$MARK_COMPRESSION_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_graph_compression_v8_core.py
+          python3 -m py_compile scripts/induce-mark-hierarchical-graph-grammar-v8.py
+          python3 -m py_compile scripts/evaluate-mark-hierarchical-graph-grammar-v8.py
+
+      - name: Install graph and blind-correspondence dependencies
+        run: python3 -m pip install --disable-pip-version-check scipy networkx
+
+      - name: Run synthetic lossless contraction tests before parent evidence exists
+        run: |
+          PYTHONPATH=scripts python3 - <<'PY'
+          from mark_graph_compression_v8_core import synthetic_roundtrip_tests
+          assert synthetic_roundtrip_tests()
+          print("synthetic_lossless_roundtrip=passed")
+          PY
+
+      - name: Download frozen v5 graph world only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-critical-edge-correspondence-v5-frozen
+          path: artifact-staging/v5
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V5_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Physically seal role labels away from grammar induction
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/sealed-role
+          ROLE_FILE="$(find "$MARK_V5_PACKET" -type f -name role-pair-labels.jsonl -print -quit)"
+          test -n "$ROLE_FILE"
+          ROLE_PARENT="$(dirname "$ROLE_FILE")"
+          mv "$ROLE_FILE" artifact-staging/sealed-role/role-pair-labels.jsonl
+          test -z "$(find "$MARK_V5_PACKET" -type f -name role-pair-labels.jsonl -print -quit)"
+          echo "MARK_ROLE_PARENT=$ROLE_PARENT" >> "$GITHUB_ENV"
+          echo "role_labels_visible_to_induction=false"
+
+      - name: Induce and freeze blind flat and hierarchical grammars
+        env:
+          PYTHONPATH: scripts
+        run: python3 scripts/induce-mark-hierarchical-graph-grammar-v8.py
+
+      - name: Verify grammar freeze before reopening labels
+        run: |
+          test -f "$MARK_COMPRESSION_GRAMMAR_OUT/hierarchical-graph-grammar-freeze.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("artifacts/mark-hierarchical-graph-compression-v8/grammar/hierarchical-graph-grammar-freeze.json")
+          data = json.loads(p.read_text())
+          assert data["roleLabelsOpenedDuringInduction"] is False
+          assert data["contract"]["frozenBeforeRoleLabels"] is True
+          assert data["grammarFreezeSha256"]
+          print("grammar_freeze_sha256=" + data["grammarFreezeSha256"])
+          PY
+          test -z "$(find "$MARK_V5_PACKET" -type f -name role-pair-labels.jsonl -print -quit)"
+
+      - name: Upload pre-label grammar freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-hierarchical-graph-compression-v8-grammar-freeze
+          path: artifacts/mark-hierarchical-graph-compression-v8/grammar/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Reopen frozen role labels only after grammar freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f artifact-staging/sealed-role/role-pair-labels.jsonl
+          mv artifact-staging/sealed-role/role-pair-labels.jsonl "$MARK_ROLE_PARENT/role-pair-labels.jsonl"
+          test -f "$MARK_ROLE_PARENT/role-pair-labels.jsonl"
+          echo "role_labels_reopened_after_grammar_freeze=true"
+
+      - name: Evaluate frozen grammar compression and role correspondence
+        env:
+          PYTHONPATH: scripts
+        run: python3 scripts/evaluate-mark-hierarchical-graph-grammar-v8.py
+
+      - name: Publish frozen result in workflow summary
+        run: cat "$MARK_COMPRESSION_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish frozen result on stacked PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file "$MARK_COMPRESSION_OUT/summary.md" --edit-last --create-if-none
+
+      - name: Upload frozen hierarchical compression packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-hierarchical-graph-compression-v8-frozen
+          path: artifacts/mark-hierarchical-graph-compression-v8/**
+          if-no-files-found: error
+          retention-days: 30
