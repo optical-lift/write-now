@@ -158,19 +158,24 @@ def main():
             if not isinstance(words, list) or not all(isinstance(x, str) for x in words):
                 raise RuntimeError(f"inscription {key!r} has invalid words array")
 
-            lane, bucket = lane_for(key, protocol["lanes"])
+            lane, _bucket = lane_for(key, protocol["lanes"])
             anonymous_id = "I" + hashlib.sha256(key.encode("utf-8")).hexdigest()[:20]
             if anonymous_id in seen_anon:
                 raise RuntimeError("anonymous inscription id collision after Map resolution")
             seen_anon.add(anonymous_id)
 
+            # Match the frozen blind-packet contract exactly. The split bucket
+            # is used only here to choose a lane; it is not carried forward.
             row = {
                 "schema": "mark_glyph_transition_blind_inscription_v10",
                 "anonymousInscriptionId": anonymous_id,
                 "lane": lane,
-                "splitBucket": bucket,
                 "words": words,
             }
+            declared = {"anonymousInscriptionId", "lane", "words"}
+            payload_fields = set(row) - {"schema"}
+            if payload_fields != declared:
+                raise RuntimeError(f"blind row field contract drift: {sorted(payload_fields)}")
             serialized = canonical_json(row)
             forbidden = protocol["custody"]["forbiddenInBlindPacket"]
             leaked = [field for field in forbidden if f'"{field}"' in serialized]
@@ -205,6 +210,7 @@ def main():
         "inscriptionCounts": lane_counts,
         "rawWordCounts": word_counts,
         "laneFileSha256": file_hashes,
+        "blindPayloadFields": sorted(["anonymousInscriptionId", "lane", "words"]),
         "semanticFieldsPresentInBlindPacket": False,
     }
     (OUT_DIR / "split-manifest.json").write_text(
