@@ -25,6 +25,47 @@ def git_blob_sha1(data):
     return hashlib.sha1(header + data).hexdigest()
 
 
+def strip_trailing_commas(js_text):
+    """Remove JS-only trailing commas outside quoted strings.
+
+    The pinned source is generated as JavaScript data. Most of the first Map is
+    JSON-compatible, but a few newly-added arrays legally retain a comma before
+    their closing bracket. We normalize only that syntax; no values are
+    evaluated and no JavaScript is executed.
+    """
+    out = []
+    in_string = False
+    escaped = False
+    i = 0
+    while i < len(js_text):
+        ch = js_text[i]
+        if in_string:
+            out.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            i += 1
+            continue
+        if ch == '"':
+            in_string = True
+            out.append(ch)
+            i += 1
+            continue
+        if ch == ",":
+            j = i + 1
+            while j < len(js_text) and js_text[j].isspace():
+                j += 1
+            if j < len(js_text) and js_text[j] in "]}":
+                i += 1
+                continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def parse_inscription_map(data):
     text = data.decode("utf-8")
     marker = "var inscriptions = new Map("
@@ -32,8 +73,9 @@ def parse_inscription_map(data):
     if start < 0:
         raise RuntimeError("could not locate inscriptions Map")
     start += len(marker)
+    payload = strip_trailing_commas(text[start:].lstrip())
     decoder = json.JSONDecoder()
-    value, consumed = decoder.raw_decode(text[start:].lstrip())
+    value, _consumed = decoder.raw_decode(payload)
     if not isinstance(value, list):
         raise RuntimeError("inscriptions Map payload is not an array")
     return value
