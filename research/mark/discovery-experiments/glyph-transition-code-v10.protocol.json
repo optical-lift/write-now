@@ -1,0 +1,104 @@
+{
+  "schema": "mark_glyph_transition_code_protocol_v10",
+  "experimentId": "mark:glyph-transition-code:v10",
+  "question": "After generic sequence context and observable boundary structure are accounted for, does recurring glyph identity contribute a transferable residual transition law, and can those laws be compressed into a finite inventory of action-equivalent operator classes that predicts unseen inscriptions?",
+  "codeClaim": "A positive result supports the operational claim that part of the corpus behaves as a finite code: recurring glyph identities contribute stable state-transition rules that can be learned on one set of inscriptions, compressed into a finite machine, and run forward on unseen inscriptions.",
+  "source": {
+    "repository": "mwenge/lineara.xyz",
+    "commit": "43fe7cf1abc8e6bb1ea3228c3a1bd5938709620a",
+    "path": "LinearAInscriptions.js",
+    "expectedGitBlobSha1": "ef41c58802a3135f295072ba60fc0df39450a10c",
+    "fieldConsumed": "words",
+    "inscriptionKeyUse": "lane assignment and anonymous custody id only"
+  },
+  "custody": {
+    "allowedAtSealing": ["map key", "object.name", "object.words"],
+    "forbiddenInBlindPacket": ["context", "findspot", "site", "scribe", "support", "transcription", "transliteratedWords", "translatedWords", "annotations", "imageRights", "images", "facsimileImages"],
+    "blindPacketContains": ["anonymousInscriptionId", "lane", "words"],
+    "semanticDictionaryForbidden": true,
+    "provenanceForbiddenDuringInduction": true,
+    "translationsForbiddenDuringInduction": true,
+    "transliterationsForbiddenDuringInduction": true,
+    "modelMustFreezeBeforeAnyContextRejoin": true
+  },
+  "lanes": {
+    "assignment": "sha256(inscription map key) first 64-bit integer modulo 10",
+    "trainBuckets": [0, 1, 2, 3, 4, 5, 6],
+    "holdoutBuckets": [7, 8],
+    "controlBuckets": [9],
+    "rule": "Only train may define vocabulary, eligible glyph operators, smoothing tables, functional fingerprints, operator classes, class count, or thresholds. Holdout and control are evaluation-only."
+  },
+  "sequence": {
+    "primaryVariant": "boundaryAware",
+    "ablationVariant": "lineOnly",
+    "boundaryAware": "Within each inscription, preserve order inside each raw words token; insert <WORD> between adjacent non-newline words and <LINE> at each raw newline.",
+    "lineOnly": "Preserve raw glyph order and <LINE> boundaries but remove word boundaries.",
+    "inscriptionBoundary": "<DOC> is placed before the first and after the last sequence item.",
+    "operator": "One recurring raw Unicode glyph codepoint at the current position. Boundary tokens are states and never operators.",
+    "incomingState": "The immediately preceding stream item after train-vocabulary mapping.",
+    "outgoingState": "The immediately following stream item after train-vocabulary mapping.",
+    "rareState": "OTHER"
+  },
+  "eligibility": {
+    "minimumTrainGlyphOccurrences": 20,
+    "minimumDistinctTrainInscriptions": 4,
+    "minimumTrainStateOccurrences": 20,
+    "minimumDistinctTrainInscriptionsPerState": 4,
+    "minimumEvaluationGlyphOccurrences": 5
+  },
+  "model": {
+    "globalAdditiveAlpha": 0.5,
+    "operatorBackoffPseudoCount": 12.0,
+    "classBackoffPseudoCount": 12.0,
+    "baseline": "P0(s_out | s_in)",
+    "operatorKernel": "K_g(s_out | s_in), hierarchically smoothed to P0",
+    "operatorGain": "mean log2 P_K - mean log2 P0 on evaluation occurrences",
+    "fingerprint": "For each eligible glyph, concatenate train input-state-weighted residual vectors K_g(.|s_in)-P0(.|s_in) over supported incoming states."
+  },
+  "functionalClasses": {
+    "candidateClassCounts": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+    "selection": "Train-only deterministic agglomerative average-link clustering of operator fingerprints. Choose class count by minimum five-fold inscription-hash cross-validated class-model log loss with a BIC-style complexity penalty of 0.5 * parameters * ln(events) / events.",
+    "classKernel": "K_C(s_out | s_in) learned from train occurrences pooled across frozen class members and smoothed to P0.",
+    "actionEquivalenceTest": "On holdout/control, the finite class model must beat context-only and retain a declared fraction of the glyph-specific operator gain."
+  },
+  "primaryGates": {
+    "minimumEvaluationCoveredFraction": 0.20,
+    "minimumEvaluationDistinctInscriptions": 20,
+    "minimumOperatorGainBitsPerEvent": 0.05,
+    "minimumInscriptionFractionOperatorBeatsBaseline": 0.60,
+    "minimumClassGainBitsPerEvent": 0.03,
+    "minimumClassRetentionOfOperatorGain": 0.60,
+    "primaryLane": "holdout",
+    "controlRequiredForStrongCodeClaim": true
+  },
+  "adjudication": {
+    "finiteOperationalCodeTransfers": "Both holdout and control clear coverage/source support; glyph-specific kernels beat context-only by the operator gain gate; the frozen finite class model beats context-only and retains the required fraction of glyph-specific gain.",
+    "operatorCodeWithoutFiniteQuotient": "Glyph-specific kernels transfer but the frozen finite class inventory does not retain enough of their gain.",
+    "sequenceIdentityWithoutTransfer": "Train discovers operator residuals but they do not improve untouched inscriptions.",
+    "noResidualGlyphCodeUnderV10": "Glyph identity does not materially improve prediction beyond generic preceding-state and boundary context on holdout.",
+    "boundaryDependence": "If boundaryAware passes but lineOnly fails, report that the recovered code depends on inherited word-boundary structure; do not call it boundary-free glyph code."
+  },
+  "claimLimits": {
+    "positiveDoesSupport": [
+      "a finite transferable operational transition system in the raw inscription sequence",
+      "glyph identities with measurable residual consequences beyond generic immediate context",
+      "a frozen quotient of glyph identities into action-equivalent classes if the class gate passes"
+    ],
+    "positiveDoesNotByItselfSupply": [
+      "phonetic readings",
+      "English glosses",
+      "speaker language identity",
+      "historical intent of any individual inscription",
+      "a claim that every visual stroke is executable"
+    ],
+    "historicalFunctionRule": "A later contextual rejoin may compare frozen operator/classes to conventional readings. The empirical function is the transition law itself; any gloss remains separately sourced."
+  },
+  "falsifiers": {
+    "sourceDrift": "Abort if the pinned upstream Git blob hash changes.",
+    "semanticLeakage": "Abort if a forbidden source field appears in the blind packet or if induction reads the raw upstream file.",
+    "laneLeakage": "Abort if holdout/control participates in vocabulary, eligibility, class-count selection, fingerprints, or class membership.",
+    "contextExplainsAll": "If glyph-specific kernels do not beat P0 on holdout, the code claim fails under this state representation.",
+    "memorization": "If gains are concentrated in fewer than the required fraction of independent inscriptions, do not call the operator transferable.",
+    "classCollapse": "If finite classes fail to retain the required operator gain, do not claim a compact action-equivalence quotient."
+  }
+}
