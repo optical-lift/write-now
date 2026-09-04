@@ -1,0 +1,154 @@
+{
+  "schema": "mark_hierarchical_graph_compression_protocol_v8",
+  "experimentId": "mark:hierarchical-graph-compression:v8",
+  "question": "Can a reusable hierarchical graph grammar induced without role labels compress frozen critical-edge graphs better than a flat local dictionary, and do its learned derivations remain more conserved when structural role is preserved than when role is broken?",
+  "rationaleParentV7": {
+    "branchHead": "50c35843a81dd66fab8b55f62ff38227ab5bfab4",
+    "firstScoringRunId": 33817007730,
+    "resultUsedAsRationaleOnly": "radius-2 length-aware local wiring neighborhoods were the only predeclared primary representation to clear the Cleveland evidence gate and they transferred to Bavaria; V7 did not establish that normalized length itself was the causal ingredient",
+    "consumedAsData": false,
+    "radius2VocabularyConsumed": false,
+    "purpose": "V7 justifies testing whether the graph contains reusable compositional structure, but V8 deliberately refuses V7's radius boundary and asks the compressor to discover reusable connected units by description-length reduction."
+  },
+  "parentV5": {
+    "expectedRunId": 33807154154,
+    "expectedArtifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedEligibleTrainPairs": 125,
+    "greedyNearestCandidatesPerCenter": 8
+  },
+  "custody": {
+    "consumeFrozenV5ArtifactOnly": true,
+    "v7ArtifactMustNotBeDownloaded": true,
+    "sourcePixelsMustNotBeDownloaded": true,
+    "topologyMustNotBeReprojected": true,
+    "grammarInductionMustFinishAndHashBeforeRoleLabelsAreOpened": true,
+    "grammarInductionUsesLaneAndSourceGroupButNotPreservedBrokenLabels": true,
+    "noProvenance": true,
+    "noStateVocabulary": true,
+    "noTransitionGrammar": true,
+    "otherExperimentBranchesMustNotBeReadOrMutated": true
+  },
+  "primitiveGraph": {
+    "observationsForInduction": "all unique V5 pair-eligible observations whose frozen lane is train",
+    "nodeLabel": [
+      "ENDPOINT/JUNCTION kind",
+      "full frozen critical-center degree class capped at 6+",
+      "frozen self-loop multiplicity class capped at 3+"
+    ],
+    "parallelPaths": "all literal parallel non-self center-to-center paths are collapsed to one undirected primitive edge",
+    "edgeMultiplicityCap": 3,
+    "primaryEdgeLabel": "parallel multiplicity class plus mean observation-diagonal-normalized path-step bin of width 0.05",
+    "topologyAblationEdgeLabel": "parallel multiplicity class only",
+    "normalizedLengthBinWidth": 0.05,
+    "residualGeometryForbidden": ["turnRate", "tortuosity", "turnCount", "pathSha256"],
+    "absolutePositionForbidden": true,
+    "orientationForbidden": true,
+    "centerIdsForbiddenFromRuleIdentity": true,
+    "sourceIdsForbiddenFromRuleIdentity": true,
+    "radiusBoundaryForbidden": true
+  },
+  "grammarFamily": {
+    "name": "lossless binary edge-bundle contraction grammar",
+    "terminal": "one primitive graph node symbol",
+    "nonterminalRule": "a binary rule X -> A + B + the complete bundle of residual edges internal to A/B, including each internal edge label and the port path into each child",
+    "portPath": "a binary child-address path; external residual edges retain exact attachment by prefixing 0 for the left child or 1 for the right child when a contraction occurs",
+    "losslessness": "expanding every nonterminal and replaying residual edges reconstructs the identity-free primitive graph exactly",
+    "candidate": "any adjacent current supernode pair together with the complete current internal edge bundle between them",
+    "candidateIdentity": "child symbols plus canonical internal-edge bundle; external context is not part of the rule identity",
+    "orientation": "canonical child-symbol order; unresolved automorphism-equivalent ties may use an ephemeral observation-local ordinal only to choose a representative contraction, never as a rule feature or score",
+    "maxRules": 128,
+    "maxDerivationDepth": 16,
+    "minimumDistinctSourceGroups": 3,
+    "minimumNonoverlappingOccurrences": 6,
+    "candidateShortlist": 32,
+    "candidateShortlistOrder": [
+      "descending distinct source-group support",
+      "descending raw occurrence count",
+      "ascending canonical candidate hash"
+    ],
+    "selection": "within the frozen top-32 shortlist, choose the candidate with the largest exact positive description-length reduction; ties prefer greater distinct-source support, then greater selected occurrence count, then canonical candidate hash",
+    "application": "contract a deterministic maximal non-overlapping set of the selected rule in every induction graph",
+    "stop": "stop when no shortlisted candidate with the minimum support yields a strictly positive exact description-length reduction, or when maxRules/maxDerivationDepth is reached"
+  },
+  "descriptionCode": {
+    "unit": "bits under a fixed explicit structural code; this is the experiment's MDL code and is not claimed to be an optimal universal graph code",
+    "integer": "Elias-gamma length; zero-valued counts are encoded as gamma(value+1)",
+    "symbolReference": "gamma(symbolId+1); terminal symbol IDs are lexicographic and nonterminal IDs are induction order",
+    "edgeLabelReference": "gamma(edgeLabelId+1) with lexicographically frozen edge-label IDs",
+    "observationHeader": "gamma(nodeCount+1) + gamma(edgeCount+1)",
+    "residualNode": "one symbol reference",
+    "residualEdgeEndpoints": "two fixed 32-bit observation-local node references so description length is invariant to node renumbering",
+    "residualEdge": "two endpoint references + edge-label reference + both port-path codes",
+    "portPathCode": "gamma(pathLength+1) plus one raw bit per path step",
+    "grammarModel": "gamma(ruleCount+1) plus, for each rule in induction order, both child-symbol references, gamma(internalEdgeCount+1), and the exact internal-edge label/port-path records",
+    "trainingTotal": "grammar model bits + encoded Cleveland induction graphs",
+    "heldoutData": "encoded heldout graphs under the frozen grammar; model bits are reported separately and are not recharged per heldout lane"
+  },
+  "models": {
+    "raw": "no learned rules; primitive graph encoded directly",
+    "flat": "same greedy coding and support rules, but every rule must have two terminal children; nonterminals may never appear on a rule right-hand side",
+    "hierarchical": "full grammarFamily; previously induced nonterminals may appear as rule children",
+    "primaryRepresentation": "lengthAware",
+    "topologyAblation": "repeat raw/flat/hierarchical induction with topology-only edge labels; this is a required ablation, not a second discovery representation"
+  },
+  "frozenGrammarEvaluation": {
+    "applicationToNewGraph": "start from primitive terminals and replay frozen rules in induction order, contracting a deterministic maximal non-overlapping set of exact rule matches; rules are never refit or reordered",
+    "recordPerObservation": [
+      "raw data bits",
+      "flat data bits",
+      "hierarchical data bits",
+      "rule application counts",
+      "final residual node/edge counts",
+      "for every original center, ordered ancestry of nonterminal rule IDs from leaf outward"
+    ],
+    "heldoutCompressionClaim": {
+      "requiredLane": "holdout",
+      "primaryRepresentation": "lengthAware",
+      "condition1": "hierarchical heldout data bits are strictly lower than flat heldout data bits in aggregate",
+      "condition2": "hierarchical beats flat within at least 60% of distinct holdout sourceGroupIds",
+      "condition3": "hierarchical training total bits including its model are strictly lower than flat training total bits including its model",
+      "interpretation": "all three are required to claim that recursive composition adds compressive structure beyond a flat dictionary"
+    },
+    "controlLane": "control",
+    "controlInterpretation": "LOC compression is reported without requiring failure; cross-world compression may reflect genuinely shared structure and is not by itself a role claim"
+  },
+  "roleSpecificity": {
+    "labelsOpenedOnlyAfter": "both length-aware grammars and the topology ablation grammars are frozen and hashed",
+    "centerCorrespondence": "reproduce the frozen V4/V5 D4-aligned sparse critical-center correspondence with 8 nearest candidates per center kind; grammar induction never sees this mapping",
+    "centerMetric": "normalized Levenshtein distance between the two mapped centers' hierarchical rule-ancestry sequences, with insertion/deletion/substitution cost 1 and denominator max(1, lenA, lenB)",
+    "pairMetric": "mean mapped-center ancestry distance within an observation pair",
+    "flatControlMetric": "the identical ancestry-distance calculation under the frozen flat grammar",
+    "unit": "observation pair",
+    "physicalStratum": "exact occupantFamilyA + occupantFamilyB",
+    "effect": "family-pair-balanced smaller-is-more-conserved rank effect; positive means grammar derivations mutate less in role-preserving pairs",
+    "trainLane": "train",
+    "nullIterations": 128,
+    "nullShuffle": "shuffle preserved/broken observation-pair labels within exact physical-family pair while preserving the original preserved count",
+    "nullUnit": "observation pair",
+    "practicalEffectMagnitude": 0.08,
+    "evidenceNullAbsoluteCountMaximum": 16,
+    "holdoutLane": "holdout",
+    "holdoutSameDirectionMinimumMagnitude": 0.08,
+    "hierarchicalRoleClaim": "requires the hierarchical primary pair metric to meet the Cleveland evidence gate and the Bavaria holdout magnitude gate",
+    "hierarchyAddsRoleInformation": "reported descriptively as hierarchical balanced effect minus flat balanced effect; no separate claim threshold is imposed because the primary hierarchy claim already requires heldout compression superiority over flat"
+  },
+  "adjudication": {
+    "hierarchicalGrammar": "If recursive grammar beats flat on all three heldoutCompressionClaim conditions and its hierarchical ancestry mutation meets Cleveland + Bavaria role gates, treat the graph as supporting a reusable hierarchical generative architecture whose learned productions track preserved structural role.",
+    "compressionOnly": "If recursive grammar beats flat in heldout compression but ancestry mutation fails the role gate, conclude that reusable hierarchy exists but this experiment has not tied that hierarchy to the preserved-role distinction.",
+    "roleWithoutHierarchy": "If ancestry mutation passes but recursive heldout compression does not beat flat, do not call the result hierarchical grammar; treat it as another local correspondence signal and stop the compression claim.",
+    "flatSuffices": "If flat matches or beats hierarchical heldout compression, reusable local pieces are sufficient under this compressor and recursive composition is not supported.",
+    "noCompression": "If neither learned model lowers Cleveland total description length relative to raw, reject this grammar family rather than tuning after the result.",
+    "topologyAblation": "If topology-only reaches the same adjudication as length-aware, normalized path length is not required for the compression grammar; if only length-aware succeeds, carry length-aware forward but do not call length causal without a separate intervention test."
+  },
+  "falsifiers": {
+    "parentDrift": "abort if frozen V5 manifest/world/projector/role-row hashes differ from the expected packet",
+    "labelLeakage": "abort if preserved/broken role labels are read before grammar packets are written and hashed",
+    "nonLosslessRule": "abort if synthetic expand(contract(graph)) round-trip checks fail for any rule case including external attachments, multiple internal edges, or nested nonterminals",
+    "insufficientPairSupport": "abort role claim if fewer than 50 Cleveland eligible pairs retain at least one mapped center with a derivation metric",
+    "heldoutCollapse": "no hierarchical grammar claim if Bavaria aggregate recursive compression does not beat flat or if fewer than 60% of Bavaria source groups improve",
+    "flatParity": "no recursive claim if flat training total bits are <= hierarchical training total bits or flat heldout data bits are <= hierarchical",
+    "roleTransferCollapse": "no role-linked grammar claim if Cleveland passes but Bavaria ancestry effect reverses or falls below +0.08"
+  }
+}
