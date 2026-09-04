@@ -1,0 +1,111 @@
+{
+  "schema": "mark_matched_direct_pair_residual_protocol_v13",
+  "experimentId": "mark:matched-direct-pair-residual:v13",
+  "question": "What information does the ordered pair (A,B) contain that the frozen V12 first-order composition T_B(T_A(S)) does not, and does that residual survive controls for pair support, independent operator consequence, exact local sequence context, and compression of the incoming latent state?",
+  "parent": {
+    "v12RunId": 33924264305,
+    "v12FreezeArtifact": "mark-state-operator-separation-v12-freeze",
+    "expectedV12FreezeSha256": "c07a39bf7c9474e3f5d7fb91d4e44b4c2437e2eb7492c6a49397345343a69091",
+    "expectedV12ResultSha256": "336d94aba158ef1cec9278272de720c0cf8a7588983570c951c838e3ca1e7dd9",
+    "knownV12Adjudication": "LATENT_OPERATOR_CONSEQUENCE_WITHOUT_COMPOSITION",
+    "knownV12HoldoutDirectPairAdvantageBitsPerEvent": 0.155692,
+    "knownV12ControlDirectPairAdvantageBitsPerEvent": 0.069151,
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "provenance": {
+    "evaluationLanesAlreadyOpened": true,
+    "freshIndependentHoldout": false,
+    "claimClass": "post-V12 mechanistic decomposition on reused evaluation inscriptions",
+    "trainOnlyFeasibilityKnownBeforeFreeze": "With minimum state-pair support 4, support ratio <= 2, factorized-kernel TV <= 0.05, and direct-pair-kernel TV >= 0.05, train contains 20 deterministic second-slot matched substitutions covering 115 events across 89 anonymous inscriptions.",
+    "rule": "No holdout/control outcome may alter pair eligibility, substitute selection, smoothing, local-context controls, thresholds, gates, or adjudication after this protocol is committed."
+  },
+  "representation": {
+    "variant": "lineOnly",
+    "incomingState": "Reuse the frozen V12 48-state anonymous predictive state induced from the two mapped stream items preceding A.",
+    "pairEvent": "Two consecutive V10-eligible glyphs A,B followed by mapped outcome z.",
+    "exactIncomingHistory": "H is the exact two mapped stream items preceding A. H is retained only as a diagnostic refinement inside the already-frozen V12 state S.",
+    "currentPairExcludedFromIncomingState": true,
+    "semanticInformationUsed": false
+  },
+  "probabilityModel": {
+    "globalAdditiveAlpha": 0.5,
+    "hierarchicalBackoffPseudoCount": 8.0,
+    "transitionBackoffPseudoCount": 8.0,
+    "emissionBackoffPseudoCount": 8.0,
+    "directPairBackoffPseudoCount": 8.0,
+    "historyPairBackoffPseudoCount": 8.0
+  },
+  "models": {
+    "factorized": "Frozen V12 Q_AB(z|S) = sum T_A(S1|S) T_B(S2|S1) E(z|S2).",
+    "directPair": "Frozen V12 train-only D(z|S,A,B), hierarchically smoothed to factorized Q_AB.",
+    "historyPair": "Train-only P(z|H,A,B), hierarchically smoothed to D(z|S,A,B). This asks whether information discarded by the 48-state compression explains the residual.",
+    "ngram2": "Frozen V12 mapped-stream order-2 hierarchical n-gram P(z|A,B).",
+    "ngram4": "Frozen V12 mapped-stream order-4 hierarchical n-gram P(z|H,A,B). This is the exact local-sequence control and uses no latent-state machinery."
+  },
+  "matchedResidualPanel": {
+    "selectionLane": "train only",
+    "substitution": "Hold frozen state S and first glyph A fixed. For each actual B, choose a different B' observed with the same S,A.",
+    "minimumTrainStatePairOccurrences": 4,
+    "maximumTrainSupportRatio": 2.0,
+    "maximumFactorizedKernelTv": 0.05,
+    "minimumDirectPairKernelTv": 0.05,
+    "selectionOrder": "Minimize factorized-kernel TV, then absolute log2 support ratio, then maximize direct-pair-kernel TV, then deterministic SHA-256 tie break.",
+    "primaryEventContrast": "[log2 D(z|S,A,B) - log2 D(z|S,A,B')] - [log2 Q(z|S,A,B) - log2 Q(z|S,A,B')]. Positive means the ordered pair carries transferable residual information after the independently composed operator consequence is subtracted.",
+    "localSequenceResidual": "[log2 D_actual - log2 D_substitute] - [log2 N4_actual - log2 N4_substitute]. Positive means the direct pair residual exceeds an exact four-token local-sequence counterfactual using H,A,B.",
+    "independentUnit": "anonymous inscription mean",
+    "minimumEvaluationEvents": {"holdout": 15, "control": 8},
+    "minimumEligibleInscriptions": {"holdout": 12, "control": 6},
+    "minimumPositiveInscriptionFraction": 0.60,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-matched-direct-pair-residual-v13"
+  },
+  "stateCompressionDiagnostic": {
+    "comparison": "historyPair versus directPair on every eligible pair event, not only matched-panel events",
+    "outcome": "Per-inscription mean log2 P_historyPair(z|H,A,B) - log2 D(z|S,A,B).",
+    "interpretation": "A reproducible positive gain means exact within-state pre-pair history contains predictive information lost by the 48-state compression.",
+    "minimumEvaluationEvents": {"holdout": 100, "control": 40},
+    "minimumEligibleInscriptions": {"holdout": 20, "control": 10},
+    "minimumMeanGainBitsPerEvent": 0.02,
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-matched-direct-pair-residual-v13-history"
+  },
+  "localSequenceDiagnostic": {
+    "comparison": "directPair versus frozen hierarchical ngram2 and ngram4 on every eligible pair event and on the matched residual panel",
+    "interpretation": "If ngram4 accounts for the matched pair contrast or matches/beats directPair prediction, ordinary local sequence remains sufficient for the pair residual.",
+    "maximumOneSidedSignFlipP": 0.05,
+    "signFlipIterations": 4096,
+    "signFlipSalt": "mark-matched-direct-pair-residual-v13-ngram"
+  },
+  "adjudication": {
+    "pairInteractionBeyondCompositionAndLocalContext": "Matched factorized-residual gate passes in both reused lanes and the direct residual over ngram4 also passes in both lanes. Exact-history compression diagnostics are reported separately and cannot upgrade this claim.",
+    "pairResidualButLocalSequenceSufficient": "Matched factorized-residual gate passes in both reused lanes, but the direct residual over ngram4 does not pass in both lanes.",
+    "directPairAdvantageExplainedByContextOrCompression": "Matched factorized-residual gate fails overall while exact-history and/or ngram4 diagnostics account for the predictive advantage.",
+    "noTransferableMatchedPairResidual": "The train-frozen matched pair residual does not transfer on both reused lanes and context/compression diagnostics do not provide a stable replacement explanation."
+  },
+  "claimLimits": {
+    "positiveDoesSupport": [
+      "transferable ordered-pair consequence information beyond the frozen first-order composition, only if the matched residual gate passes",
+      "structure beyond exact four-token local sequence only if the explicit ngram4 residual gate also passes",
+      "lost local state information only if the exact-history diagnostic passes"
+    ],
+    "positiveDoesNotByItselfSupply": [
+      "translation or phonetic values",
+      "historical intent",
+      "physical causal intervention",
+      "proof of conscious software-like design",
+      "semantic meaning of any glyph or pair",
+      "fresh independent confirmation"
+    ]
+  },
+  "falsifiers": {
+    "pairSupportArtifact": "Matched substitutes must stay within the frozen support-ratio bound.",
+    "independentOperatorExplanation": "Actual and substitute factorized kernels must stay within the frozen TV bound; the primary contrast subtracts their remaining difference directly.",
+    "localSequenceExplanation": "If the ngram4 counterfactual accounts for the matched direct-pair contrast, do not claim pair structure beyond ordinary local sequence.",
+    "stateCompressionExplanation": "If exact H materially improves prediction over S on both lanes, report lost-state contribution rather than attributing the entire residual to pair interaction.",
+    "evaluationLeakage": "Abort if holdout/control participates in panel selection, history-pair estimation, support matching, or any frozen threshold."
+  }
+}
