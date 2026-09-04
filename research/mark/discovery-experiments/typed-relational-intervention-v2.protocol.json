@@ -1,0 +1,94 @@
+{
+  "schema": "mark_typed_relational_intervention_protocol_v2",
+  "experimentId": "mark:typed-relational-intervention:v2",
+  "question": "When exact node adjacency is changed in both counterfactuals and realization labels are held identical, does breaking the endpoint structural-type relation class disrupt a previously frozen blind hierarchical grammar more than rewiring node identity while preserving that type relation class?",
+  "designContext": {
+    "priorV1RunId": 33879070819,
+    "priorV1ResultSha256": "60ea3d7dc3c3c4ab52c8dfa41c37e820fff4929335f96fe00f4277a94c599fa8",
+    "priorV1Adjudication": "RELATIONSHIP_EFFECT_NOT_DISTINGUISHED",
+    "designLearnedAfterPriorResult": true,
+    "refinement": "V1 tested literal node-identity adjacency against realization assignment. V8 rules do not encode literal node IDs; they encode structural symbols and edge descriptors. V2 therefore tests the representational level the frozen grammar can actually protect: endpoint structural-type relation class versus exact node identity."
+  },
+  "parentV8": {
+    "runId": 33821017246,
+    "artifactName": "mark-hierarchical-graph-compression-v8-grammar-freeze",
+    "expectedGrammarFreezeSha256": "917fd07f604334f96548df0fa05e7fd3d130066854acf380eb695396b551ae81",
+    "grammarLearnedWithoutRoleLabels": true,
+    "primaryVariant": "lengthAware",
+    "primaryModel": "hierarchical",
+    "flatComparator": true,
+    "topologyReplication": true
+  },
+  "parentV5": {
+    "runId": 33807154154,
+    "artifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedProjectorRowsSha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e"
+  },
+  "population": {
+    "usePairEligibleObservationsOnly": true,
+    "primaryLane": "holdout",
+    "replicationLane": "control",
+    "trainLaneExcludedFromPrimaryAdjudication": true
+  },
+  "matchedIntervention": {
+    "unit": "one observation primitive graph",
+    "edgeBudget": 2,
+    "candidateEdgeLimitPerCompleteLabel": 256,
+    "candidateSelection": "deterministic minimum SHA-256 among valid candidates",
+    "edgePairCriteria": [
+      "two distinct primitive non-self edges",
+      "four distinct endpoint nodes",
+      "same complete length-aware edge label",
+      "both canonical degree-preserving two-edge rewires create nonduplicate non-self relationships",
+      "both rewires preserve connected-component count",
+      "exactly one rewire preserves the selected typed-edge signature and the other breaks it"
+    ],
+    "typedEdgeSignature": "multiset over the two selected edges of (complete edge label, unordered endpoint terminal-symbol pair)",
+    "identityRewire": "change exact node adjacency while preserving the selected typed-edge signature",
+    "typeBreakingRewire": "change exact node adjacency while changing the selected typed-edge signature",
+    "requiredExactInvariantsAcrossOriginalIdentityAndTypeBreaking": [
+      "node IDs and terminal labels",
+      "node count",
+      "edge count",
+      "per-node graph degree",
+      "full edge-label multiset",
+      "connected-component count",
+      "cycle rank",
+      "raw V8 structural code length"
+    ]
+  },
+  "outcome": {
+    "instrument": "frozen V8 grammar; no rule refit, reordering, or selection",
+    "primaryPerObservation": "hierarchical typed selective penalty = hierarchicalDataBits(typeBreakingRewire) - hierarchicalDataBits(identityRewire)",
+    "normalizedPrimary": "primary typed selective penalty divided by max(1, hierarchicalDataBits(original))",
+    "positiveMeaning": "breaking the endpoint structural-type relation class is less compatible with the frozen grammar than changing exact node identity while preserving that relation class",
+    "flatComparator": "same typed selective penalty under the frozen V8 flat dictionary",
+    "topologyReplication": "same typed selective penalty under the frozen topology-only hierarchical grammar"
+  },
+  "null": {
+    "iterations": 512,
+    "unit": "eligible observation",
+    "test": "deterministic sign flips of each observation's normalized primary typed selective penalty within lane",
+    "seedSalt": "mark-typed-relational-intervention-v2-signflip"
+  },
+  "gates": {
+    "minimumEligibleHoldoutObservations": 40,
+    "minimumEligibleControlObservations": 40,
+    "holdoutPositiveFractionMinimum": 0.60,
+    "controlPositiveFractionMinimum": 0.55,
+    "holdoutMeanNormalizedSelectivePenaltyMinimum": 0.0,
+    "controlMeanNormalizedSelectivePenaltyMinimum": 0.0,
+    "holdoutSignFlipPMaximum": 0.05,
+    "controlSignFlipPMaximum": 0.05
+  },
+  "adjudication": {
+    "TYPED_RELATION_CLASS_SUPPORTED": "all holdout and control support, sign, fraction, and sign-flip gates pass",
+    "TYPED_RELATION_CLASS_NOT_DISTINGUISHED": "support is sufficient but at least one preregistered gate fails; do not rescue by redefining type, relation, realization, or grammar after the result",
+    "INFEASIBLE": "either primary lane has fewer than its frozen minimum eligible matched interventions"
+  },
+  "falsifier": "If a matched type-breaking rewire does not damage frozen heldout grammar fit more than an exact-identity rewire that preserves the same endpoint structural-type relation inventory in both untouched lanes, this experiment does not support the claim that V8 protects typed relationship classes beyond node identity.",
+  "claimBoundary": "A pass would support the narrower claim that the frozen blind V8 grammar protects relations among structural symbol classes rather than literal node identities. It would not establish historical semantics, conscious machine encoding, universality, or that the terminal classes are the final functional ontology.",
+  "scientificFailureIsGreen": true
+}
