@@ -1,0 +1,85 @@
+{
+  "schema": "mark_hebrew_glyph_operator_stress_protocol_v16",
+  "experimentId": "mark:hebrew-glyph-operator-stress:v16",
+  "question": "Does the V15 Hebrew↔glyph operator-fingerprint correspondence survive removal of boundary position, long-segment effects, proper-name operators, and loose frequency matching?",
+  "claimBoundary": "A pass supports transferable cross-corpus similarity of internal local transition fingerprints after explicit boundary, segment-length, proper-name, and frequency controls. It does not establish translation, semantic identity, historical contact, common authorship, theological identity, phonetic equivalence, causal mechanism, or machine execution.",
+  "lineage": {
+    "parentBranch": "mark-hebrew-glyph-operator-fingerprint-v15",
+    "parentHead": "273b9ec962ef9ee75c3f8618590c9a7eb4906982",
+    "parentAdjudication": "TRANSFERABLE_CROSS_CORPUS_OPERATOR_FINGERPRINT_MATCHES",
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "tokenIdentity": "first numeric lemma component rendered H<number>",
+    "properNameControl": "OSHB morphology is used only to mark/exclude Hebrew operator identities with any proper-noun-tagged train occurrence; morphology never enters a fingerprint or a pairing score"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "projector": {
+    "historyLength": 4,
+    "minimumSegmentLength": 6,
+    "maximumSegmentLength": 10,
+    "maximumEventsPerSegment": 3,
+    "eventSelectionSeed": "mark-v16-internal-event-cap",
+    "eligibleCurrentPositions": "only positions with four real predecessors and a real successor; no START padding and no END outcome",
+    "incomingState": "first-occurrence canonical equality pattern of exactly the previous four operator identities; current operator identity is excluded",
+    "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","OTHER"],
+    "outcomePrecedence": "SAME_CURRENT, then nearest H1..H4, otherwise OTHER; no whole-segment seen/new distinction",
+    "segmentContributionControl": "segments outside length 6..10 are excluded and each accepted segment contributes at most three deterministically hash-selected internal events",
+    "forbiddenFeatures": ["segment start/end state","absolute position","whole-segment length outside admission filter","whole-segment seen/new outcome","Hebrew surface spelling","Strong definitions","English glosses","translations","verse/book identity","glyph proposed reading","glyph word identity","historical labels"]
+  },
+  "training": {
+    "minimumSharedStateEventsPerCorpus": 8,
+    "minimumOperatorEvents": 5,
+    "maximumOperatorsPerCorpus": 48,
+    "minimumOperatorStateEventsForCoverage": 2,
+    "minimumCoveredSharedStates": 1,
+    "backoffPseudoCount": 10.0,
+    "globalAdditiveAlpha": 0.5,
+    "residualLog2Clip": 4.0,
+    "minimumFingerprintNorm": 0.03,
+    "excludeHebrewOperatorIfAnyTrainProperOccurrence": true,
+    "maximumFrequencyPercentileGap": 0.15,
+    "pairSelection": "mutual nearest neighbor by weighted cosine similarity among train-only candidates whose within-corpus operator-frequency percentiles differ by at most 0.15",
+    "frequencyNullStrata": 2,
+    "minimumFrozenPairCount": 6
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 2,
+    "minimumEvaluablePairFraction": 0.70,
+    "minimumEvaluablePairCount": 5,
+    "permutationCount": 4096,
+    "permutationSeed": "mark-v16-hebrew-glyph-stress",
+    "primaryMetric": "mean weighted cosine similarity of evaluable frozen train-paired operators",
+    "rankMetric": "median percentile rank of each frozen glyph among evaluable frozen glyphs",
+    "gatesPerLane": {
+      "meanSimilarityGreaterThan": 0.0,
+      "unstratifiedPermutationPAtMost": 0.05,
+      "frequencyStratifiedPermutationPAtMost": 0.05,
+      "medianRankPercentileAtLeast": 0.65,
+      "positivePairFractionAtLeast": 0.70
+    },
+    "fullAdjudication": "both holdout and control must independently pass every lane gate plus evaluability gates; these lanes were previously opened, so a pass is a frozen mechanistic stress-test result rather than fresh independent confirmation"
+  },
+  "custody": {
+    "hebrewSourcePinnedBeforeScoring": true,
+    "custodyJobOnlyParsesSplitsAndMarksProperNounMorphology": true,
+    "freezeJobReceivesHebrewTrainAndV10TrainOnly": true,
+    "evaluationJobDownloadsFreezeBeforeAnyEvaluationPacket": true,
+    "evaluationJobMustNotContainTrainPacketsOrRawHebrewSource": true,
+    "scientificFailureIsGreen": true
+  }
+}
