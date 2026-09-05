@@ -1,0 +1,128 @@
+name: Mark First Passage Trajectory v24
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_first_passage_trajectory_v24_core.py"
+      - "scripts/freeze-mark-first-passage-trajectory-v24.py"
+      - "scripts/evaluate-mark-first-passage-trajectory-v24.py"
+      - "research/mark/discovery-experiments/first-passage-trajectory-v24.protocol.json"
+      - ".github/workflows/mark-first-passage-trajectory-v24.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V24_PROTOCOL: research/mark/discovery-experiments/first-passage-trajectory-v24.protocol.json
+  MARK_V21_RUN_ID: 33986094131
+  MARK_V10_RUN_ID: 33905459943
+
+jobs:
+  freeze:
+    name: Freeze first-passage trajectory models before evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V24 protocol and code before data acquisition
+        run: |
+          python3 -m json.tool "$MARK_V24_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_first_passage_trajectory_v24_core.py \
+            scripts/freeze-mark-first-passage-trajectory-v24.py \
+            scripts/evaluate-mark-first-passage-trajectory-v24.py
+      - name: Download exact frozen V21 Hebrew TRAIN representation packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-operator-representation-v21-hebrew-train
+          path: artifact-staging/hebrew-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V21_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download exact frozen V10 glyph TRAIN packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/glyph-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent
+        run: |
+          test -z "$(find artifact-staging -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V24 first-passage models
+        env:
+          PYTHONPATH: scripts
+          MARK_V24_HEBREW_TRAIN: artifact-staging/hebrew-train
+          MARK_V24_GLYPH_TRAIN: artifact-staging/glyph-train
+          MARK_V24_FREEZE_OUT: artifacts/mark-first-passage-trajectory-v24/freeze
+        run: python3 scripts/freeze-mark-first-passage-trajectory-v24.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-first-passage-trajectory-v24/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-first-passage-trajectory-v24-freeze
+          path: artifacts/mark-first-passage-trajectory-v24/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Test first-passage trajectory on sealed lanes
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V24 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-first-passage-trajectory-v24-freeze
+          path: artifact-staging/freeze
+      - name: Open exact inherited V21 Hebrew sealed evaluation packet only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-operator-representation-v21-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V21_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Open exact inherited V10 glyph sealed evaluation packet only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/glyph-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove training data are absent
+        run: |
+          test -z "$(find artifact-staging/hebrew-eval artifact-staging/glyph-eval -type f -name 'train.jsonl' -print -quit)"
+          test ! -d artifact-staging/hebrew-train
+          test ! -d artifact-staging/glyph-train
+          echo "training_visible_to_evaluation=false"
+      - name: Evaluate frozen V24 first-passage trajectories
+        env:
+          PYTHONPATH: scripts
+          MARK_V24_FREEZE: artifact-staging/freeze
+          MARK_V24_HEBREW_EVAL: artifact-staging/hebrew-eval
+          MARK_V24_GLYPH_EVAL: artifact-staging/glyph-eval
+          MARK_V24_RESULT_OUT: artifacts/mark-first-passage-trajectory-v24/result
+        run: python3 scripts/evaluate-mark-first-passage-trajectory-v24.py
+      - name: Publish result summary
+        run: cat artifacts/mark-first-passage-trajectory-v24/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-first-passage-trajectory-v24/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-first-passage-trajectory-v24-frozen
+          path: artifacts/mark-first-passage-trajectory-v24/**
+          if-no-files-found: error
+          retention-days: 30
