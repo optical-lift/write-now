@@ -2,8 +2,9 @@
 import os
 from pathlib import Path
 from mark_operator_selection_grammar_v28_core import (
-    REPRESENTATIONS, adjudicate, evaluate_all, read_json, read_jsonl, sha256_json, write_json,
+    REPRESENTATIONS, adjudicate, read_json, read_jsonl, sha256_json, write_json,
 )
+from mark_operator_selection_grammar_v28_fast import evaluate_all_fast
 
 protocol = read_json(os.environ["MARK_V28_PROTOCOL"])
 freeze = read_json(Path(os.environ["MARK_V28_FREEZE"]) / "freeze.json")
@@ -15,7 +16,7 @@ if freeze.get("freezeAdjudication") != "FEASIBLE":
 else:
     hebrew_eval={lane:read_jsonl(hd / f"{lane}.jsonl") for lane in ("holdout","control")}
     glyph_eval={lane:read_jsonl(gd / f"{lane}.jsonl") for lane in ("holdout","control")}
-    lanes, glyph = evaluate_all(hebrew_eval, glyph_eval, freeze, protocol)
+    lanes, glyph = evaluate_all_fast(hebrew_eval, glyph_eval, freeze, protocol)
     result={"schema":"mark_operator_selection_grammar_result_v28","freezeSha256":freeze["freezeSha256"],"lanes":lanes,"glyph":glyph,"adjudication":adjudicate(lanes,glyph)}
 result["resultSha256"] = sha256_json({k:v for k,v in result.items() if k != "resultSha256"})
 out.mkdir(parents=True, exist_ok=True)
