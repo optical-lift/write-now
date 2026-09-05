@@ -1,0 +1,159 @@
+name: Mark Coarse Boundary Book Block v26
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_coarse_boundary_book_block_v26_core.py"
+      - "scripts/prepare-mark-coarse-boundary-book-block-v26.py"
+      - "scripts/freeze-mark-coarse-boundary-book-block-v26.py"
+      - "scripts/evaluate-mark-coarse-boundary-book-block-v26.py"
+      - "research/mark/discovery-experiments/coarse-boundary-book-block-v26.protocol.json"
+      - ".github/workflows/mark-coarse-boundary-book-block-v26.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V26_PROTOCOL: research/mark/discovery-experiments/coarse-boundary-book-block-v26.protocol.json
+  OSHB_COMMIT: 3d15126fb1ef74867fc1434be1942e837932691f
+  OSHB_TREE: 50e6be1d06a80cef7d9285b3c8e4dff47e420bf6
+  OSHB_EXOD_BLOB: 9397e001f25d14353793a3924d4e9c605cecfc6c
+
+jobs:
+  custody:
+    name: Build whole-book-custodied coarse Hebrew packets
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V26 protocol and code before source acquisition
+        run: |
+          python3 -m json.tool "$MARK_V26_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_coarse_boundary_book_block_v26_core.py \
+            scripts/prepare-mark-coarse-boundary-book-block-v26.py \
+            scripts/freeze-mark-coarse-boundary-book-block-v26.py \
+            scripts/evaluate-mark-coarse-boundary-book-block-v26.py
+      - name: Acquire exact Open Scriptures Hebrew Bible commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/morphhb
+          git -C artifact-staging/morphhb init -q
+          git -C artifact-staging/morphhb remote add origin https://github.com/openscriptures/morphhb.git
+          git -C artifact-staging/morphhb fetch -q --depth=1 origin "$OSHB_COMMIT"
+          git -C artifact-staging/morphhb checkout -q --detach FETCH_HEAD
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD)" = "$OSHB_COMMIT"
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD^{tree})" = "$OSHB_TREE"
+          test "$(git -C artifact-staging/morphhb hash-object wlc/Exod.xml)" = "$OSHB_EXOD_BLOB"
+      - name: Parse whole books and construct model-blind shuffled controls
+        env:
+          PYTHONPATH: scripts
+          MARK_V26_WLC: artifact-staging/morphhb/wlc
+          MARK_V26_OUT: artifact-staging/all
+        run: python3 scripts/prepare-mark-coarse-boundary-book-block-v26.py
+      - name: Physically separate TRAIN books and sealed evaluation books
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/train artifact-staging/eval
+          cp artifact-staging/all/train.jsonl artifact-staging/train/train.jsonl
+          cp artifact-staging/all/manifest.json artifact-staging/train/manifest.json
+          cp artifact-staging/all/holdout.jsonl artifact-staging/eval/holdout.jsonl
+          cp artifact-staging/all/control.jsonl artifact-staging/eval/control.jsonl
+          cp artifact-staging/all/manifest.json artifact-staging/eval/manifest.json
+          rm -rf artifact-staging/all artifact-staging/morphhb
+          test ! -e artifact-staging/train/holdout.jsonl
+          test ! -e artifact-staging/train/control.jsonl
+          test ! -e artifact-staging/eval/train.jsonl
+          test ! -d artifact-staging/morphhb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-train
+          path: artifact-staging/train/**
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-sealed-evaluation
+          path: artifact-staging/eval/**
+          if-no-files-found: error
+          retention-days: 30
+
+  freeze:
+    name: Freeze coarse within-verse model before book-block evaluation
+    needs: custody
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-train
+          path: artifact-staging/train
+      - name: Prove sealed books are absent
+        run: |
+          test -z "$(find artifact-staging -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V26 coarse destination model
+        env:
+          PYTHONPATH: scripts
+          MARK_V26_TRAIN: artifact-staging/train
+          MARK_V26_FREEZE_OUT: artifacts/mark-coarse-boundary-book-block-v26/freeze
+        run: python3 scripts/freeze-mark-coarse-boundary-book-block-v26.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-coarse-boundary-book-block-v26/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-freeze
+          path: artifacts/mark-coarse-boundary-book-block-v26/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Test coarse real-adjacent continuation across sealed book blocks
+    needs: [custody, freeze]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V26 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-freeze
+          path: artifact-staging/freeze
+      - name: Open sealed books only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-sealed-evaluation
+          path: artifact-staging/eval
+      - name: Prove TRAIN books and raw OSHB are absent
+        run: |
+          test ! -e artifact-staging/eval/train.jsonl
+          test ! -d artifact-staging/train
+          test ! -d artifact-staging/morphhb
+          echo "training_visible_to_evaluation=false"
+      - name: Evaluate frozen V26 coarse book-block contrast
+        env:
+          PYTHONPATH: scripts
+          MARK_V26_FREEZE: artifact-staging/freeze
+          MARK_V26_EVAL: artifact-staging/eval
+          MARK_V26_RESULT_OUT: artifacts/mark-coarse-boundary-book-block-v26/result
+        run: python3 scripts/evaluate-mark-coarse-boundary-book-block-v26.py
+      - name: Publish result summary
+        run: cat artifacts/mark-coarse-boundary-book-block-v26/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-coarse-boundary-book-block-v26/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-coarse-boundary-book-block-v26-frozen
+          path: artifacts/mark-coarse-boundary-book-block-v26/**
+          if-no-files-found: error
+          retention-days: 30
