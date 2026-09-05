@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+from mark_hebrew_glyph_annotation_competition_v19_eval_pairing import pairing_lane
+from mark_hebrew_glyph_annotation_competition_v19_eval_maps import map_lane,adjudicate

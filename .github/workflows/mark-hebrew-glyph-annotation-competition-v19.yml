@@ -4,6 +4,12 @@ on:
   pull_request:
     paths:
       - "scripts/mark_hebrew_glyph_annotation_competition_v19_core.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_io.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_projector.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_freeze_model.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_eval.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_eval_pairing.py"
+      - "scripts/mark_hebrew_glyph_annotation_competition_v19_eval_maps.py"
       - "scripts/prepare-mark-hebrew-annotation-competition-v19.py"
       - "scripts/freeze-mark-hebrew-glyph-annotation-competition-v19.py"
       - "scripts/evaluate-mark-hebrew-glyph-annotation-competition-v19.py"
@@ -36,7 +42,7 @@ jobs:
         run: |
           python3 -m json.tool "$MARK_V19_PROTOCOL" >/dev/null
           python3 -m json.tool "$MARK_V19_SONG_MAP" >/dev/null
-          python3 -m py_compile scripts/mark_hebrew_glyph_annotation_competition_v19_core.py scripts/prepare-mark-hebrew-annotation-competition-v19.py scripts/freeze-mark-hebrew-glyph-annotation-competition-v19.py scripts/evaluate-mark-hebrew-glyph-annotation-competition-v19.py
+          python3 -m py_compile scripts/mark_hebrew_glyph_annotation_competition_v19_core.py scripts/mark_hebrew_glyph_annotation_competition_v19_io.py scripts/mark_hebrew_glyph_annotation_competition_v19_projector.py scripts/mark_hebrew_glyph_annotation_competition_v19_freeze_model.py scripts/mark_hebrew_glyph_annotation_competition_v19_eval.py scripts/mark_hebrew_glyph_annotation_competition_v19_eval_pairing.py scripts/mark_hebrew_glyph_annotation_competition_v19_eval_maps.py scripts/prepare-mark-hebrew-annotation-competition-v19.py scripts/freeze-mark-hebrew-glyph-annotation-competition-v19.py scripts/evaluate-mark-hebrew-glyph-annotation-competition-v19.py
       - name: Acquire exact Open Scriptures Hebrew Bible commit
         shell: bash
         run: |
