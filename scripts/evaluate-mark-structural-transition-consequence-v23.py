@@ -3,9 +3,10 @@ import os
 from pathlib import Path
 
 from mark_structural_transition_consequence_v23_core import (
-    HEBREW_REPS, adjudicate, compare_transition_profiles, evaluate_system,
+    HEBREW_REPS, adjudicate, compare_transition_profiles,
     read_json, read_jsonl, sha256_json, write_json,
 )
+from mark_structural_transition_consequence_v23_fast import evaluate_system_fast
 
 protocol = read_json(os.environ["MARK_V23_PROTOCOL"])
 freeze = read_json(Path(os.environ["MARK_V23_FREEZE"]) / "freeze.json")
@@ -27,8 +28,8 @@ else:
         grows = read_jsonl(gd / f"{lane}.jsonl")
         for rep in HEBREW_REPS:
             pair = freeze["systems"][rep]
-            h = evaluate_system(hrows, "hebrew", rep, pair, protocol, lane)
-            g = evaluate_system(grows, "glyph", rep, pair, protocol, lane)
+            h = evaluate_system_fast(hrows, "hebrew", rep, pair, protocol, lane)
+            g = evaluate_system_fast(grows, "glyph", rep, pair, protocol, lane)
             results[lane][rep] = {"hebrew": h, "glyph": g}
             profiles[rep][lane] = compare_transition_profiles(h, g, protocol, lane, rep)
 
