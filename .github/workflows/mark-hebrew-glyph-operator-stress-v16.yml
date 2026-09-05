@@ -1,0 +1,171 @@
+name: Mark Hebrew Glyph Operator Stress v16
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_hebrew_glyph_operator_stress_v16_core.py"
+      - "scripts/prepare-mark-hebrew-custody-v16.py"
+      - "scripts/freeze-mark-hebrew-glyph-operator-stress-v16.py"
+      - "scripts/evaluate-mark-hebrew-glyph-operator-stress-v16.py"
+      - "research/mark/discovery-experiments/hebrew-glyph-operator-stress-v16.protocol.json"
+      - ".github/workflows/mark-hebrew-glyph-operator-stress-v16.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V16_PROTOCOL: research/mark/discovery-experiments/hebrew-glyph-operator-stress-v16.protocol.json
+  MARK_V10_RUN_ID: 33905459943
+  OSHB_COMMIT: 3d15126fb1ef74867fc1434be1942e837932691f
+  OSHB_TREE: 50e6be1d06a80cef7d9285b3c8e4dff47e420bf6
+  OSHB_EXOD_BLOB: 9397e001f25d14353793a3924d4e9c605cecfc6c
+
+jobs:
+  hebrew-custody:
+    name: Acquire pinned Hebrew MT and mark proper-noun morphology only
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V16 protocol and code
+        run: |
+          python3 -m json.tool "$MARK_V16_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/mark_hebrew_glyph_operator_stress_v16_core.py scripts/prepare-mark-hebrew-custody-v16.py scripts/freeze-mark-hebrew-glyph-operator-stress-v16.py scripts/evaluate-mark-hebrew-glyph-operator-stress-v16.py
+      - name: Acquire exact Open Scriptures Hebrew Bible commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/morphhb
+          git -C artifact-staging/morphhb init -q
+          git -C artifact-staging/morphhb remote add origin https://github.com/openscriptures/morphhb.git
+          git -C artifact-staging/morphhb fetch -q --depth=1 origin "$OSHB_COMMIT"
+          git -C artifact-staging/morphhb checkout -q --detach FETCH_HEAD
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD)" = "$OSHB_COMMIT"
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD^{tree})" = "$OSHB_TREE"
+          test "$(git -C artifact-staging/morphhb hash-object wlc/Exod.xml)" = "$OSHB_EXOD_BLOB"
+      - name: Parse lemma-token sequences, proper mask, and frozen verse split only
+        env:
+          PYTHONPATH: scripts
+          MARK_V16_WLC: artifact-staging/morphhb/wlc
+          MARK_V16_HEBREW_OUT: artifact-staging/hebrew-all
+        run: python3 scripts/prepare-mark-hebrew-custody-v16.py
+      - name: Physically separate Hebrew train and evaluation packets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/hebrew-train artifact-staging/hebrew-eval
+          cp artifact-staging/hebrew-all/train.jsonl artifact-staging/hebrew-train/train.jsonl
+          cp artifact-staging/hebrew-all/manifest.json artifact-staging/hebrew-train/manifest.json
+          cp artifact-staging/hebrew-all/holdout.jsonl artifact-staging/hebrew-eval/holdout.jsonl
+          cp artifact-staging/hebrew-all/control.jsonl artifact-staging/hebrew-eval/control.jsonl
+          cp artifact-staging/hebrew-all/manifest.json artifact-staging/hebrew-eval/manifest.json
+          rm -rf artifact-staging/hebrew-all artifact-staging/morphhb
+          test ! -e artifact-staging/hebrew-train/holdout.jsonl
+          test ! -e artifact-staging/hebrew-train/control.jsonl
+          test ! -e artifact-staging/hebrew-eval/train.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-v16-hebrew-train
+          path: artifact-staging/hebrew-train/**
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-v16-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval/**
+          if-no-files-found: error
+          retention-days: 30
+
+  freeze:
+    name: Freeze internal frequency-matched operator pairs from train only
+    needs: hebrew-custody
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-v16-hebrew-train
+          path: artifact-staging/hebrew-train
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/glyph-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent
+        run: |
+          test -z "$(find artifact-staging/hebrew-train artifact-staging/glyph-train -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V16 stress-test pair panel
+        env:
+          PYTHONPATH: scripts
+          MARK_V16_HEBREW_TRAIN: artifact-staging/hebrew-train
+          MARK_V16_GLYPH_TRAIN: artifact-staging/glyph-train
+          MARK_V16_FREEZE_OUT: artifacts/mark-hebrew-glyph-operator-stress-v16/freeze
+        run: python3 scripts/freeze-mark-hebrew-glyph-operator-stress-v16.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-hebrew-glyph-operator-stress-v16/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-stress-v16-freeze
+          path: artifacts/mark-hebrew-glyph-operator-stress-v16/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Test V16 stress panel on sealed lanes
+    needs: [hebrew-custody, freeze]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V16 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-stress-v16-freeze
+          path: artifact-staging/freeze
+      - name: Open Hebrew evaluation only after freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-v16-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval
+      - name: Open reused V10 glyph evaluation only after freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/glyph-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove train packets and raw Hebrew source are absent
+        run: |
+          test -z "$(find artifact-staging/hebrew-eval artifact-staging/glyph-eval -type f -name 'train.jsonl' -print -quit)"
+          test ! -d artifact-staging/morphhb
+          echo "train_visible_to_evaluation=false"
+      - name: Evaluate frozen V16 correspondence
+        env:
+          PYTHONPATH: scripts
+          MARK_V16_FREEZE: artifact-staging/freeze
+          MARK_V16_HEBREW_EVAL: artifact-staging/hebrew-eval
+          MARK_V16_GLYPH_EVAL: artifact-staging/glyph-eval
+          MARK_V16_RESULT_OUT: artifacts/mark-hebrew-glyph-operator-stress-v16/result
+        run: python3 scripts/evaluate-mark-hebrew-glyph-operator-stress-v16.py
+      - name: Publish result summary
+        run: cat artifacts/mark-hebrew-glyph-operator-stress-v16/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-hebrew-glyph-operator-stress-v16/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-hebrew-glyph-operator-stress-v16-frozen
+          path: artifacts/mark-hebrew-glyph-operator-stress-v16/**
+          if-no-files-found: error
+          retention-days: 30
