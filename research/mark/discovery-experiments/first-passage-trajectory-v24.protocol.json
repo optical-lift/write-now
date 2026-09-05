@@ -1,0 +1,132 @@
+{
+  "schema": "mark_first_passage_trajectory_protocol_v24",
+  "experimentId": "mark:first-passage-trajectory:v24",
+  "question": "After the current operator produces its immediate anonymous relational state, does the incoming relational context alter which first distinct downstream relational state is reached, beyond both an invariant operator effect and context-only path effects; and does any recovered first-passage interaction align across Hebrew and glyph systems without one-to-one operator matching?",
+  "claimBoundary": "A positive result supports context-conditioned prediction of the first downstream anonymous relational departure after the operator's immediate structural effect, under this four-history projector. It does not establish semantic meanings for transitions, lexical translation, Hebrew-glyph symbol identity, historical contact, common authorship, theology, phonetics, English glosses, or that the first-passage event is the only or final consequence of an operator.",
+  "lineage": {
+    "parentBranch": "mark-structural-transition-consequence-v23",
+    "parentHead": "72b45fa87df2286931091525791305da30978b4f",
+    "v23RunId": 33989875332,
+    "v23Adjudication": "GLYPH_ONLY_STRUCTURAL_TRANSFORMATION",
+    "v23ResultSha256": "2a115482007f39b3ca0043fbbd7a8941dd8f2e633485f07ae9f3553c2246f9e2",
+    "v21RunId": 33986094131,
+    "v21HebrewTrainArtifact": "mark-hebrew-operator-representation-v21-hebrew-train",
+    "v21HebrewEvaluationArtifact": "mark-hebrew-operator-representation-v21-hebrew-sealed-evaluation",
+    "v21HebrewTrainArtifactId": 9975190318,
+    "v21HebrewTrainArtifactDigest": "sha256:7b5bf477ec5eadccee51d8e09c4b3e49569657bd13be75cfdeeffee9de4e96b7",
+    "v21HebrewEvaluationArtifactId": 9975190564,
+    "v21HebrewEvaluationArtifactDigest": "sha256:c1be3b023e8a02dac44678ced80e122ea768abaffec739f9e1259018f936a8a6",
+    "v10RunId": 33905459943,
+    "v10GlyphTrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10GlyphEvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "v10GlyphTrainArtifactId": 9949415443,
+    "v10GlyphTrainArtifactDigest": "sha256:364ecdff8d3aaa283da7a45a792194246c4efaf87d4ceaffd5e1d1d5773037c8",
+    "v10GlyphEvaluationArtifactId": 9949415857,
+    "v10GlyphEvaluationArtifactDigest": "sha256:957bdd9ad5cf637527d2da41d4ec5d7c987a6b549094ef3dc48bc335d0968d84"
+  },
+  "relationalRepresentations": {
+    "lemma": "H<number>",
+    "lemmaCoarseMorph": "H<number>|M=<V21 coarse OSHB morph family>",
+    "lemmaFullMorph": "H<number>|M=<exact V21 aligned OSHB morph segment>",
+    "glyph": "literal glyph identity from the frozen V10 corpus"
+  },
+  "matchedHebrewSystems": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "projector": {
+    "historyLength": 4,
+    "incomingState": "S0 = anonymous equality pattern of the previous four identities before the current operator, in the same relational representation as that operator",
+    "immediateState": "S1 = anonymous equality pattern immediately after the current operator is inserted, hist(sequence, i+1)",
+    "firstPassage": "Starting after S1, scan subsequent anonymous four-history states in natural sequence order and return the first state F whose canonical anonymous label differs from S1. No fixed token lag is imposed. If the unit ends before a different state appears, return <UNIT_END_NO_DEPARTURE>.",
+    "distance": "For descriptive diagnostics only, record the number of subsequent operators after the current operator required to reach F; if the unit ends first, record the number remaining before end and mark the event censored by unit end.",
+    "context": "The interaction context is the incoming state S0 conditional on the already-observed immediate state S1. This directly asks whether prior relational context changes downstream trajectory after controlling for the operator's immediate structural result.",
+    "outcomeAlphabet": "all structurally generated canonical four-history anonymous states plus <UNIT_END_NO_DEPARTURE>; no outcome is selected from evaluation data",
+    "semanticLabels": false
+  },
+  "training": {
+    "minimumSharedImmediateStateEventsPerCorpus": 100,
+    "minimumOperatorEvents": 40,
+    "minimumOperatorContextEventsForCoverage": 4,
+    "minimumCoveredInteractionContexts": 3,
+    "maximumOperatorsPerSystem": 128,
+    "minimumTripleEventsForInteraction": 4,
+    "globalAdditiveAlpha": 0.5,
+    "immediateStateBackoffPseudoCount": 20.0,
+    "contextMainEffectBackoffPseudoCount": 20.0,
+    "operatorMainEffectBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0,
+    "sharedImmediateStateRule": "TRAIN only and independently for each matched Hebrew representation: retain S1 iff it has at least minimumSharedImmediateStateEventsPerCorpus first-passage events in that Hebrew representation and in glyph TRAIN. Glyph models are refit on the exact S1 set frozen for the corresponding Hebrew representation.",
+    "eligibility": "TRAIN only; an operator must satisfy minimum total support and minimum supported (S0,S1) interaction contexts, then operators are ranked by train frequency and identity under the frozen cap"
+  },
+  "models": {
+    "immediateStateOnly": "Pbase(F|S1), learned from TRAIN with additive smoothing",
+    "contextOnly": "Pcontext(F|S0,S1), learned from TRAIN and smoothed toward Pbase; contains the incoming relational context but not operator identity",
+    "invariantOperator": "Pinv(F|S1,o), obtained from Pbase multiplied by the TRAIN-smoothed operator-wide first-passage outcome ratio and renormalized; contains operator identity but not S0-specific interaction",
+    "additiveNoInteraction": "Padd(F|S0,S1,o), proportional to Pbase times the frozen context-main-effect ratio times the frozen operator-main-effect ratio; combines context and operator main effects without their interaction",
+    "contextConditionedOperator": "Pctx(F|S0,S1,o), learned from TRAIN triple counts and hierarchically smoothed toward Padd; low-support triples collapse exactly to Padd",
+    "primaryInteractionContrast": "log2 Pctx(observed F|S0,S1,o) - log2 Padd(observed F|S0,S1,o)",
+    "operatorBeyondContextContrast": "log2 Pctx - log2 Pcontext",
+    "contextBeyondOperatorContrast": "log2 Pctx - log2 Pinv",
+    "interactionNull": "within each operator and immediate-state S1, permute frozen TRAIN triple-interaction residual blocks across supported incoming-state S0 labels while leaving Padd for each evaluation occurrence fixed. This preserves S1, operator identity, both main effects, residual magnitudes, support pattern, and first-passage outcome alphabet while breaking only the S0-specific operator interaction."
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 5,
+    "minimumEvaluationInteractionContextsPerOperator": 2,
+    "minimumEvaluableOperatorsPerSystem": 12,
+    "minimumPositiveOperatorFraction": 0.60,
+    "permutationCount": 4096,
+    "hebrewFamilywiseInteractionPAtMost": 0.016666666666666666,
+    "glyphInteractionPAtMost": 0.05,
+    "withinSystemGatesPerLane": {
+      "operatorBalancedInteractionGainOverAdditiveGreaterThan": 0.0,
+      "operatorBalancedGainOverContextOnlyGreaterThan": 0.0,
+      "operatorBalancedGainOverInvariantOperatorGreaterThan": 0.0,
+      "positiveInteractionOperatorFractionAtLeast": 0.60
+    },
+    "replicationRule": "A Hebrew first-passage interaction is recovered only if every within-system gate passes in BOTH sealed holdout and control, including the Bonferroni familywise interaction p gate across the three frozen Hebrew representations. Its matched glyph model must independently satisfy the glyph gate in both lanes for any cross-system claim.",
+    "trajectoryDiagnostics": {
+      "reportFirstPassageDistance": true,
+      "reportUnitEndNoDepartureFraction": true,
+      "inferentialStatus": "descriptive only; no rescue or alignment claim may depend on distance bins or post-evaluation thresholding"
+    },
+    "transitionProfile": {
+      "definition": "for each anonymous S0 -> S1 -> F structural cell, average realized Pctx-vs-Padd interaction gain within operator first and then across evaluable operators having events in that cell",
+      "minimumOperatorsPerTransitionCell": 5,
+      "minimumCommonTransitionCells": 8,
+      "similarity": "Pearson correlation of Hebrew and matched-glyph first-passage interaction-gain profiles over identical anonymous S0 -> S1 -> F labels",
+      "null": "4096 deterministic permutations of glyph F labels independently within each frozen S0 -> S1 row, preserving row support and gain multiset while breaking first-passage destination alignment",
+      "gate": {
+        "correlationGreaterThan": 0.0,
+        "permutationPAtMost": 0.05
+      },
+      "replicationRule": "cross-system first-passage alignment requires the same Hebrew representation's profile to pass in BOTH holdout and control after both within-system models pass both lanes"
+    }
+  },
+  "adjudications": [
+    "FULL_FIRST_PASSAGE_CONTEXT_RECOVERED_AND_ALIGNS_GLYPHS",
+    "COARSE_FIRST_PASSAGE_CONTEXT_RECOVERED_AND_ALIGNS_GLYPHS",
+    "LEMMA_FIRST_PASSAGE_CONTEXT_RECOVERED_AND_ALIGNS_GLYPHS",
+    "MULTIPLE_FIRST_PASSAGE_CONTEXTS_RECOVERED_WITH_ALIGNMENT",
+    "FULL_FIRST_PASSAGE_CONTEXT_RECOVERED_WITHOUT_ALIGNMENT",
+    "COARSE_FIRST_PASSAGE_CONTEXT_RECOVERED_WITHOUT_ALIGNMENT",
+    "LEMMA_FIRST_PASSAGE_CONTEXT_RECOVERED_WITHOUT_ALIGNMENT",
+    "MULTIPLE_FIRST_PASSAGE_CONTEXTS_RECOVERED_WITHOUT_ALIGNMENT",
+    "GLYPH_ONLY_FIRST_PASSAGE_CONTEXT",
+    "NO_FIRST_PASSAGE_CONTEXT_INTERACTION_PREDICTIVE",
+    "INSUFFICIENT_FIRST_PASSAGE_SUPPORT"
+  ],
+  "custody": {
+    "protocolFrozenInCommitBeforeRun": true,
+    "reuseExactV21HebrewPackets": true,
+    "reuseExactV10GlyphPackets": true,
+    "firstPassageRuleFrozenBeforeEvaluation": true,
+    "noFixedLagSelectedAfterEvaluation": true,
+    "allMatchedRelationalRepresentationsFrozenBeforeEvaluation": true,
+    "sharedImmediateStatesUseTrainOnly": true,
+    "freezeJobReceivesNoEvaluationPackets": true,
+    "evaluationDownloadsFreezeBeforeEvaluationPackets": true,
+    "trainingPacketsAbsentFromEvaluation": true,
+    "noSongLabelsUsed": true,
+    "noHebrewGlyphOperatorPairingUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
