@@ -1,0 +1,130 @@
+name: Mark Structural Transition Consequence v23
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_structural_transition_consequence_v23_core.py"
+      - "scripts/mark_structural_transition_consequence_v23_fast.py"
+      - "scripts/freeze-mark-structural-transition-consequence-v23.py"
+      - "scripts/evaluate-mark-structural-transition-consequence-v23.py"
+      - "research/mark/discovery-experiments/structural-transition-consequence-v23.protocol.json"
+      - ".github/workflows/mark-structural-transition-consequence-v23.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V23_PROTOCOL: research/mark/discovery-experiments/structural-transition-consequence-v23.protocol.json
+  MARK_V21_RUN_ID: 33986094131
+  MARK_V10_RUN_ID: 33905459943
+
+jobs:
+  freeze:
+    name: Freeze immediate relational-state transformation models
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V23 protocol and code before data acquisition
+        run: |
+          python3 -m json.tool "$MARK_V23_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_structural_transition_consequence_v23_core.py \
+            scripts/mark_structural_transition_consequence_v23_fast.py \
+            scripts/freeze-mark-structural-transition-consequence-v23.py \
+            scripts/evaluate-mark-structural-transition-consequence-v23.py
+      - name: Download exact frozen V21 Hebrew TRAIN representation packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-operator-representation-v21-hebrew-train
+          path: artifact-staging/hebrew-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V21_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download exact frozen V10 glyph TRAIN packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/glyph-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent
+        run: |
+          test -z "$(find artifact-staging -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V23 matched relational systems
+        env:
+          PYTHONPATH: scripts
+          MARK_V23_HEBREW_TRAIN: artifact-staging/hebrew-train
+          MARK_V23_GLYPH_TRAIN: artifact-staging/glyph-train
+          MARK_V23_FREEZE_OUT: artifacts/mark-structural-transition-consequence-v23/freeze
+        run: python3 scripts/freeze-mark-structural-transition-consequence-v23.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-structural-transition-consequence-v23/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-structural-transition-consequence-v23-freeze
+          path: artifacts/mark-structural-transition-consequence-v23/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Test immediate relational-state transformation on sealed lanes
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V23 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-structural-transition-consequence-v23-freeze
+          path: artifact-staging/freeze
+      - name: Open exact inherited V21 Hebrew sealed evaluation packet only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-hebrew-operator-representation-v21-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V21_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Open exact inherited V10 glyph sealed evaluation packet only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/glyph-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove training data are absent
+        run: |
+          test -z "$(find artifact-staging/hebrew-eval artifact-staging/glyph-eval -type f -name 'train.jsonl' -print -quit)"
+          test ! -d artifact-staging/hebrew-train
+          test ! -d artifact-staging/glyph-train
+          echo "training_visible_to_evaluation=false"
+      - name: Evaluate frozen V23 structural transformations
+        env:
+          PYTHONPATH: scripts
+          MARK_V23_FREEZE: artifact-staging/freeze
+          MARK_V23_HEBREW_EVAL: artifact-staging/hebrew-eval
+          MARK_V23_GLYPH_EVAL: artifact-staging/glyph-eval
+          MARK_V23_RESULT_OUT: artifacts/mark-structural-transition-consequence-v23/result
+        run: python3 scripts/evaluate-mark-structural-transition-consequence-v23.py
+      - name: Publish result summary
+        run: cat artifacts/mark-structural-transition-consequence-v23/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-structural-transition-consequence-v23/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-structural-transition-consequence-v23-frozen
+          path: artifacts/mark-structural-transition-consequence-v23/**
+          if-no-files-found: error
+          retention-days: 30

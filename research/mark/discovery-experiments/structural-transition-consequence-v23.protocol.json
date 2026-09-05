@@ -1,0 +1,114 @@
+{
+  "schema": "mark_structural_transition_consequence_protocol_v23",
+  "experimentId": "mark:structural-transition-consequence:v23",
+  "question": "When Hebrew and glyph sequences are represented only as anonymous equality relations, does the current operator predict the immediate outgoing relational state better as a context-conditioned transformation than as an invariant operator effect; and do the resulting structural transition profiles align across systems without one-to-one operator matching?",
+  "claimBoundary": "A positive result supports context-conditioned prediction of immediate anonymous relational state transitions under this four-history projector. Cross-system profile alignment supports similarity in which anonymous incoming-to-outgoing structural transitions receive context-dependent operator gain. It does not establish lexical translation, Hebrew-glyph symbol identity, historical contact, common authorship, theology, phonetics, English glosses, or semantic meanings for any transition.",
+  "lineage": {
+    "parentBranch": "mark-hebrew-consequence-representation-v22",
+    "parentHead": "eef39ae5e6d62f0d12e2a0d17b8bc07d4e98757f",
+    "v22RunId": 33987183415,
+    "v22Adjudication": "NO_RECURRENCE_CONSEQUENCE_REPRESENTATION_RESCUES",
+    "v22ResultSha256": "c41de14cc10b4d81f9f08046b5363d5ccedcfa85ddf216fdc41f2d1c8a1e7eea",
+    "v21RunId": 33986094131,
+    "v21Adjudication": "MORPH_REFINEMENT_DOES_NOT_RESCUE",
+    "v21HebrewTrainArtifact": "mark-hebrew-operator-representation-v21-hebrew-train",
+    "v21HebrewEvaluationArtifact": "mark-hebrew-operator-representation-v21-hebrew-sealed-evaluation",
+    "v21HebrewTrainArtifactId": 9975190318,
+    "v21HebrewEvaluationArtifactId": 9975190564,
+    "v10RunId": 33905459943,
+    "v10GlyphTrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10GlyphEvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "relationalRepresentations": {
+    "lemma": "H<number>",
+    "lemmaCoarseMorph": "H<number>|M=<V21 coarse OSHB morph family>",
+    "lemmaFullMorph": "H<number>|M=<exact V21 aligned OSHB morph segment>",
+    "glyph": "literal glyph identity from the frozen V10 corpus"
+  },
+  "matchedHebrewSystems": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "projector": {
+    "historyLength": 4,
+    "incomingState": "anonymous equality pattern of the previous four identities in the SAME relational representation as the current Hebrew operator, padded by <START>",
+    "operator": "current identity in that same relational representation",
+    "outgoingState": "anonymous equality pattern of the four-history window immediately AFTER inserting the current operator, i.e. hist(sequence, i+1); no next-token identity is consulted",
+    "glyph": "uses the identical anonymous history projector over glyph identities",
+    "outcomeAlphabet": "all canonical anonymous equality-pattern states reachable by a four-history window, including start-padded states; generated structurally rather than selected from evaluation data",
+    "semanticLabels": false
+  },
+  "training": {
+    "minimumSharedStateEventsPerCorpus": 100,
+    "minimumOperatorEvents": 40,
+    "minimumOperatorStateEventsForCoverage": 4,
+    "minimumCoveredSharedStates": 3,
+    "maximumOperatorsPerSystem": 128,
+    "minimumOperatorStateEventsForInteraction": 4,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "operatorMainEffectBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0,
+    "sharedStateRule": "TRAIN only and independently for each matched Hebrew representation: retain an incoming anonymous state iff it has at least minimumSharedStateEventsPerCorpus in that Hebrew representation and in glyph TRAIN. Glyph models are refit on the exact state set frozen for the corresponding Hebrew representation.",
+    "eligibility": "TRAIN only; operators are ranked by train frequency then identity under the frozen cap"
+  },
+  "models": {
+    "stateOnly": "Pstate(Sout|Sin) from TRAIN with additive smoothing",
+    "invariantOperator": "Pinv(Sout|Sin,o): state baseline multiplied by the TRAIN-smoothed operator-wide outgoing-state ratio and renormalized",
+    "contextConditionedOperator": "Pctx(Sout|Sin,o) learned from TRAIN (Sin,o) outgoing-state counts and hierarchically smoothed toward Pinv; low-support pairs collapse exactly to Pinv",
+    "interactionContrast": "log2 Pctx(observed Sout|Sin,o) - log2 Pinv(observed Sout|Sin,o)",
+    "totalOperatorContextContrast": "log2 Pctx(observed Sout|Sin,o) - log2 Pstate(observed Sout|Sin)",
+    "interactionNull": "for each operator, permute its frozen TRAIN interaction-residual blocks across the matched incoming structural states while leaving Pinv fixed; this preserves operator identity, state baseline, residual magnitudes, support pattern, and outgoing-state alphabet while breaking operator-by-context alignment"
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 5,
+    "minimumEvaluationContextsPerOperator": 2,
+    "minimumEvaluableOperatorsPerSystem": 12,
+    "minimumPositiveOperatorFraction": 0.60,
+    "permutationCount": 4096,
+    "hebrewFamilywiseInteractionPAtMost": 0.016666666666666666,
+    "glyphInteractionPAtMost": 0.05,
+    "withinSystemGatesPerLane": {
+      "operatorBalancedInteractionGainGreaterThan": 0.0,
+      "operatorBalancedTotalGainOverStateOnlyGreaterThan": 0.0,
+      "positiveInteractionOperatorFractionAtLeast": 0.60
+    },
+    "replicationRule": "A Hebrew relational representation is predictive only if all within-system gates pass in BOTH sealed holdout and control, including the Bonferroni familywise interaction p gate across the three frozen Hebrew representations. Its matched glyph model must independently satisfy the glyph gate in both lanes for cross-system claims.",
+    "transitionProfile": {
+      "definition": "for each anonymous incoming-state -> outgoing-state cell, average realized interaction gain within operator first and then across evaluable operators having events in that cell",
+      "minimumOperatorsPerTransitionCell": 5,
+      "minimumCommonTransitionCells": 8,
+      "similarity": "Pearson correlation of Hebrew and matched-glyph transition-gain profiles over identical anonymous incoming-state -> outgoing-state labels",
+      "null": "4096 deterministic permutations of glyph outgoing-state labels independently within each incoming-state row, preserving incoming-state support and row-wise gain multiset while breaking structural transition alignment",
+      "gate": {
+        "correlationGreaterThan": 0.0,
+        "permutationPAtMost": 0.05
+      },
+      "replicationRule": "cross-system transition alignment requires the same Hebrew representation's transition profile to pass in BOTH holdout and control after both within-system models pass both lanes"
+    }
+  },
+  "adjudications": [
+    "FULL_RELATIONAL_TRANSFORMATION_RECOVERED_AND_ALIGNS_GLYPHS",
+    "COARSE_RELATIONAL_TRANSFORMATION_RECOVERED_AND_ALIGNS_GLYPHS",
+    "LEMMA_RELATIONAL_TRANSFORMATION_RECOVERED_AND_ALIGNS_GLYPHS",
+    "MULTIPLE_RELATIONAL_TRANSFORMATIONS_RECOVERED_WITH_ALIGNMENT",
+    "FULL_RELATIONAL_TRANSFORMATION_RECOVERED_WITHOUT_ALIGNMENT",
+    "COARSE_RELATIONAL_TRANSFORMATION_RECOVERED_WITHOUT_ALIGNMENT",
+    "LEMMA_RELATIONAL_TRANSFORMATION_RECOVERED_WITHOUT_ALIGNMENT",
+    "MULTIPLE_RELATIONAL_TRANSFORMATIONS_RECOVERED_WITHOUT_ALIGNMENT",
+    "GLYPH_ONLY_STRUCTURAL_TRANSFORMATION",
+    "NO_STRUCTURAL_TRANSFORMATION_MODEL_PREDICTIVE",
+    "INSUFFICIENT_STRUCTURAL_SUPPORT"
+  ],
+  "custody": {
+    "protocolFrozenInCommitBeforeRun": true,
+    "reuseExactV21HebrewPackets": true,
+    "reuseExactV10GlyphPackets": true,
+    "allMatchedRelationalRepresentationsFrozenBeforeEvaluation": true,
+    "sharedStatesUseTrainOnly": true,
+    "freezeJobReceivesNoEvaluationPackets": true,
+    "evaluationDownloadsFreezeBeforeEvaluationPackets": true,
+    "trainingPacketsAbsentFromEvaluation": true,
+    "noSongLabelsUsed": true,
+    "noHebrewGlyphOperatorPairingUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
