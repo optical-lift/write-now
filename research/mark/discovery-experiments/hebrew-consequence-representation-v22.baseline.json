@@ -1,0 +1,48 @@
+{
+  "schema": "mark_hebrew_consequence_representation_baseline_v22",
+  "v21RunId": 33986094131,
+  "v21ResultSha256": "569eac39e59bcdffe223c922e22120972f132924dda586403f283b0543ef642a",
+  "v21TrainArtifact": {
+    "id": 9975190318,
+    "name": "mark-hebrew-operator-representation-v21-hebrew-train",
+    "digest": "sha256:7b5bf477ec5eadccee51d8e09c4b3e49569657bd13be75cfdeeffee9de4e96b7"
+  },
+  "v21EvaluationArtifact": {
+    "id": 9975190564,
+    "name": "mark-hebrew-operator-representation-v21-hebrew-sealed-evaluation",
+    "digest": "sha256:c1be3b023e8a02dac44678ced80e122ea768abaffec739f9e1259018f936a8a6"
+  },
+  "expectedLemmaLemma": {
+    "holdout": {
+      "operatorBalancedContextGainBitsPerEvent": 0.0006819811454069253,
+      "positiveOperatorFraction": 0.4375,
+      "permutationP": 0.000244081034903588,
+      "evaluableOperators": 64,
+      "frozenOperators": 64
+    },
+    "control": {
+      "operatorBalancedContextGainBitsPerEvent": 0.0015804588998255646,
+      "positiveOperatorFraction": 0.515625,
+      "permutationP": 0.000244081034903588,
+      "evaluableOperators": 64,
+      "frozenOperators": 64
+    }
+  },
+  "expectedGlyph": {
+    "holdout": {
+      "operatorBalancedContextGainBitsPerEvent": 0.03808063726098158,
+      "positiveOperatorFraction": 0.6956521739130435,
+      "permutationP": 0.000244081034903588,
+      "evaluableOperators": 46,
+      "frozenOperators": 47
+    },
+    "control": {
+      "operatorBalancedContextGainBitsPerEvent": 0.020139574378374065,
+      "positiveOperatorFraction": 0.631578947368421,
+      "permutationP": 0.00122040517451794,
+      "evaluableOperators": 38,
+      "frozenOperators": 47
+    }
+  },
+  "numericTolerance": 1e-12
+}
