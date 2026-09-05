@@ -1,0 +1,175 @@
+name: Mark Context Conditioned Operator v20
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_context_conditioned_operator_v20_core.py"
+      - "scripts/prepare-mark-context-conditioned-operator-v20.py"
+      - "scripts/freeze-mark-context-conditioned-operator-v20.py"
+      - "scripts/evaluate-mark-context-conditioned-operator-v20.py"
+      - "research/mark/discovery-experiments/context-conditioned-operator-v20.protocol.json"
+      - ".github/workflows/mark-context-conditioned-operator-v20.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V20_PROTOCOL: research/mark/discovery-experiments/context-conditioned-operator-v20.protocol.json
+  MARK_V10_RUN_ID: 33905459943
+  OSHB_COMMIT: 3d15126fb1ef74867fc1434be1942e837932691f
+  OSHB_TREE: 50e6be1d06a80cef7d9285b3c8e4dff47e420bf6
+  OSHB_EXOD_BLOB: 9397e001f25d14353793a3924d4e9c605cecfc6c
+
+jobs:
+  hebrew-custody:
+    name: Freeze Hebrew split without glyph data
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V20 protocol and code before data acquisition
+        run: |
+          python3 -m json.tool "$MARK_V20_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_context_conditioned_operator_v20_core.py \
+            scripts/prepare-mark-context-conditioned-operator-v20.py \
+            scripts/freeze-mark-context-conditioned-operator-v20.py \
+            scripts/evaluate-mark-context-conditioned-operator-v20.py
+      - name: Acquire exact Open Scriptures Hebrew Bible commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/morphhb
+          git -C artifact-staging/morphhb init -q
+          git -C artifact-staging/morphhb remote add origin https://github.com/openscriptures/morphhb.git
+          git -C artifact-staging/morphhb fetch -q --depth=1 origin "$OSHB_COMMIT"
+          git -C artifact-staging/morphhb checkout -q --detach FETCH_HEAD
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD)" = "$OSHB_COMMIT"
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD^{tree})" = "$OSHB_TREE"
+          test "$(git -C artifact-staging/morphhb hash-object wlc/Exod.xml)" = "$OSHB_EXOD_BLOB"
+      - name: Parse anonymous Hebrew token stream only
+        env:
+          PYTHONPATH: scripts
+          MARK_V20_WLC: artifact-staging/morphhb/wlc
+          MARK_V20_HEBREW_OUT: artifact-staging/hebrew-all
+        run: python3 scripts/prepare-mark-context-conditioned-operator-v20.py
+      - name: Physically separate Hebrew train and evaluation packets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/hebrew-train artifact-staging/hebrew-eval
+          cp artifact-staging/hebrew-all/train.jsonl artifact-staging/hebrew-train/train.jsonl
+          cp artifact-staging/hebrew-all/manifest.json artifact-staging/hebrew-train/manifest.json
+          cp artifact-staging/hebrew-all/holdout.jsonl artifact-staging/hebrew-eval/holdout.jsonl
+          cp artifact-staging/hebrew-all/control.jsonl artifact-staging/hebrew-eval/control.jsonl
+          cp artifact-staging/hebrew-all/manifest.json artifact-staging/hebrew-eval/manifest.json
+          rm -rf artifact-staging/hebrew-all artifact-staging/morphhb
+          test ! -e artifact-staging/hebrew-train/holdout.jsonl
+          test ! -e artifact-staging/hebrew-train/control.jsonl
+          test ! -e artifact-staging/hebrew-eval/train.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-hebrew-train
+          path: artifact-staging/hebrew-train/**
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval/**
+          if-no-files-found: error
+          retention-days: 30
+
+  freeze:
+    name: Freeze invariant and context-conditioned operator models
+    needs: hebrew-custody
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-hebrew-train
+          path: artifact-staging/hebrew-train
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/glyph-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent
+        run: |
+          test -z "$(find artifact-staging -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V20 shared contexts and both within-system models
+        env:
+          PYTHONPATH: scripts
+          MARK_V20_HEBREW_TRAIN: artifact-staging/hebrew-train
+          MARK_V20_GLYPH_TRAIN: artifact-staging/glyph-train
+          MARK_V20_FREEZE_OUT: artifacts/mark-context-conditioned-operator-v20/freeze
+        run: python3 scripts/freeze-mark-context-conditioned-operator-v20.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-context-conditioned-operator-v20/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-freeze
+          path: artifacts/mark-context-conditioned-operator-v20/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Test context-conditioned operator effects on sealed lanes
+    needs: [hebrew-custody, freeze]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V20 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-freeze
+          path: artifact-staging/freeze
+      - name: Open Hebrew evaluation only after freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval
+      - name: Open reused V10 glyph evaluation only after freeze exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/glyph-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove training data and raw source are absent
+        run: |
+          test -z "$(find artifact-staging/hebrew-eval artifact-staging/glyph-eval -type f -name 'train.jsonl' -print -quit)"
+          test ! -d artifact-staging/morphhb
+          echo "train_visible_to_evaluation=false"
+      - name: Evaluate frozen V20 context interaction
+        env:
+          PYTHONPATH: scripts
+          MARK_V20_FREEZE: artifact-staging/freeze
+          MARK_V20_HEBREW_EVAL: artifact-staging/hebrew-eval
+          MARK_V20_GLYPH_EVAL: artifact-staging/glyph-eval
+          MARK_V20_RESULT_OUT: artifacts/mark-context-conditioned-operator-v20/result
+        run: python3 scripts/evaluate-mark-context-conditioned-operator-v20.py
+      - name: Publish result summary
+        run: cat artifacts/mark-context-conditioned-operator-v20/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-context-conditioned-operator-v20/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-context-conditioned-operator-v20-frozen
+          path: artifacts/mark-context-conditioned-operator-v20/**
+          if-no-files-found: error
+          retention-days: 30
