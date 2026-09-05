@@ -1,0 +1,116 @@
+{
+  "schema": "mark_verse_boundary_continuity_protocol_v25",
+  "experimentId": "mark:verse-boundary-continuity:v25",
+  "question": "Do Hebrew structural trajectories that appear unresolved at an inherited verse boundary continue into the actual adjacent verse in a way that is more coherent with within-verse first-passage structure than a matched shuffled next-verse splice?",
+  "claimBoundary": "A positive result supports the claim that at least some inherited verse divisions cut across the structural process measured by this anonymous four-history first-passage projector. It does not show that verse divisions are meaningless, that every process crosses them, that chapter boundaries are process boundaries, or that Hebrew and glyphs share a grammar. Failure would reject only this boundary-continuity test under the frozen projector and control construction.",
+  "lineage": {
+    "parentBranch": "mark-first-passage-trajectory-v24",
+    "parentHead": "0e6fcbee2e1eeb332b2146dc6a2cd15b9a216f19",
+    "v24RunId": 33991052536,
+    "v24Adjudication": "NO_FIRST_PASSAGE_CONTEXT_INTERACTION_PREDICTIVE",
+    "v24ResultSha256": "c3784c678628d735acd66c59cedb3191d375593d7592fc5ea4ae0ad861b4b3be",
+    "v21RunId": 33986094131,
+    "v21Adjudication": "MORPH_REFINEMENT_DOES_NOT_RESCUE"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "split": {
+    "unit": "chapter",
+    "reason": "All adjacent verses used by a boundary-continuity comparison must remain in the same custody lane; the older verse-hash split is therefore not reused for V25 modeling.",
+    "hash": "sha256(chapter osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9],
+    "hardBoundary": "chapter end; V25 does not cross chapter boundaries"
+  },
+  "representations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "projector": {
+    "historyLength": 4,
+    "state": "anonymous equality pattern of previous four identities in the same representation, padded by <START>",
+    "origin": "an operator occurrence inside a non-final verse whose V24-style first passage does not leave its immediate post-operator state S1 before the inherited verse boundary",
+    "realContinuation": "append the actual immediately adjacent verse in the same chapter and scan only that next verse for the first anonymous state F different from S1",
+    "shuffledContinuation": "append a deterministic matched next-verse splice from another eligible boundary in the same custody lane, preferably same book and lemma-token-count bin, never the actual next verse; scan exactly one shuffled verse for first F different from S1",
+    "resolvedTrainingEvent": "an occurrence whose first anonymous state F different from S1 is observed before the end of its own verse; these events alone train the within-verse destination model",
+    "distance": "number of subsequent operators from the origin to F; descriptive only and never used for eligibility, model selection, or adjudication",
+    "semanticLabels": false
+  },
+  "shuffleControl": {
+    "salt": "mark-v25-verse-boundary-shuffle-v1",
+    "lengthBinsByLemmaTokenCount": [[1,5],[6,10],[11,20],[21,40],[41,1000000]],
+    "primaryGrouping": "custody lane + book + target-next-verse lemma-token-count bin",
+    "fallbackGrouping": "custody lane + book when a primary group has fewer than two boundaries",
+    "finalFallback": "custody lane when a book group has fewer than two boundaries",
+    "assignment": "sort origin boundaries by sha256(salt + anonymous origin verse id), then cyclically rotate target next-verse ids by one; groups of size one after final fallback are excluded",
+    "usesOutcomeOrModelInformation": false
+  },
+  "training": {
+    "minimumResolvedEventsPerOperator": 40,
+    "minimumResolvedS1StatesPerOperator": 3,
+    "maximumOperatorsPerRepresentation": 128,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "contextBackoffPseudoCount": 20.0,
+    "operatorBackoffPseudoCount": 20.0,
+    "outcomeAlphabet": "all 24 canonical four-history anonymous states generated structurally; no unit-end category"
+  },
+  "withinVerseDestinationModel": {
+    "base": "Pbase(F|S1)",
+    "context": "Pcontext(F|S0,S1), hierarchically smoothed toward Pbase",
+    "operator": "Poperator(F|S1,o), hierarchically smoothed toward Pbase",
+    "additive": "Padd(F|S0,S1,o) proportional to Pcontext * Poperator / Pbase, then renormalized",
+    "trainingData": "TRAIN resolved-within-verse events only; boundary-hit events never train this destination model",
+    "purpose": "measure whether a post-boundary destination looks like the same structural process observed when trajectories resolve inside verses"
+  },
+  "evaluation": {
+    "minimumBoundaryOriginsPerOperator": 5,
+    "minimumEvaluableOperators": 12,
+    "minimumCommonResolvedOrigins": 100,
+    "permutationCount": 4096,
+    "hebrewFamilywisePAtMost": 0.016666666666666666,
+    "positiveOperatorFractionAtLeast": 0.60,
+    "primaryContrast": "For origins where both real and shuffled adjacent verses yield a departure F, compute log2 Padd(F_real|S0,S1,o) - log2 Padd(F_shuffle|S0,S1,o), average within operator, then equally across operators.",
+    "pairedNull": "independently sign-flip each evaluable operator's real-minus-shuffled mean coherence difference; exact enumeration when <=12 operators, otherwise 4096 deterministic sign flips",
+    "primaryGatePerLane": {
+      "operatorBalancedRealMinusShuffleBitsGreaterThan": 0.0,
+      "pairedSignFlipPAtMost": 0.016666666666666666,
+      "positiveOperatorFractionAtLeast": 0.60,
+      "minimumCommonResolvedOrigins": 100
+    },
+    "recoveryGuard": "actual-next-verse departure recovery fraction among eligible origins must be at least the shuffled-next-verse recovery fraction in the same lane; recovery is otherwise descriptive and is not itself a significance test",
+    "replicationRule": "A representation supports verse-boundary continuity only if its primary gate and recovery guard pass in BOTH sealed holdout and control.",
+    "secondary": {
+      "realRecoveryFraction": "fraction of eligible unresolved origins whose actual next verse produces F",
+      "shuffledRecoveryFraction": "same for shuffled continuation",
+      "meanAndMedianDistance": "reported separately for real and shuffled resolved continuations",
+      "realOnlyAndShuffleOnlyCounts": "reported to expose asymmetry hidden by the common-resolved primary contrast"
+    }
+  },
+  "adjudications": [
+    "MULTIPLE_REPRESENTATIONS_SUPPORT_VERSE_BOUNDARY_CONTINUITY",
+    "FULL_MORPH_SUPPORTS_VERSE_BOUNDARY_CONTINUITY",
+    "COARSE_MORPH_SUPPORTS_VERSE_BOUNDARY_CONTINUITY",
+    "LEMMA_SUPPORTS_VERSE_BOUNDARY_CONTINUITY",
+    "REAL_CONTINUATION_SIGNAL_DOES_NOT_REPLICATE",
+    "SHUFFLED_CONTINUATION_MATCHES_OR_BEATS_REAL",
+    "NO_VERSE_BOUNDARY_CONTINUITY_SIGNAL",
+    "INSUFFICIENT_BOUNDARY_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "chapterLaneAssignmentOccursBeforeModeling": true,
+    "shuffleMapDeterministicAndModelBlind": true,
+    "freezeJobReceivesTrainChaptersOnly": true,
+    "evaluationDownloadsFreezeBeforeSealedChapters": true,
+    "evaluationReceivesNoTrainChapters": true,
+    "noSongLabelsUsed": true,
+    "noGlyphDataUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
