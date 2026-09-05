@@ -1,0 +1,114 @@
+{
+  "schema": "mark_operator_selection_grammar_protocol_v28",
+  "experimentId": "mark:operator-selection-grammar:v28",
+  "question": "Does anonymous structural context predict which operator occurs next, beyond operator frequency and prefix-position effects, in Hebrew and glyph corpora independently; and do anonymous states show aligned operator-selection strength across systems without pairing operator identities?",
+  "claimBoundary": "A positive Hebrew result supports a structural operator-selection grammar under the frozen anonymous four-history projector. A positive cross-system result supports alignment of state-level selection strength only; it does not identify Hebrew operators with glyphs or prove common origin. Failure rejects only this local operator-selection test.",
+  "lineage": {
+    "parentBranch": "mark-competing-resolution-v27",
+    "parentHead": "d0bf5d16c4fb5f0381300f6e58b47c05dc001b70",
+    "v27RunId": 33996391147,
+    "v27Adjudication": "NO_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "motivation": "V20-V27 repeatedly show real operator and context information but local context-by-operator consequence interactions fail. V28 reverses direction and tests whether context selects the operator rather than modifies its consequence."
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "glyphSource": {
+    "inheritedRunId": 33905459943,
+    "trainArtifact": "mark-glyph-transition-code-v10-train",
+    "sealedEvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "hebrewSplit": {
+    "unit": "book",
+    "salt": "mark-v28-operator-selection-book-block-v1",
+    "assignment": "Sort canonical book osisIDs by sha256(salt + ':' + book). Assign rank modulo 5: residues 0,1,2 TRAIN; 3 holdout; 4 control.",
+    "trainRankResidues": [0,1,2],
+    "holdoutRankResidues": [3],
+    "controlRankResidues": [4]
+  },
+  "representations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "projector": {
+    "historyLength": 4,
+    "state": "anonymous equality pattern of the previous four identities in the same representation, padded by <START>; current operator is excluded",
+    "operator": "current identity at position i",
+    "positionBucket": "prefix token count i bucketed as 0,1,2,3,4,5-7,8-11,12-15,16-23,24+",
+    "currentOperatorLeakage": false,
+    "semanticLabels": false
+  },
+  "positionBuckets": {
+    "buckets": [[0,0],[1,1],[2,2],[3,3],[4,4],[5,7],[8,11],[12,15],[16,23],[24,1000000]],
+    "labels": ["0","1","2","3","4","5-7","8-11","12-15","16-23","24+"]
+  },
+  "training": {
+    "minimumOperatorEvents": 80,
+    "maximumOperatorsPerSystem": 128,
+    "minimumStateEvents": 100,
+    "minimumStatePositionEventsForConditional": 20,
+    "globalAlpha": 0.5,
+    "positionBackoffPseudoCount": 40.0,
+    "statePositionBackoffPseudoCount": 40.0,
+    "minimumEligibleStates": 5
+  },
+  "models": {
+    "global": "Pglobal(O)",
+    "position": "Ppos(O|positionBucket), smoothed toward Pglobal",
+    "selection": "Psel(O|S0,positionBucket), smoothed toward Ppos",
+    "primaryGain": "log2 Psel(actual O|S0,pos) - log2 Ppos(actual O|pos)",
+    "secondaryGain": "log2 Psel(actual O|S0,pos) - log2 Pglobal(actual O)",
+    "selectionResidual": "Psel(O|S0,pos) / Ppos(O|pos)"
+  },
+  "counterfactual": {
+    "substitute": "for each frozen eligible operator, choose the distinct eligible operator with closest TRAIN global support; ties lexical",
+    "preference": "compare selectionResidual(actual|S0,pos) with selectionResidual(substitute|S0,pos)",
+    "usesEvaluationInformation": false
+  },
+  "null": {
+    "type": "state-residual reassignment",
+    "description": "For each position bucket, permute frozen TRAIN state-conditioned selection residual blocks across supported anonymous states, preserving Ppos, operator vocabulary, state support, position support, and residual magnitudes while breaking the actual state-to-selection mapping.",
+    "permutations": 4096
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 10,
+    "minimumEvaluableOperators": 12,
+    "minimumEvaluationEventsPerState": 50,
+    "positiveOperatorFractionAtLeast": 0.60,
+    "counterfactualPreferenceAtLeast": 0.50,
+    "hebrewFamilywisePAtMost": 0.016666666666666666,
+    "glyphPAtMost": 0.05,
+    "primaryGate": "operator-balanced primary gain > 0; residual-reassignment p at threshold; >=60% evaluable operators positive; counterfactual actual-over-substitute preference > 0.50; sufficient support; BOTH holdout and control",
+    "operatorBalance": "average event gain within operator, then equally across evaluable operators"
+  },
+  "crossSystem": {
+    "operatorPairing": false,
+    "profile": "for each anonymous state with sufficient sealed support in both systems, compute mean primary selection gain across eligible events; correlate Hebrew and glyph state profiles",
+    "minimumSharedStates": 8,
+    "permutations": 4096,
+    "pAtMost": 0.05,
+    "replicationRule": "same-sign positive Pearson correlation with p<=.05 in BOTH holdout and control for a Hebrew representation"
+  },
+  "adjudications": [
+    "MULTIPLE_HEBREW_REPRESENTATIONS_SUPPORT_OPERATOR_SELECTION",
+    "FULL_MORPH_SUPPORTS_OPERATOR_SELECTION",
+    "COARSE_MORPH_SUPPORTS_OPERATOR_SELECTION",
+    "LEMMA_SUPPORTS_OPERATOR_SELECTION",
+    "GLYPH_ONLY_OPERATOR_SELECTION",
+    "OPERATOR_SELECTION_PRESENT_WITHOUT_CROSS_SYSTEM_ALIGNMENT",
+    "CROSS_SYSTEM_STATE_SELECTION_PROFILE_ALIGNED",
+    "NO_OPERATOR_SELECTION_GRAMMAR",
+    "INSUFFICIENT_SELECTION_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "hebrewWholeBooksDisjointAcrossLanes": true,
+    "freezeReceivesHebrewTrainAndGlyphTrainOnly": true,
+    "evaluationDownloadsImmutableFreezeBeforeSealedData": true,
+    "evaluationReceivesNoTrainData": true,
+    "noSongLabelsUsed": true,
+    "noHebrewGlyphOperatorPairing": true,
+    "scientificFailureIsGreen": true
+  }
+}
