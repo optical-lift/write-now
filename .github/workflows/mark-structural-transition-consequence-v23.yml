@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/mark_structural_transition_consequence_v23_core.py"
+      - "scripts/mark_structural_transition_consequence_v23_fast.py"
       - "scripts/freeze-mark-structural-transition-consequence-v23.py"
       - "scripts/evaluate-mark-structural-transition-consequence-v23.py"
       - "research/mark/discovery-experiments/structural-transition-consequence-v23.protocol.json"
@@ -32,6 +33,7 @@ jobs:
           python3 -m json.tool "$MARK_V23_PROTOCOL" >/dev/null
           python3 -m py_compile \
             scripts/mark_structural_transition_consequence_v23_core.py \
+            scripts/mark_structural_transition_consequence_v23_fast.py \
             scripts/freeze-mark-structural-transition-consequence-v23.py \
             scripts/evaluate-mark-structural-transition-consequence-v23.py
       - name: Download exact frozen V21 Hebrew TRAIN representation packet
