@@ -1,0 +1,47 @@
+{
+  "schema": "song_function_group_manifest_v19",
+  "frozenBeforeGlyphEvaluation": true,
+  "sourcePolicy": "Only explicit Strong's starter-ID groupings already present in the cited Song documents are included. No glyph result was used to add, remove, or regroup an ID.",
+  "sources": [
+    {
+      "name": "Song Control Map v2.docx",
+      "dropboxFileId": "id:XYUXL6jFezIAAAAAAAAM7A",
+      "path": "/Lex/Song/ChatGPT/Song/Lexicon/Song Control Map v2.docx",
+      "clientModified": "2026-04-11T22:07:19Z",
+      "serverModified": "2026-08-09T19:24:59Z",
+      "rev": "658a2318a4104042a653d"
+    },
+    {
+      "name": "Song_Control_Registry_v1.docx",
+      "dropboxFileId": "id:XYUXL6jFezIAAAAAAAAM7g",
+      "path": "/Lex/Song/ChatGPT/Song/Lexicon/Song_Control_Registry_v1.docx",
+      "clientModified": "2026-04-07T13:42:32Z",
+      "serverModified": "2026-08-09T19:24:59Z",
+      "rev": "658a2318a410d042a653d"
+    }
+  ],
+  "groups": {
+    "umbrella_boundary_integrity_protected_disclosure": ["H1817","H1849","H6605","H8104","H6839","H7289","H7541"],
+    "umbrella_cultivated_domain_controlled_source": ["H1588","H3754","H3755","H6508","H6529","H8081","H4753"],
+    "umbrella_readiness_response_cycle": ["H7272","H5275","H1817","H1849"],
+    "umbrella_relation_status_shared_dwelling": ["H2315","H1004"],
+    "umbrella_body_status_public_ordering": ["H8081","H7272","H5275","H7541"],
+    "umbrella_interior_animating_field": ["H8008","H3801","H2315"],
+    "umbrella_kingdom_form_false_finality_pressure": ["H1004","H3754","H8104","H5850","H5851","H3880"],
+    "umbrella_continuity_concealed_inheritance": ["H517","H500","H269","H264","H1323","H1332"],
+    "object_door_opening_knocking": ["H1817","H1849","H6605"],
+    "object_feet_shoes": ["H7272","H5275"],
+    "object_watchers_guards_keepers": ["H8104","H6839"],
+    "object_garden_vineyard_orchard_fruit": ["H1588","H3754","H3755","H6508","H6529","H930"],
+    "object_water_fountain_spring_source": ["H875","H878","H4351","H3738"],
+    "object_covering_protection_regulated_disclosure": ["H7289","H7286","H7541","H3895"],
+    "object_body_status_office_fitness": ["H7541","H7416","H5884","H5869"],
+    "object_solomon_kingdom_form": ["H5850","H5851","H3880"],
+    "object_awareness_breath": ["H8008","H3801"],
+    "object_mother_comfort_source": ["H517","H500"],
+    "object_sister_brotherhood_nearness": ["H269","H264"],
+    "object_daughter": ["H1323","H1332"],
+    "object_crown_wreath": ["H5851","H3880"],
+    "object_oil_fragrance_spices": ["H8081","H7004","H7003","H7547","H7538","H4753"]
+  }
+}

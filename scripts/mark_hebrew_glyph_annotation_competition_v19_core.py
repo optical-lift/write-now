@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+from mark_hebrew_glyph_annotation_competition_v19_io import *
+from mark_hebrew_glyph_annotation_competition_v19_projector import *
+from mark_hebrew_glyph_annotation_competition_v19_freeze_model import freeze_model

@@ -1,0 +1,116 @@
+{
+  "schema": "mark_hebrew_glyph_annotation_competition_protocol_v19",
+  "experimentId": "mark:hebrew-glyph-annotation-competition:v19",
+  "question": "Among Hebrew operators already covered by a pre-glyph Song functional registry, which independently frozen annotation map—Song function groups, conventional OSHB morphology, or blind Hebrew structural clusters—predicts organization among their independently matched glyph operators?",
+  "claimBoundary": "A winning map predicts relational organization of glyph operator behavior on the frozen Song-covered Hebrew panel. It does not establish translation, lexical equivalence, historical contact, common authorship, theology, phonetics, physical machine execution, or that a glyph carries an English gloss.",
+  "lineage": {
+    "parentBranch": "mark-hebrew-glyph-exact-v15-ablation-v18",
+    "parentHead": "fec48b8b365dc12db9d30bf8903b315e4bd42ddd",
+    "v18RunId": 33946841135,
+    "v18Adjudication": "EXACT_V15_ABLATION_LOCALIZED",
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "tokenIdentity": "first numeric lemma component rendered H<number>"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "exactV15": {
+    "projector": {
+      "historyLength": 4,
+      "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","SEEN_EARLIER_SEGMENT","NEW_SEGMENT","END"]
+    },
+    "training": {
+      "minimumSharedStateEventsPerCorpus": 100,
+      "minimumOperatorEvents": 40,
+      "minimumOperatorStateEventsForCoverage": 4,
+      "minimumCoveredSharedStates": 3,
+      "maximumGlyphOperators": 64,
+      "backoffPseudoCount": 20.0,
+      "globalAdditiveAlpha": 0.5,
+      "residualLog2Clip": 4.0,
+      "minimumFingerprintNorm": 0.05
+    }
+  },
+  "commonPanel": {
+    "songManifest": "research/mark/discovery-experiments/hebrew-glyph-annotation-competition-v19.song-map.json",
+    "selection": "union of Strong IDs explicitly present in the frozen Song group manifest, then exact-V15 train support/coverage/norm gates; no Hebrew frequency-rank cap is applied to the Song-covered panel",
+    "minimumPanelOperators": 8,
+    "pairing": "label-blind deterministic global-greedy one-to-one assignment maximizing train weighted-cosine Hebrew↔glyph fingerprint similarity",
+    "minimumTrainPairSimilarity": 0.0
+  },
+  "annotationMaps": {
+    "song": {
+      "source": "frozen pre-glyph Song manifest",
+      "relation": "two panel operators are related when they share at least one explicitly frozen Song group"
+    },
+    "conventional": {
+      "source": "OSHB morphology on Hebrew TRAIN occurrences only",
+      "targetMorphAlignment": "split lemma and morph fields on slash; use the morph segment aligned to the first numeric lemma component",
+      "coarseFamily": "after optional H language prefix, N/V/A/P/T/S families keep first two characters; other families keep first character",
+      "relation": "two panel operators are related when their train-derived coarse morphology-family sets overlap"
+    },
+    "blind": {
+      "source": "Hebrew TRAIN exact-V15 fingerprint vectors only",
+      "clustering": "deterministic complete-linkage cosine clustering",
+      "candidateK": [2,3,4,5],
+      "kSelection": "highest mean silhouette on Hebrew train; ties choose smaller K",
+      "relation": "same frozen blind cluster"
+    }
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerMatchedOperator": 2,
+    "minimumEvaluableOperatorFraction": 0.70,
+    "minimumEvaluableOperatorCount": 7,
+    "permutationCount": 4096,
+    "pairingPermutationSeed": "mark-v19-song-panel-pairing",
+    "mapPermutationSeed": "mark-v19-annotation-map",
+    "pairingGatesPerLane": {
+      "meanSimilarityGreaterThan": 0.0,
+      "unstratifiedPermutationPAtMost": 0.05,
+      "medianRankPercentileAtLeast": 0.60
+    },
+    "mapGatesPerLane": {
+      "operatorBalancedRelatedAdvantageGreaterThan": 0.0,
+      "annotationPermutationPAtMost": 0.05,
+      "minimumRelatedPairCount": 3,
+      "minimumUnrelatedPairCount": 3
+    },
+    "mapPrimaryMetric": "operator-balanced leave-one-operator-out advantage: for each operator, mean glyph similarity to annotation-related partners minus mean similarity to unrelated partners; average across operators having both",
+    "mapSecondaryMetric": "pairwise mean glyph similarity among annotation-related pairs minus unrelated pairs",
+    "null": "permute whole annotation bundles/cluster labels across the fixed Hebrew panel; this preserves each map's category topology and label multiplicities while breaking alignment to the frozen glyph partners",
+    "fullRule": "the label-blind Hebrew↔glyph common-panel pairing must pass both reused lanes before annotation-map results are interpreted; each annotation map must independently pass its map gate in both lanes"
+  },
+  "adjudications": [
+    "SONG_FUNCTIONAL_MAP_PREDICTS_GLYPH_STRUCTURE",
+    "CONVENTIONAL_MAP_PREDICTS_GLYPH_STRUCTURE",
+    "BLIND_HEBREW_STRUCTURE_SUFFICIENT",
+    "MULTIPLE_MAPSK_TRANSFER_WITHOUT_CLEAR_WINNER",
+    "NO_ANNOTATION_MAP_TRANSFERS",
+    "SONG_COVERED_PAIRING_DOES_NOT_TRANSFER",
+    "INSUFFICIENT_SONG_COVERED_PANEL"
+  ],
+  "custody": {
+    "songManifestFrozenInCommitBeforeRun": true,
+    "conventionalMapUsesHebrewTrainOnly": true,
+    "blindMapUsesHebrewTrainOnly": true,
+    "pairingUsesTrainOnlyAndNoAnnotationLabels": true,
+    "freezeJobReceivesNoEvaluationPackets": true,
+    "evaluationDownloadsFreezeBeforeEvaluationPackets": true,
+    "evaluationPreviouslyOpened": true,
+    "scientificFailureIsGreen": true
+  }
+}
