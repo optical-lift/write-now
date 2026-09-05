@@ -1,0 +1,72 @@
+{
+  "schema": "mark_hebrew_glyph_operator_fingerprint_protocol_v15",
+  "experimentId": "mark:hebrew-glyph-operator-fingerprint:v15",
+  "question": "Do Hebrew MT lemma tokens and the V10 glyph operators exhibit cross-corpus-stable matches in an alphabet-free state-transition fingerprint space?",
+  "claimBoundary": "A pass supports transferable similarity of anonymous structural transition fingerprints. It does not establish translation, common historical origin, theological identity, phonetic equivalence, causal mechanism, or machine execution.",
+  "lineage": {
+    "parentBranch": "mark-structural-role-factorization-v14",
+    "parentHead": "d440abcc06c5b085d1b8a66338cfc366a0791a88",
+    "v14ResultUsedAsRationaleOnly": "NO_TRANSFERABLE_STRUCTURAL_ROLE_CONDITIONING",
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "tokenIdentity": "first numeric lemma component rendered H<number>; no gloss, morphology, translation, Strong definition, verse label, or semantic annotation is used by induction or evaluation"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "projector": {
+    "segment": "Hebrew verse or glyph line; transitions never cross segment boundaries",
+    "historyLength": 4,
+    "incomingState": "first-occurrence canonical equality pattern of the four preceding operator identities, left padded with START; current operator identity is excluded",
+    "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","SEEN_EARLIER_SEGMENT","NEW_SEGMENT","END"],
+    "outcomePrecedence": "SAME_CURRENT, then nearest H1..H4, then SEEN_EARLIER_SEGMENT, then NEW_SEGMENT; END at segment end",
+    "forbiddenFeatures": ["Hebrew surface spelling","Hebrew morphology","Strong definitions","English glosses","translations","verse/book identity","glyph proposed reading","glyph word identity","absolute coordinates","historical labels"]
+  },
+  "training": {
+    "minimumSharedStateEventsPerCorpus": 100,
+    "minimumOperatorEvents": 40,
+    "maximumOperatorsPerCorpus": 64,
+    "minimumOperatorStateEventsForCoverage": 4,
+    "minimumCoveredSharedStates": 3,
+    "backoffPseudoCount": 20.0,
+    "globalAdditiveAlpha": 0.5,
+    "residualLog2Clip": 4.0,
+    "minimumFingerprintNorm": 0.05,
+    "pairSelection": "mutual nearest neighbor by weighted cosine similarity, train only",
+    "minimumFrozenPairCount": 8
+  },
+  "evaluation": {
+    "permutationCount": 4096,
+    "permutationSeed": "mark-v15-hebrew-glyph-operator-fingerprint",
+    "primaryMetric": "mean weighted cosine similarity of frozen train-paired operators in the evaluation lane",
+    "rankMetric": "median percentile rank of the frozen glyph among frozen glyph candidates for each Hebrew operator",
+    "gatesPerLane": {
+      "meanSimilarityGreaterThan": 0.0,
+      "unstratifiedPermutationPAtMost": 0.05,
+      "supportStratifiedPermutationPAtMost": 0.05,
+      "medianRankPercentileAtLeast": 0.60
+    },
+    "fullAdjudication": "both holdout and control must independently pass every lane gate; evaluation lanes were opened in earlier V10-V14 work, so a pass is mechanistic cross-corpus evidence, not fresh independent confirmation"
+  },
+  "custody": {
+    "hebrewSourcePinnedBeforeScoring": true,
+    "custodyJobOnlyParsesAndSplitsHebrewTokens": true,
+    "freezeJobReceivesHebrewTrainAndV10TrainOnly": true,
+    "evaluationJobDownloadsFreezeBeforeAnyEvaluationPacket": true,
+    "evaluationJobMustNotContainTrainPackets": true,
+    "scientificFailureIsGreen": true
+  }
+}
