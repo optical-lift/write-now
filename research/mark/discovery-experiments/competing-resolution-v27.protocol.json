@@ -1,0 +1,116 @@
+{
+  "schema": "mark_competing_resolution_protocol_v27",
+  "experimentId": "mark:competing-resolution:v27",
+  "question": "Within Hebrew verses, after the current operator produces its immediate anonymous relational state S1, do operator identity, incoming relational context S0, and especially their interaction predict whether the trajectory first departs structurally or reaches the inherited verse boundary, and the step at which that competing resolution occurs?",
+  "claimBoundary": "A positive result supports context-conditioned prediction of the within-verse competing-resolution trajectory under the frozen anonymous four-history projector: CONTINUE until either structural DEPARTURE or VERSE_BOUNDARY occurs first. It does not establish lexical translation, semantic meaning, theology, Hebrew-glyph identity, historical contact, or that verse boundaries are universal process boundaries. Because the same OSHB corpus has been used in prior experiments, V27 is a prospective mechanism test with fresh book blocking, not an untouched-corpus replication.",
+  "lineage": {
+    "parentBranch": "mark-coarse-boundary-confirmation-v26",
+    "parentHead": "820d6a71f787dfb841bce801585ce93b3878864f",
+    "v26RunId": 33994812075,
+    "v26Adjudication": "SHUFFLED_CONTINUATION_MATCHES_OR_BEATS_REAL",
+    "v26ResultSha256": "6bcbcc1e23b01792e637ec3499d5cde8f146ffc8f3e26ac00b68ddf1db0cb314",
+    "v25RunId": 33993953091,
+    "v25Adjudication": "NO_VERSE_BOUNDARY_CONTINUITY_SIGNAL",
+    "reasonForV27": "V25-V26 do not support treating verse boundaries as accidental continuation cuts under the current projector. V27 therefore treats structural departure and verse boundary as competing within-verse terminal events rather than treating boundary as censoring or as an anonymous structural state."
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "representations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "split": {
+    "unit": "book",
+    "salt": "mark-v27-competing-resolution-book-block-v1",
+    "assignment": "Sort canonical book osisIDs by sha256(salt + ':' + book). Assign hashed rank modulo 5: residues 0,1,2 to TRAIN; residue 3 to holdout; residue 4 to control.",
+    "trainRankResidues": [0,1,2],
+    "holdoutRankResidues": [3],
+    "controlRankResidues": [4],
+    "reason": "Whole-book custody prevents any book from contributing to both model fitting and a sealed evaluation lane. The split uses only book identity and the frozen salt; no V25/V26 per-book outcome information is used."
+  },
+  "projector": {
+    "historyLength": 4,
+    "incomingState": "S0 = anonymous equality pattern of the four identities before the current operator in the same representation, padded by <START>",
+    "immediateState": "S1 = anonymous equality pattern immediately after the current operator is inserted",
+    "riskTrajectory": "Starting after S1, step through subsequent operators inside the same inherited verse. Each risk step is CONTINUE if the anonymous state remains S1 and more verse material remains; DEPARTURE if the state first becomes different from S1; VERSE_BOUNDARY if the verse ends before any such departure. An operator already at the final token resolves as VERSE_BOUNDARY at elapsed step 0.",
+    "terminalEvents": ["DEPARTURE", "VERSE_BOUNDARY"],
+    "riskOutcomes": ["CONTINUE", "DEPARTURE", "VERSE_BOUNDARY"],
+    "noCrossVerseContinuation": true,
+    "noUnitEndStructuralState": true,
+    "semanticLabels": false
+  },
+  "elapsedTime": {
+    "meaning": "number of subsequent operators consumed after the current operator before the current risk row",
+    "buckets": [[0,0],[1,1],[2,2],[3,3],[4,4],[5,7],[8,11],[12,15],[16,23],[24,1000000]],
+    "labels": ["0","1","2","3","4","5-7","8-11","12-15","16-23","24+"],
+    "reason": "Frozen coarse elapsed-time strata control the baseline resolution hazard without selecting a lag from evaluation data."
+  },
+  "training": {
+    "minimumOriginsPerOperator": 40,
+    "minimumS1StatesPerOperator": 3,
+    "maximumOperatorsPerRepresentation": 128,
+    "minimumInteractionRiskRows": 4,
+    "globalAdditiveAlpha": 0.5,
+    "timeBackoffPseudoCount": 20.0,
+    "baseBackoffPseudoCount": 20.0,
+    "contextBackoffPseudoCount": 20.0,
+    "operatorBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0,
+    "eligibility": "TRAIN books only; rank eligible operators by TRAIN origin count then identity under the frozen cap"
+  },
+  "models": {
+    "time": "Ptime(Y|elapsedBucket)",
+    "base": "Pbase(Y|S1,elapsedBucket), hierarchically smoothed toward Ptime",
+    "context": "Pcontext(Y|S0,S1,elapsedBucket), hierarchically smoothed toward Pbase",
+    "operator": "Poperator(Y|S1,o,elapsedBucket), hierarchically smoothed toward Pbase",
+    "additiveNoInteraction": "Padd(Y|S0,S1,o,elapsedBucket) proportional to Pcontext * Poperator / Pbase, then renormalized",
+    "contextConditionedInteraction": "Pctx(Y|S0,S1,o,elapsedBucket) learned from TRAIN risk-row counts and smoothed toward Padd; interaction cells below minimumInteractionRiskRows collapse exactly to Padd",
+    "primaryContrast": "per-origin mean log2 Pctx(observed risk outcome) - log2 Padd(observed risk outcome), then average within operator and equally across operators",
+    "contextOnlyContrast": "same per-origin/operator balancing for log2 Pctx - log2 Pcontext",
+    "operatorOnlyContrast": "same per-origin/operator balancing for log2 Pctx - log2 Poperator"
+  },
+  "localizationDiagnostics": {
+    "timing": "Collapse each risk-row distribution to TERMINAL = DEPARTURE + VERSE_BOUNDARY versus CONTINUE and compute the same Pctx-minus-Padd log contrast across the full trajectory. Positive gain localizes interaction information to when resolution happens regardless of cause.",
+    "cause": "At each origin's terminal row, condition each model on terminality and compare DEPARTURE versus VERSE_BOUNDARY. Positive Pctx-minus-Padd gain localizes interaction information to which competing terminal event happens first.",
+    "gating": "Timing and cause diagnostics are predeclared localization outputs but do not determine the primary adjudication."
+  },
+  "evaluation": {
+    "minimumEvaluationOriginsPerOperator": 5,
+    "minimumEvaluableOperators": 12,
+    "permutationCount": 4096,
+    "hebrewFamilywiseInteractionPAtMost": 0.016666666666666666,
+    "positiveOperatorFractionAtLeast": 0.60,
+    "primaryGatePerLane": {
+      "operatorBalancedInteractionGainGreaterThan": 0.0,
+      "operatorBalancedGainOverContextOnlyGreaterThan": 0.0,
+      "operatorBalancedGainOverOperatorOnlyGreaterThan": 0.0,
+      "positiveInteractionOperatorFractionAtLeast": 0.60,
+      "pairedSignFlipPAtMost": 0.016666666666666666
+    },
+    "pairedNull": "Independently sign-flip each evaluable operator's mean Pctx-minus-Padd trajectory gain; exact enumeration when <=12 operators, otherwise 4096 deterministic sign flips.",
+    "replicationRule": "A representation supports context-conditioned competing resolution only if all primary gates pass independently in BOTH sealed book-blocked holdout and control lanes."
+  },
+  "adjudications": [
+    "MULTIPLE_REPRESENTATIONS_SUPPORT_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "FULL_MORPH_SUPPORTS_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "COARSE_MORPH_SUPPORTS_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "LEMMA_SUPPORTS_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "COMPETING_RESOLUTION_INTERACTION_DOES_NOT_REPLICATE",
+    "NO_CONTEXT_CONDITIONED_COMPETING_RESOLUTION",
+    "INSUFFICIENT_COMPETING_RESOLUTION_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "bookLaneAssignmentUsesOnlyBookIdentityAndFrozenSalt": true,
+    "freezeJobReceivesTrainBooksOnly": true,
+    "evaluationDownloadsFreezeBeforeSealedBooks": true,
+    "evaluationReceivesNoTrainBooks": true,
+    "noV25V26PerBookOutcomeInformationUsedToConstructSplit": true,
+    "noSongLabelsUsed": true,
+    "noGlyphDataUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
