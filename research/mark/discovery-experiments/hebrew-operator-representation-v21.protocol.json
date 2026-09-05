@@ -1,0 +1,152 @@
+{
+  "schema": "mark_hebrew_operator_representation_protocol_v21",
+  "experimentId": "mark:hebrew-operator-representation:v21",
+  "question": "Holding the V20 anonymous structural state and consequence definition fixed, does refining Hebrew operator identity from Strong's lemma to independently supplied OSHB morphological realization recover a broad transferable context-conditioned operator effect; and does any rescued Hebrew representation align with the already-frozen glyph context-modulation profile without one-to-one operator matching?",
+  "claimBoundary": "A positive result supports the claim that the Hebrew operator unit used in V20 was too coarse under this projector, if a morphology-refined representation passes sealed holdout and control and improves over lemma on paired parent lemmas. Cross-system profile alignment, if it also passes, supports similarity in which anonymous structural contexts expose operator modulation. It does not establish lexical translation, Hebrew-glyph symbol identity, historical contact, common authorship, theology, phonetics, English glosses, or that OSHB morphology is itself the recovered underlying grammar.",
+  "lineage": {
+    "parentBranch": "mark-context-conditioned-operator-v20",
+    "parentHead": "8c1529a902336fc2570449531b26369aa1e06729",
+    "v20RunId": 33979557978,
+    "v20Adjudication": "GLYPH_ONLY_CONTEXT_CONDITIONING",
+    "v20FreezeArtifact": "mark-context-conditioned-operator-v20-freeze",
+    "v10RunId": 33905459943,
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "v20FreezeArtifactId": 9973339841,
+    "v20FreezeArtifactDigest": "sha256:f7fe0c6a41d262f4bbcdf04ca3d7b1a3b8d9ac4bd5120ad9b5b7fd21bffb7170",
+    "v10EvaluationArtifactId": 9949415857,
+    "v10EvaluationArtifactDigest": "sha256:957bdd9ad5cf637527d2da41d4ec5d7c987a6b549094ef3dc48bc335d0968d84",
+    "v20FreezeSha256": "1ad52056b1ee2434e544aeda34defca94ad93b7461c893876eb000200926cb1a",
+    "v20ProtocolSha256": "d9a328cfbc68193da88ff21ce7945592050662e458eabcb98c26bcf1b4ce683a"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "baseTokenIdentity": "first numeric lemma component rendered H<number>",
+    "morphAlignment": "split lemma and morph attributes on slash; use the morph segment aligned to the first numeric lemma component; if absent use <MISSING>"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "fixedStructuralTarget": {
+    "historyLength": 4,
+    "state": "exact V20 anonymous equality pattern of the previous four BASE LEMMA tokens, padded by <START>; morphology never changes the state label",
+    "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","SEEN_EARLIER_SEGMENT","NEW_SEGMENT","END"],
+    "consequence": "exact V20 consequence computed only from the BASE LEMMA sequence; morphology never changes SAME/REPEAT/SEEN/NEW/END classification",
+    "sharedStates": "inherit the exact shared-state set frozen by V20; V21 may not reselect states"
+  },
+  "operatorRepresentations": {
+    "lemma": {
+      "identity": "H<number>",
+      "status": "exact inherited V20 Hebrew operator representation and baseline model"
+    },
+    "lemmaCoarseMorph": {
+      "identity": "H<number>|M=<coarse-family>",
+      "coarseFamily": "after optional H language prefix, N/V/A/P/T/S families keep first two characters; other families keep first character; missing is <MISSING>",
+      "source": "aligned OSHB morph segment on each occurrence"
+    },
+    "lemmaFullMorph": {
+      "identity": "H<number>|M=<full-aligned-OSHB-morph-segment>",
+      "source": "exact aligned OSHB morph segment on each occurrence, stripped only of surrounding whitespace; missing is <MISSING>"
+    }
+  },
+  "training": {
+    "inheritV20ModelParameters": true,
+    "minimumOperatorEvents": 40,
+    "minimumOperatorStateEventsForCoverage": 4,
+    "minimumCoveredSharedStates": 3,
+    "maximumRefinedOperatorsPerRepresentation": 128,
+    "minimumOperatorStateEventsForInteraction": 4,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "operatorMainEffectBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0,
+    "eligibility": "TRAIN only; refined identities are ranked by train frequency then identity, and only the frozen cap may be retained"
+  },
+  "models": {
+    "lemma": "reuse exact V20 frozen Hebrew model without refitting",
+    "refinedInvariant": "for each refined operator r, Pinv(y|S,r) is V20's invariant-operator construction: V20-style state baseline multiplied by the TRAIN-smoothed refined-operator-wide outcome ratio and renormalized",
+    "refinedContextConditioned": "Pctx(y|S,r) learned from TRAIN (S,r) outcome counts and hierarchically smoothed toward refined Pinv; low-support pairs collapse exactly to Pinv",
+    "primaryWithinRepresentationContrast": "log2 Pctx(observed y|S,r) - log2 Pinv(observed y|S,r)",
+    "withinRepresentationNull": "for each refined operator, permute its frozen TRAIN interaction-residual blocks across the inherited V20 shared states while leaving that occurrence's Pinv fixed",
+    "pairedRefinementContrast": "on evaluation occurrences covered by both the inherited lemma model and a refined model, compare refined Pctx-vs-Pinv context gain with the inherited lemma Pctx-vs-Pinv gain; average occurrence differences within base lemma first, then across eligible base lemmas",
+    "pairedRefinementNull": "independent sign flip of each eligible base lemma's paired refined-minus-lemma mean difference; exact enumeration when feasible, otherwise 4096 deterministic sign-flip permutations"
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 5,
+    "minimumEvaluationContextsPerOperator": 2,
+    "minimumEvaluableOperatorsPerRepresentation": 12,
+    "minimumPositiveOperatorFraction": 0.6,
+    "permutationCount": 4096,
+    "representationSeeds": {
+      "lemma": "mark-v20-hebrew-context-interaction",
+      "lemmaCoarseMorph": "mark-v21-hebrew-coarse-context-interaction",
+      "lemmaFullMorph": "mark-v21-hebrew-full-context-interaction",
+      "glyph": "mark-v20-glyph-context-interaction"
+    },
+    "withinRepresentationGatesPerLane": {
+      "operatorBalancedContextGainGreaterThan": 0.0,
+      "interactionPermutationPAtMost": 0.05,
+      "positiveOperatorFractionAtLeast": 0.6
+    },
+    "pairedRefinement": {
+      "minimumCommonEventsPerParentLemma": 5,
+      "minimumEligibleParentLemmas": 8,
+      "minimumParentCoverageFractionOfEvaluableLemmaBaseline": 0.5,
+      "minimumPositiveParentFraction": 0.6,
+      "gate": {
+        "parentBalancedDeltaGreaterThan": 0.0,
+        "pairedSignFlipPAtMost": 0.05,
+        "positiveParentFractionAtLeast": 0.6
+      }
+    },
+    "contextProfile": {
+      "definition": "for each inherited V20 shared state, average realized Pctx-vs-Pinv gain within operator first and then across evaluable operators having events in that state",
+      "minimumOperatorsPerState": 5,
+      "minimumCommonStates": 4,
+      "similarity": "Pearson correlation of Hebrew representation and inherited V20 glyph state-gain profiles over identical anonymous V20 structural-state labels",
+      "null": "exactly permute glyph state-profile labels relative to Hebrew when feasible; otherwise 4096 deterministic permutations",
+      "gate": {
+        "correlationGreaterThan": 0.0,
+        "statePermutationPAtMost": 0.05
+      }
+    },
+    "rescueRule": "A morphology-refined representation rescues Hebrew context conditioning only if it passes the within-representation gate in BOTH holdout and control AND its paired refinement advantage over inherited lemma passes in BOTH lanes. Narrow subset success is blocked by the frozen parent-coverage requirement.",
+    "crossSystemRule": "A rescued Hebrew representation additionally aligns with glyph contexts only if the inherited glyph V20 model passes its within-system gate in both lanes and that representation's context-profile comparison with glyph passes in both lanes."
+  },
+  "adjudications": [
+    "FULL_MORPH_RESCUES_HEBREW_OPERATOR_UNIT_AND_ALIGNS_GLYPH_CONTEXTS",
+    "COARSE_MORPH_RESCUES_HEBREW_OPERATOR_UNIT_AND_ALIGNS_GLYPH_CONTEXTS",
+    "MULTIPLE_MORPH_REPRESENTATIONS_RESCUE_AND_ALIGN",
+    "MULTIPLE_MORPH_REPRESENTATIONS_RESCUE_PARTIAL_ALIGNMENT",
+    "FULL_MORPH_RESCUES_HEBREW_OPERATOR_UNIT_WITHOUT_GLYPH_ALIGNMENT",
+    "COARSE_MORPH_RESCUES_HEBREW_OPERATOR_UNIT_WITHOUT_GLYPH_ALIGNMENT",
+    "MULTIPLE_MORPH_REPRESENTATIONS_RESCUE_WITHOUT_GLYPH_ALIGNMENT",
+    "LEMMA_CONTEXT_CONDITIONING_REPLICATES",
+    "MORPH_REFINEMENT_DOES_NOT_RESCUE",
+    "INSUFFICIENT_REFINED_SUPPORT"
+  ],
+  "custody": {
+    "protocolFrozenInCommitBeforeRun": true,
+    "v20FreezeReusedWithoutModification": true,
+    "sharedStatesInheritedFromV20": true,
+    "lemmaModelInheritedFromV20": true,
+    "glyphModelInheritedFromV20": true,
+    "morphologyChangesOnlyCurrentHebrewOperatorIdentity": true,
+    "stateAndOutcomeUseBaseLemmaOnly": true,
+    "allRefinedEligibilityAndModelParametersUseTrainOnly": true,
+    "noSongLabelsUsed": true,
+    "noHebrewGlyphOperatorPairingUsed": true,
+    "freezeJobReceivesNoV21EvaluationPackets": true,
+    "evaluationDownloadsV21FreezeBeforeV21HebrewOrGlyphEvaluationPackets": true,
+    "rawOSHBSourceAbsentFromEvaluation": true,
+    "scientificFailureIsGreen": true
+  }
+}
