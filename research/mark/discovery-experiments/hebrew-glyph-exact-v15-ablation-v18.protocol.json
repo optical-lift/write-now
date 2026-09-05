@@ -1,0 +1,122 @@
+{
+  "claimBoundary": "V18 localizes why V15 and V16 differ. It can distinguish structural-control failure from loss of statistical support, but it does not establish translation, semantic identity, historical contact, common authorship, theological identity, phonetic equivalence, causal mechanism, or machine execution.",
+  "controls": {
+    "boundary": {
+      "description": "remove START-padded and END positions; retain only current positions with four real predecessors and a real successor"
+    },
+    "frequency": {
+      "description": "restrict candidate pairing to operators within 0.15 train frequency percentile, changing no event count",
+      "maximumFrequencyPercentileGap": 0.15
+    },
+    "proper": {
+      "description": "exclude Hebrew candidate lemmas with any proper-noun-tagged train occurrence, changing no event count"
+    },
+    "seenNew": {
+      "description": "collapse SEEN_EARLIER_SEGMENT and NEW_SEGMENT to OTHER, changing no event count"
+    },
+    "segment": {
+      "description": "restrict to 6–10 item segments and at most three deterministic eligible events per segment",
+      "eventSelectionSeed": "mark-v18-segment-cap",
+      "maximumEventsPerSegment": 3,
+      "maximumSegmentLength": 10,
+      "minimumSegmentLength": 6
+    },
+    "volumeSham": {
+      "description": "retain the V15 projector but deterministically thin its event set to exactly the event count produced by the named structural control in that corpus/lane",
+      "eventSelectionSeed": "mark-v18-volume-sham"
+    }
+  },
+  "custody": {
+    "allVariantsFrozenBeforeEvaluation": true,
+    "evaluationPreviouslyOpened": true,
+    "scientificFailureIsGreen": true
+  },
+  "exactV15": {
+    "evaluation": {
+      "baselinePermutationSeed": "mark-v15-hebrew-glyph-operator-fingerprint",
+      "gatesPerLane": {
+        "meanSimilarityGreaterThan": 0.0,
+        "medianRankPercentileAtLeast": 0.6,
+        "supportStratifiedPermutationPAtMost": 0.05,
+        "unstratifiedPermutationPAtMost": 0.05
+      },
+      "permutationCount": 4096,
+      "variantPermutationSeed": "mark-v18-exact-v15-ablation"
+    },
+    "projector": {
+      "historyLength": 4,
+      "outcomes": [
+        "SAME_CURRENT",
+        "REPEAT_H1",
+        "REPEAT_H2",
+        "REPEAT_H3",
+        "REPEAT_H4",
+        "SEEN_EARLIER_SEGMENT",
+        "NEW_SEGMENT",
+        "END"
+      ]
+    },
+    "training": {
+      "backoffPseudoCount": 20.0,
+      "globalAdditiveAlpha": 0.5,
+      "maximumOperatorsPerCorpus": 64,
+      "minimumCoveredSharedStates": 3,
+      "minimumFingerprintNorm": 0.05,
+      "minimumFrozenPairCount": 8,
+      "minimumOperatorEvents": 40,
+      "minimumOperatorStateEventsForCoverage": 4,
+      "minimumSharedStateEventsPerCorpus": 100,
+      "residualLog2Clip": 4.0
+    }
+  },
+  "experimentId": "mark:hebrew-glyph-exact-v15-ablation:v18",
+  "hebrewSource": {
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "properNameMask": "OSHB morphology is recorded only so the proper-name control can exclude train lemmas; baseline V15 machinery ignores morphology",
+    "repository": "openscriptures/morphhb",
+    "tokenIdentity": "first numeric lemma component rendered H<number>",
+    "wlcDirectory": "wlc"
+  },
+  "hebrewSplit": {
+    "controlBuckets": [8, 9],
+    "hash": "sha256(osisID)",
+    "holdoutBuckets": [6, 7],
+    "modulus": 10,
+    "trainBuckets": [0, 1, 2, 3, 4, 5],
+    "unit": "verse"
+  },
+  "interpretation": {
+    "baselineMustReproduceV15": true,
+    "cumulativeRule": "cumulative rungs are diagnostic only; no semantic claim is made from them",
+    "nonvolumeRule": "seenNew, proper, or frequency is an isolated breaker only if exact baseline passes and the exact-V15 isolated variant is train-feasible but fails two-lane V15 gates",
+    "thinningRule": "boundary or segment is a structural breaker only if its exact-V15 variant fails while the corresponding event-count-matched V15 sham remains feasible/passing; if both collapse, classify support thinning as confounded/sufficient to explain loss of analyzability"
+  },
+  "lineage": {
+    "parentBranch": "mark-hebrew-glyph-ablation-ladder-v17",
+    "parentHead": "2551959ccff81d9c29247cb3d18a0b66e23e2390",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v15Adjudication": "TRANSFERABLE_CROSS_CORPUS_OPERATOR_FINGERPRINT_MATCHES",
+    "v15RunId": 33936127030,
+    "v17Adjudication": "BASELINE_NOT_REPRODUCED_UNDER_V17"
+  },
+  "question": "Which V16 stress controls break the V15 correspondence when the V15 fitting, support, pairing, null, and gate machinery is held exact?",
+  "schema": "mark_hebrew_glyph_exact_v15_ablation_protocol_v18",
+  "variants": [
+    {"controls": [], "id": "baseline", "kind": "baseline"},
+    {"controls": ["boundary"], "id": "boundary_only", "kind": "isolated_structural"},
+    {"controls": [], "id": "boundary_volume_sham", "kind": "support_sham", "shamOf": "boundary_only"},
+    {"controls": ["segment"], "id": "segment_only", "kind": "isolated_structural"},
+    {"controls": [], "id": "segment_volume_sham", "kind": "support_sham", "shamOf": "segment_only"},
+    {"controls": ["seenNew"], "id": "seennew_only", "kind": "isolated_nonvolume"},
+    {"controls": ["proper"], "id": "proper_only", "kind": "isolated_nonvolume"},
+    {"controls": ["frequency"], "id": "frequency_only", "kind": "isolated_nonvolume"},
+    {"controls": ["boundary", "segment"], "id": "cum_boundary_segment", "kind": "cumulative"},
+    {"controls": ["boundary", "segment", "seenNew"], "id": "cum_boundary_segment_seennew", "kind": "cumulative"},
+    {"controls": ["boundary", "segment", "seenNew", "proper"], "id": "cum_boundary_segment_seennew_proper", "kind": "cumulative"},
+    {"controls": ["boundary", "segment", "seenNew", "proper", "frequency"], "id": "cum_full", "kind": "cumulative"}
+  ]
+}
