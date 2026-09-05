@@ -1,0 +1,148 @@
+{
+  "schema": "mark_hebrew_consequence_representation_protocol_v22",
+  "experimentId": "mark:hebrew-consequence-representation:v22",
+  "question": "Holding the V20 anonymous structural state fixed, does Hebrew context-conditioned operator behavior become broadly predictive when consequence recurrence is measured at lemma, lemma-plus-coarse-morphology, or lemma-plus-full-morphology resolution; and specifically, do matched operator/consequence resolutions outperform both one-axis alternatives on sealed holdout and control?",
+  "claimBoundary": "A positive matched-resolution result supports the claim that V20/V21 used a consequence representation too coarse for the corresponding Hebrew operator representation under this recurrence projector. It does not establish lexical translation, Hebrew-glyph symbol identity, historical contact, common authorship, theology, phonetics, English glosses, or that OSHB morphology is the recovered underlying grammar. Failure of all consequence representations would reject only these recurrence-based consequence definitions, not Hebrew context conditioning itself.",
+  "lineage": {
+    "parentBranch": "mark-hebrew-operator-representation-v21",
+    "parentHead": "b4186aa8174cb7534b89e9001b71910fc633ae9f",
+    "v21RunId": 33986094131,
+    "v21Adjudication": "MORPH_REFINEMENT_DOES_NOT_RESCUE",
+    "v21ResultSha256": "569eac39e59bcdffe223c922e22120972f132924dda586403f283b0543ef642a",
+    "v20RunId": 33979557978,
+    "v20Adjudication": "GLYPH_ONLY_CONTEXT_CONDITIONING",
+    "v20FreezeArtifact": "mark-context-conditioned-operator-v20-freeze",
+    "v20FreezeArtifactId": 9973339841,
+    "v20FreezeArtifactDigest": "sha256:f7fe0c6a41d262f4bbcdf04ca3d7b1a3b8d9ac4bd5120ad9b5b7fd21bffb7170",
+    "v20FreezeSha256": "1ad52056b1ee2434e544aeda34defca94ad93b7461c893876eb000200926cb1a",
+    "v20ProtocolSha256": "d9a328cfbc68193da88ff21ce7945592050662e458eabcb98c26bcf1b4ce683a",
+    "v10RunId": 33905459943,
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation",
+    "v10EvaluationArtifactId": 9949415857,
+    "v10EvaluationArtifactDigest": "sha256:957bdd9ad5cf637527d2da41d4ec5d7c987a6b549094ef3dc48bc335d0968d84"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "baseTokenIdentity": "first numeric lemma component rendered H<number>",
+    "morphAlignment": "exact V21 alignment: split lemma and morph attributes on slash; use the morph segment aligned to the first numeric lemma component; if absent use <MISSING>"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "fixedStructuralState": {
+    "historyLength": 4,
+    "state": "exact V20/V21 anonymous equality pattern of the previous four BASE LEMMA tokens, padded by <START>; neither operator nor consequence refinement may change the state label",
+    "sharedStates": "inherit the exact shared-state set frozen by V20; V22 may not reselect states"
+  },
+  "identityRepresentations": {
+    "lemma": "H<number>",
+    "lemmaCoarseMorph": "H<number>|M=<V21 coarse OSHB morph family>",
+    "lemmaFullMorph": "H<number>|M=<exact V21 aligned OSHB morph segment>"
+  },
+  "operatorRepresentations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "consequenceRepresentations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "consequenceProjector": {
+    "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","SEEN_EARLIER_SEGMENT","NEW_SEGMENT","END"],
+    "rule": "use the exact V20 consequence projector, but apply equality/seen/new tests to the frozen identity sequence named by consequenceRepresentation rather than always to base lemma",
+    "end": "END is unchanged because unit boundaries are unchanged",
+    "baselineCell": "operator=lemma, consequence=lemma must reuse the exact inherited V20 Hebrew model and reproduce V20/V21 sealed results before any V22 rescue claim is interpretable"
+  },
+  "matrix": {
+    "cells": "all 3 operator representations x all 3 consequence representations are frozen before evaluation",
+    "primaryMatchedCells": [
+      {"operator": "lemmaCoarseMorph", "consequence": "lemmaCoarseMorph"},
+      {"operator": "lemmaFullMorph", "consequence": "lemmaFullMorph"}
+    ],
+    "diagnosticCells": "the remaining cells are reported to determine whether any gain comes from consequence resolution alone, operator resolution alone, or their compatibility"
+  },
+  "training": {
+    "minimumOperatorEvents": 40,
+    "minimumOperatorStateEventsForCoverage": 4,
+    "minimumCoveredSharedStates": 3,
+    "maximumOperatorsPerCell": 128,
+    "minimumOperatorStateEventsForInteraction": 4,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "operatorMainEffectBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0,
+    "eligibility": "TRAIN only, independently within each nonbaseline matrix cell; rank by train frequency then identity under the frozen cap"
+  },
+  "models": {
+    "contextOnly": "V20-style P0(y|S) learned within each consequence representation from TRAIN",
+    "invariantOperator": "V20-style Pinv(y|S,o): cell-specific state baseline multiplied by the TRAIN-smoothed operator-wide outcome ratio and renormalized",
+    "contextConditionedOperator": "V20-style Pctx(y|S,o) learned from TRAIN (S,o) outcome counts and hierarchically smoothed toward cell Pinv; low-support pairs collapse exactly to Pinv",
+    "primaryContrast": "log2 Pctx(observed y|S,o) - log2 Pinv(observed y|S,o)",
+    "null": "within each cell and operator, permute frozen TRAIN interaction-residual blocks across inherited V20 structural states while leaving the occurrence's Pinv fixed; preserves operator identity, state baseline, residual magnitudes, support pattern, consequence alphabet, and consequence resolution while breaking operator-by-context alignment"
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 5,
+    "minimumEvaluationContextsPerOperator": 2,
+    "minimumEvaluableOperatorsPerCell": 12,
+    "minimumPositiveOperatorFraction": 0.60,
+    "permutationCount": 4096,
+    "withinCellGatesPerLane": {
+      "operatorBalancedContextGainGreaterThan": 0.0,
+      "interactionPermutationPAtMost": 0.05,
+      "positiveOperatorFractionAtLeast": 0.60
+    },
+    "pairedAxisComparisons": {
+      "minimumCommonEventsPerOperator": 5,
+      "minimumEligibleOperators": 8,
+      "minimumCoverageFraction": 0.50,
+      "minimumPositiveOperatorFraction": 0.60,
+      "gate": {
+        "operatorBalancedDeltaGreaterThan": 0.0,
+        "pairedSignFlipPAtMost": 0.05,
+        "positiveOperatorFractionAtLeast": 0.60
+      },
+      "consequenceAxis": "for a primary diagonal cell (r,r), compare its realized context gain against cell (r,lemma) on the same evaluation occurrences and matched operator identities; asks whether changing consequence resolution helps while operator resolution is fixed",
+      "operatorAxis": "for a primary diagonal cell (r,r), compare its realized context gain against cell (lemma,r) on occurrences whose base lemma and refined operator are both evaluable; aggregate occurrence differences within refined operator first; asks whether changing operator resolution helps while consequence resolution is fixed"
+    },
+    "primaryRescueRule": "A matched morphology resolution r rescues the recurrence consequence model only if diagonal cell (r,r) passes the within-cell gate in BOTH holdout and control, its consequence-axis advantage over (r,lemma) passes in BOTH lanes, and its operator-axis advantage over (lemma,r) passes in BOTH lanes. No off-diagonal cell can establish a matched-resolution rescue.",
+    "baselineReproductionRule": "the inherited (lemma,lemma) V20 model must reproduce the frozen V20/V21 lane metrics within numerical tolerance 1e-12; otherwise adjudicate IMPLEMENTATION_DRIFT and do not interpret V22",
+    "contextProfile": {
+      "status": "secondary only after a primary matched cell rescues",
+      "definition": "for each inherited V20 shared state, average realized Pctx-vs-Pinv gain within operator first and then across evaluable operators having events in that state",
+      "minimumOperatorsPerState": 5,
+      "minimumCommonStates": 4,
+      "similarity": "Pearson correlation of the rescued Hebrew diagonal-cell state-gain profile with the inherited V20 glyph state-gain profile over identical anonymous structural states",
+      "null": "exactly permute glyph state-profile labels relative to Hebrew when feasible; otherwise 4096 deterministic permutations",
+      "gate": {"correlationGreaterThan": 0.0, "statePermutationPAtMost": 0.05}
+    }
+  },
+  "adjudications": [
+    "FULL_MATCHED_CONSEQUENCE_RESCUES_AND_ALIGNS_GLYPH_CONTEXTS",
+    "COARSE_MATCHED_CONSEQUENCE_RESCUES_AND_ALIGNS_GLYPH_CONTEXTS",
+    "BOTH_MATCHED_CONSEQUENCES_RESCUE_AND_ALIGN",
+    "FULL_MATCHED_CONSEQUENCE_RESCUES_WITHOUT_GLYPH_ALIGNMENT",
+    "COARSE_MATCHED_CONSEQUENCE_RESCUES_WITHOUT_GLYPH_ALIGNMENT",
+    "BOTH_MATCHED_CONSEQUENCES_RESCUE_WITHOUT_FULL_ALIGNMENT",
+    "CONSEQUENCE_RESOLUTION_CHANGES_SIGNAL_WITHOUT_MATCHED_RESCUE",
+    "NO_RECURRENCE_CONSEQUENCE_REPRESENTATION_RESCUES",
+    "INSUFFICIENT_CELL_SUPPORT",
+    "IMPLEMENTATION_DRIFT"
+  ],
+  "custody": {
+    "protocolFrozenInCommitBeforeRun": true,
+    "sharedStatesInheritedFromV20": true,
+    "baselineLemmaModelInheritedFromV20": true,
+    "glyphModelInheritedFromV20": true,
+    "allNonbaselineCellEligibilityAndModelParametersUseTrainOnly": true,
+    "allNineCellsFrozenBeforeEvaluation": true,
+    "freezeJobReceivesNoV22EvaluationPackets": true,
+    "evaluationDownloadsV22FreezeBeforeV22EvaluationPackets": true,
+    "rawOSHBSourceAbsentFromEvaluation": true,
+    "noSongLabelsUsed": true,
+    "noHebrewGlyphOperatorPairingUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
