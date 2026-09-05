@@ -1,0 +1,115 @@
+{
+  "schema": "mark_coarse_boundary_book_block_protocol_v26",
+  "experimentId": "mark:coarse-boundary-book-block:v26",
+  "question": "Does the coarse-morph verse-boundary continuity advantage observed in V25 survive a harder whole-book blocked repartition, with the same real-adjacent-verse versus model-blind shuffled-splice contrast and no representation competition?",
+  "claimBoundary": "A positive result supports robustness of the V25 coarse-morph verse-boundary continuity signal under whole-book blocking. Because V26 reuses the same underlying Hebrew Bible corpus, it is not an independent corpus replication and must not be described as one. Failure rejects only this robustness test under the frozen coarse-morph projector, book split, within-verse model, and shuffle construction.",
+  "lineage": {
+    "parentBranch": "mark-verse-boundary-continuity-v25",
+    "parentHead": "82bd5d1d623212393f7dd318796086f1e6bfbf77",
+    "v25RunId": 33993953091,
+    "v25Adjudication": "NO_VERSE_BOUNDARY_CONTINUITY_SIGNAL",
+    "v25ResultSha256": "a44190378fb4dbb7ca861cdb439e395f99534977925b19121a1ddda662bec70f",
+    "hypothesisSelectedFromV25": true,
+    "v25CoarseObserved": {
+      "holdoutRealMinusShuffleBits": 0.02635,
+      "holdoutPositiveOperatorFraction": 0.593,
+      "holdoutSignFlipP": 0.02538,
+      "controlRealMinusShuffleBits": 0.02640,
+      "controlPositiveOperatorFraction": 0.585,
+      "controlSignFlipP": 0.02343
+    }
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "representation": "lemmaCoarseMorph",
+  "split": {
+    "unit": "book",
+    "reason": "V25 used every OSHB chapter, so V26 cannot honestly be called an untouched-data replication. Whole-book blocking is frozen instead as a harder robustness test: no book contributes to more than one lane.",
+    "salt": "mark-v26-coarse-book-block-v1",
+    "assignment": "Sort canonical book osisIDs by sha256(salt + ':' + book). Assign hashed rank modulo 5: residues 0,1,2 to TRAIN; residue 3 to holdout; residue 4 to control.",
+    "trainRankResidues": [0,1,2],
+    "holdoutRankResidues": [3],
+    "controlRankResidues": [4],
+    "hardBoundary": "chapter end; V26 tests verse boundaries only"
+  },
+  "projector": {
+    "historyLength": 4,
+    "state": "anonymous equality pattern of previous four lemma+coarse-morph identities, padded by <START>",
+    "origin": "an operator occurrence inside a non-final verse whose first passage does not leave its immediate post-operator state S1 before the inherited verse boundary",
+    "realContinuation": "append the actual immediately adjacent verse in the same chapter and scan only that next verse for the first anonymous state F different from S1",
+    "shuffledContinuation": "append a deterministic matched next-verse splice from another eligible boundary in the same custody lane, preferably the same book and lemma-token-count bin, never the actual next verse; scan exactly one shuffled verse for first F different from S1",
+    "resolvedTrainingEvent": "an occurrence whose first anonymous state F different from S1 is observed before the end of its own verse; these events alone train the within-verse destination model",
+    "distance": "descriptive only",
+    "semanticLabels": false
+  },
+  "shuffleControl": {
+    "salt": "mark-v26-coarse-boundary-shuffle-v1",
+    "lengthBinsByLemmaTokenCount": [[1,5],[6,10],[11,20],[21,40],[41,1000000]],
+    "primaryGrouping": "custody lane + book + target-next-verse lemma-token-count bin",
+    "fallbackGrouping": "custody lane + book",
+    "finalFallback": "custody lane",
+    "assignment": "same deterministic model-blind cyclic rotation rule as V25; actual adjacency is forbidden",
+    "usesOutcomeOrModelInformation": false
+  },
+  "training": {
+    "minimumResolvedEventsPerOperator": 40,
+    "minimumResolvedS1StatesPerOperator": 3,
+    "maximumOperatorsPerRepresentation": 128,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "contextBackoffPseudoCount": 20.0,
+    "operatorBackoffPseudoCount": 20.0,
+    "outcomeAlphabet": "all 24 canonical four-history anonymous states generated structurally; no unit-end category"
+  },
+  "withinVerseDestinationModel": {
+    "base": "Pbase(F|S1)",
+    "context": "Pcontext(F|S0,S1), hierarchically smoothed toward Pbase",
+    "operator": "Poperator(F|S1,o), hierarchically smoothed toward Pbase",
+    "additive": "Padd(F|S0,S1,o) proportional to Pcontext * Poperator / Pbase, then renormalized",
+    "trainingData": "TRAIN books only; resolved-within-verse events only"
+  },
+  "evaluation": {
+    "minimumBoundaryOriginsPerOperator": 5,
+    "minimumEvaluableOperators": 12,
+    "minimumCommonResolvedOrigins": 100,
+    "permutationCount": 4096,
+    "confirmatoryPAtMost": 0.05,
+    "positiveOperatorFractionAtLeast": 0.60,
+    "primaryContrast": "For origins where both real and shuffled adjacent verses yield F, compute log2 Padd(F_real|S0,S1,o) - log2 Padd(F_shuffle|S0,S1,o), average within operator, then equally across operators.",
+    "pairedNull": "independently sign-flip each evaluable operator's real-minus-shuffled mean coherence difference; exact enumeration when <=12 operators, otherwise 4096 deterministic sign flips",
+    "primaryGatePerLane": {
+      "operatorBalancedRealMinusShuffleBitsGreaterThan": 0.0,
+      "pairedSignFlipPAtMost": 0.05,
+      "positiveOperatorFractionAtLeast": 0.60,
+      "minimumCommonResolvedOrigins": 100
+    },
+    "recoveryGuard": "actual-next-verse departure recovery fraction among eligible origins must be at least the shuffled-next-verse recovery fraction",
+    "replicationRule": "The coarse-morph robustness hypothesis passes only if the primary gate and recovery guard pass independently in BOTH book-blocked holdout and control lanes.",
+    "v25MagnitudeReferenceIsDescriptiveOnly": true
+  },
+  "adjudications": [
+    "COARSE_BOUNDARY_EFFECT_ROBUST_UNDER_BOOK_BLOCKING",
+    "COARSE_BOUNDARY_DIRECTION_REPEATS_BUT_CONFIRMATORY_GATE_FAILS",
+    "COARSE_BOUNDARY_EFFECT_DOES_NOT_REPLICATE_ACROSS_BOOK_BLOCKS",
+    "SHUFFLED_CONTINUATION_MATCHES_OR_BEATS_REAL",
+    "INSUFFICIENT_BOOK_BLOCKED_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "bookLaneAssignmentUsesOnlyBookIdentityAndFrozenSalt": true,
+    "shuffleMapDeterministicAndModelBlind": true,
+    "freezeJobReceivesTrainBooksOnly": true,
+    "evaluationDownloadsFreezeBeforeSealedBooks": true,
+    "evaluationReceivesNoTrainBooks": true,
+    "noV25PerBookOutcomeInformationUsedToConstructSplit": true,
+    "noSongLabelsUsed": true,
+    "noGlyphDataUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "scientificFailureIsGreen": true
+  }
+}
