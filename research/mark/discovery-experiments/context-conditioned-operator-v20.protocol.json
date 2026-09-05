@@ -1,0 +1,103 @@
+{
+  "schema": "mark_context_conditioned_operator_protocol_v20",
+  "experimentId": "mark:context-conditioned-operator:v20",
+  "question": "Within Hebrew and glyph corpora independently, does the same recurring operator exhibit a transferable consequence law that changes with anonymous structural context beyond a context-only baseline and beyond an invariant operator main effect; and, if so, is the pattern of context modulation itself aligned across the two systems without requiring one-to-one operator matching?",
+  "claimBoundary": "A positive result supports context-conditioned operator effects under the frozen anonymous four-history projector, and if the cross-system gate also passes it supports similarity in where structural context exposes those effects. It does not establish lexical translation, one-to-one Hebrew-glyph identity, historical contact, common authorship, theology, phonetics, English glosses, or that any operator has one invariant standalone meaning.",
+  "lineage": {
+    "parentBranch": "mark-hebrew-glyph-annotation-competition-v19",
+    "parentHead": "1ffee37cf8ba44fdf92fe6bd8c34db949de63add",
+    "v19RunId": 33976392033,
+    "v19Adjudication": "SONG_COVERED_PAIRING_DOES_NOT_TRANSFER",
+    "v10RunId": 33905459943,
+    "v10TrainArtifact": "mark-glyph-transition-code-v10-train",
+    "v10EvaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c",
+    "tokenIdentity": "first numeric lemma component rendered H<number>"
+  },
+  "hebrewSplit": {
+    "unit": "verse",
+    "hash": "sha256(osisID)",
+    "modulus": 10,
+    "trainBuckets": [0,1,2,3,4,5],
+    "holdoutBuckets": [6,7],
+    "controlBuckets": [8,9]
+  },
+  "representation": {
+    "historyLength": 4,
+    "state": "anonymous equality pattern of the previous four operators, padded by <START>; literal operator identity is excluded from the state label",
+    "outcomes": ["SAME_CURRENT","REPEAT_H1","REPEAT_H2","REPEAT_H3","REPEAT_H4","SEEN_EARLIER_SEGMENT","NEW_SEGMENT","END"],
+    "glyphSegmentation": "reuse V19/V15 line-segment projection over the sealed V10 words packet",
+    "sharedStateSelection": "TRAIN only; state must have at least the frozen minimum event support in both corpora"
+  },
+  "training": {
+    "minimumSharedStateEventsPerCorpus": 100,
+    "minimumOperatorEvents": 40,
+    "minimumOperatorStateEventsForCoverage": 4,
+    "minimumCoveredSharedStates": 3,
+    "maximumOperatorsPerCorpus": 64,
+    "minimumOperatorStateEventsForInteraction": 4,
+    "globalAdditiveAlpha": 0.5,
+    "stateBackoffPseudoCount": 20.0,
+    "operatorMainEffectBackoffPseudoCount": 20.0,
+    "interactionBackoffPseudoCount": 20.0
+  },
+  "models": {
+    "contextOnly": "P0(y|S), hierarchically smoothed from TRAIN state outcomes toward the TRAIN global outcome distribution",
+    "invariantOperator": "Pinv(y|S,o) proportional to P0(y|S) times the TRAIN-smoothed operator-wide outcome ratio P(y|o)/P(y); this allows one operator main effect but forces that effect to be invariant across structural states",
+    "contextConditionedOperator": "Pctx(y|S,o), learned from TRAIN (S,o) outcome counts and hierarchically smoothed toward Pinv; pairs below the frozen interaction-support floor collapse exactly to Pinv",
+    "primaryContrast": "log2 Pctx(observed y|S,o) - log2 Pinv(observed y|S,o)",
+    "null": "for each operator, permute its frozen TRAIN interaction-residual blocks across shared structural states while leaving the current-state Pinv distribution fixed; this preserves operator identity, state baseline, residual magnitudes, support pattern, and outcome alphabet while breaking the operator-by-context alignment"
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperator": 5,
+    "minimumEvaluationContextsPerOperator": 2,
+    "minimumEvaluableOperatorsPerCorpus": 12,
+    "minimumPositiveOperatorFraction": 0.60,
+    "permutationCount": 4096,
+    "hebrewPermutationSeed": "mark-v20-hebrew-context-interaction",
+    "glyphPermutationSeed": "mark-v20-glyph-context-interaction",
+    "withinSystemGatesPerLane": {
+      "operatorBalancedContextGainGreaterThan": 0.0,
+      "interactionPermutationPAtMost": 0.05,
+      "positiveOperatorFractionAtLeast": 0.60
+    },
+    "contextProfile": {
+      "definition": "for each shared state, average the realized Pctx-vs-Pinv log2 gain within operator first and then across evaluable operators having events in that state",
+      "minimumOperatorsPerState": 5,
+      "minimumCommonStates": 4,
+      "similarity": "Pearson correlation of Hebrew and glyph state-gain profiles over the same anonymous structural state labels",
+      "null": "exactly permute glyph state-profile labels relative to Hebrew when feasible; otherwise use 4096 deterministic permutations",
+      "gate": {
+        "correlationGreaterThan": 0.0,
+        "statePermutationPAtMost": 0.05
+      }
+    },
+    "fullRule": "A within-system context-conditioned effect must pass independently in both holdout and control for that corpus. The strongest cross-system claim additionally requires both corpora to pass both lanes and the cross-system context-profile gate to pass in both lanes. No one-to-one Hebrew-glyph operator pairing is constructed or used anywhere in V20."
+  },
+  "adjudications": [
+    "CONTEXT_CONDITIONED_OPERATOR_EFFECTS_ALIGN_ACROSS_SYSTEMS",
+    "CONTEXT_CONDITIONED_EFFECTS_TRANSFER_WITHOUT_CROSS_SYSTEM_ALIGNMENT",
+    "HEBREW_ONLY_CONTEXT_CONDITIONING",
+    "GLYPH_ONLY_CONTEXT_CONDITIONING",
+    "CONTEXT_INVARIANT_OPERATOR_MODEL_SUFFICIENT",
+    "INSUFFICIENT_CONTEXT_SUPPORT"
+  ],
+  "custody": {
+    "protocolFrozenInCommitBeforeRun": true,
+    "allStateAndOperatorEligibilityUsesTrainOnly": true,
+    "allModelParametersUseTrainOnly": true,
+    "noSongLabelsUsed": true,
+    "noOSHBMorphologyUsedAsPredictor": true,
+    "noHebrewGlyphOperatorPairingUsed": true,
+    "freezeJobReceivesNoEvaluationPackets": true,
+    "evaluationDownloadsFreezeBeforeEvaluationPackets": true,
+    "evaluationPreviouslyOpenedInAncestorExperiments": true,
+    "scientificFailureIsGreen": true
+  }
+}
