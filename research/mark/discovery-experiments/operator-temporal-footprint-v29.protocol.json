@@ -1,0 +1,123 @@
+{
+  "schema": "mark_operator_temporal_footprint_protocol_v29",
+  "experimentId": "mark:operator-temporal-footprint:v29",
+  "question": "Without preselecting a consequence variable, where in signed temporal distance around an operator does anonymous relational structure carry transferable information associated with that operator?",
+  "claimBoundary": "A positive result supports a transferable operator-associated temporal footprint in anonymous local relational structure at one or more predeclared distances. It does not by itself establish causality, semantic meaning, a Hebrew-to-glyph operator correspondence, shared origin, or that the operator is the unique source of the surrounding structure. Failure rejects only this masked local-transition footprint projector under the frozen distances, strata, smoothing, and null.",
+  "lineage": {
+    "parentBranch": "mark-operator-selection-grammar-v28",
+    "parentHead": "f326efa16de3b6aed5500b9cc7bc6ff40b9401fe",
+    "v28RunId": 33999405311,
+    "v28Adjudication": "NO_OPERATOR_SELECTION_GRAMMAR",
+    "v28ResultSha256": "86ded88cca0da39c93fe5c922ef6badc032137c3937b58caf7d2e6c185159bf0"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "glyphSource": {
+    "inheritedRunId": 33905459943,
+    "trainArtifact": "mark-glyph-transition-code-v10-train",
+    "evaluationArtifact": "mark-glyph-transition-code-v10-sealed-evaluation"
+  },
+  "representations": ["lemma", "lemmaCoarseMorph", "lemmaFullMorph"],
+  "hebrewSplit": {
+    "unit": "book",
+    "salt": "mark-v29-temporal-footprint-book-block-v1",
+    "assignment": "Sort canonical book osisIDs by sha256(salt + ':' + book). Assign rank modulo 5 residues 0,1,2 TRAIN; 3 holdout; 4 control.",
+    "trainRankResidues": [0,1,2],
+    "holdoutRankResidues": [3],
+    "controlRankResidues": [4]
+  },
+  "distances": [-12,-11,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9,10,11,12],
+  "masking": {
+    "currentOperatorExcludedFromSignature": true,
+    "method": "For each origin occurrence independently, replace the current operator identity with a sentinel that occurs nowhere else in that temporary sequence before computing any target signature.",
+    "sentinel": "<ORIGIN_MASK>",
+    "reason": "Prevent a positive-distance footprint from winning because the literal current operator remains inside the target's four-history window."
+  },
+  "signature": {
+    "historyLength": 4,
+    "definition": "At target index j=i+d in the masked sequence, signature = ordered pair [anonymous four-history state immediately before target j, anonymous four-history state immediately after target j].",
+    "targetMustRemainInsideSameUnit": true,
+    "hebrewUnit": "verse",
+    "glyphUnit": "frozen V10 segment",
+    "semanticLabels": false
+  },
+  "stratification": {
+    "originPositionBuckets": [[0,0],[1,1],[2,3],[4,7],[8,15],[16,1000000]],
+    "originPositionLabels": ["P0","P1","P2_3","P4_7","P8_15","P16P"],
+    "unitLengthBins": [[1,5],[6,10],[11,20],[21,40],[41,1000000]],
+    "unitLengthLabels": ["L1_5","L6_10","L11_20","L21_40","L41P"],
+    "baselineKey": "signed distance + origin-position bucket + unit-length bin"
+  },
+  "training": {
+    "minimumOperatorEvents": 80,
+    "maximumOperatorsPerSystem": 128,
+    "minimumSignatureEventsPerStratum": 25,
+    "globalAlpha": 0.5,
+    "baselineBackoffPseudoCount": 30.0,
+    "operatorBackoffPseudoCount": 40.0,
+    "operatorFrequencyMatchBins": 8
+  },
+  "models": {
+    "baseline": "P(signature | distance, origin-position bucket, unit-length bin)",
+    "operator": "P(signature | operator, distance, origin-position bucket, unit-length bin), hierarchically smoothed toward baseline",
+    "primaryEventGain": "log2 Poperator(signature_actual) - log2 Pbaseline(signature_actual)",
+    "aggregation": "average event gains within operator and distance; average equally across eligible operators to obtain gain_d"
+  },
+  "null": {
+    "permutations": 4096,
+    "construction": "Within each distance and frozen TRAIN-frequency bin, deterministically permute operator-to-conditional-residual assignments while holding the sealed event signatures, baseline strata, operator vocabulary, operator frequencies, smoothing, support, and residual magnitudes fixed.",
+    "globalStatistic": "positive footprint mass = sum over all predeclared distances of max(gain_d, 0)",
+    "familywisePeakStatistic": "maximum gain_d across all predeclared distances",
+    "usesEvaluationToChooseDistance": false
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperatorDistance": 8,
+    "minimumEvaluableOperatorsPerDistance": 12,
+    "minimumDistancesWithSupport": 12,
+    "positiveFootprintMassPAtMost": 0.05,
+    "peakFamilywisePAtMost": 0.05,
+    "replicationRule": "A system supports an operator-associated temporal footprint only if positive footprint mass > 0 and its permutation p<=.05 independently in BOTH sealed holdout and control. Peak location and individual-distance p values are descriptive unless the familywise peak p also passes in both lanes.",
+    "directionDiagnostics": {
+      "preOperatorMass": "sum max(gain_d,0) for d<0",
+      "postOperatorMass": "sum max(gain_d,0) for d>0",
+      "centerOfPositiveMass": "weighted mean signed distance using max(gain_d,0) as weights",
+      "peakDistance": "distance with maximum gain_d"
+    }
+  },
+  "crossSystem": {
+    "enabled": true,
+    "comparison": "Pearson correlation of the 24-distance gain curves between one Hebrew representation and glyph identity; no operator pairing.",
+    "minimumCommonSupportedDistances": 16,
+    "permutations": 4096,
+    "pAtMost": 0.05,
+    "null": "permute glyph signed-distance labels while preserving its gain values",
+    "replicationRule": "Cross-system footprint alignment requires both compared systems to pass their own footprint gate and curve correlation p<=.05 in BOTH sealed lanes."
+  },
+  "adjudications": [
+    "CROSS_SYSTEM_TEMPORAL_FOOTPRINT_ALIGNED",
+    "MULTIPLE_HEBREW_REPRESENTATIONS_HAVE_TEMPORAL_FOOTPRINT",
+    "LEMMA_HAS_TEMPORAL_FOOTPRINT",
+    "COARSE_MORPH_HAS_TEMPORAL_FOOTPRINT",
+    "FULL_MORPH_HAS_TEMPORAL_FOOTPRINT",
+    "GLYPH_ONLY_TEMPORAL_FOOTPRINT",
+    "NO_TRANSFERABLE_TEMPORAL_FOOTPRINT",
+    "INSUFFICIENT_TEMPORAL_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "bookLaneAssignmentUsesOnlyBookIdentityAndFrozenSalt": true,
+    "freezeReceivesHebrewTrainBooksOnly": true,
+    "freezeReceivesGlyphTrainOnly": true,
+    "evaluationDownloadsFreezeBeforeSealedData": true,
+    "evaluationReceivesNoTrainData": true,
+    "noSongLabelsUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "noCurrentOperatorInStructuralSignature": true,
+    "scientificFailureIsGreen": true
+  }
+}
