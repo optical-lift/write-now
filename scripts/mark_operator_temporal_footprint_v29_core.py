@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import json
 import math
 import random
 from collections import Counter, defaultdict
@@ -11,7 +10,7 @@ from mark_structural_transition_consequence_v23_core import OUTCOMES as HIST_STA
 EPS = 1e-300
 REPRESENTATIONS = ("lemma", "lemmaCoarseMorph", "lemmaFullMorph")
 MASK = "<ORIGIN_MASK>"
-SIGNATURES = tuple(canonical_json([a, b]) for a in HIST_STATES for b in HIST_STATES)
+SIGNATURE_ALPHABET_SIZE = len(HIST_STATES) * len(HIST_STATES)
 
 
 def _bucket(value, pairs, labels):
@@ -75,20 +74,6 @@ def glyph_events(rows, protocol):
     return out
 
 
-def _normalize(d):
-    z = sum(d.values())
-    if z <= 0:
-        return {s: 1.0 / len(SIGNATURES) for s in SIGNATURES}
-    return {s: d.get(s, 0.0) / z for s in SIGNATURES}
-
-
-def _dist(counts, prior, pseudo):
-    n = sum(counts.values())
-    if n <= 0:
-        return dict(prior)
-    return {s: (counts[s] + pseudo * prior[s]) / (n + pseudo) for s in SIGNATURES}
-
-
 def _origin_support(events):
     seen = defaultdict(set)
     for e in events:
@@ -108,6 +93,10 @@ def _frequency_bins(operators, support, n_bins):
     return dict(bins), opbin
 
 
+def _counter_record(cnt):
+    return {"counts": dict(cnt), "total": int(sum(cnt.values()))}
+
+
 def build_model(events, protocol):
     cfg = protocol["training"]
     support = _origin_support(events)
@@ -119,34 +108,28 @@ def build_model(events, protocol):
     bins, opbin = _frequency_bins(operators, support, int(cfg["operatorFrequencyMatchBins"]))
 
     by_d = {}
+    min_stratum = int(cfg["minimumSignatureEventsPerStratum"])
     for d in map(int, protocol["distances"]):
         rows = [e for e in kept if e["distance"] == d]
         global_counts = Counter(e["signature"] for e in rows)
-        alpha = float(cfg["globalAlpha"])
-        total = sum(global_counts.values())
-        pglobal = {
-            s: (global_counts[s] + alpha) / (total + alpha * len(SIGNATURES))
-            for s in SIGNATURES
-        }
         base_counts = defaultdict(Counter)
         op_counts = defaultdict(Counter)
         for e in rows:
             base_counts[e["stratum"]][e["signature"]] += 1
             op_counts[(e["operator"], e["stratum"])][e["signature"]] += 1
         baseline = {}
-        min_stratum = int(cfg["minimumSignatureEventsPerStratum"])
-        bpseudo = float(cfg["baselineBackoffPseudoCount"])
         for st, cnt in base_counts.items():
-            n = sum(cnt.values())
-            baseline[st] = _dist(cnt, pglobal, bpseudo) if n >= min_stratum else dict(pglobal)
-        operator = {}
-        opseudo = float(cfg["operatorBackoffPseudoCount"])
-        for (op, st), cnt in op_counts.items():
-            prior = baseline.get(st, pglobal)
-            operator[canonical_json([op, st])] = _dist(cnt, prior, opseudo)
+            rec = _counter_record(cnt)
+            rec["active"] = rec["total"] >= min_stratum
+            baseline[st] = rec
+        operator = {
+            canonical_json([op, st]): _counter_record(cnt)
+            for (op, st), cnt in op_counts.items()
+        }
         by_d[str(d)] = {
             "trainEvents": len(rows),
-            "pGlobal": pglobal,
+            "globalCounts": dict(global_counts),
+            "globalTotal": int(sum(global_counts.values())),
             "baseline": baseline,
             "operator": operator,
         }
@@ -157,12 +140,18 @@ def build_model(events, protocol):
         "operatorFrequencyBin": {o: int(b) for o, b in opbin.items()},
         "distances": by_d,
         "trainEvents": len(kept),
+        "smoothing": {
+            "globalAlpha": float(cfg["globalAlpha"]),
+            "baselineBackoffPseudoCount": float(cfg["baselineBackoffPseudoCount"]),
+            "operatorBackoffPseudoCount": float(cfg["operatorBackoffPseudoCount"]),
+            "signatureAlphabetSize": SIGNATURE_ALPHABET_SIZE,
+        },
     }
 
 
 def freeze_models(hebrew_train, glyph_train, protocol):
     return {
-        "signatureAlphabetSize": len(SIGNATURES),
+        "signatureAlphabetSize": SIGNATURE_ALPHABET_SIZE,
         "hebrew": {
             rep: build_model(hebrew_events(hebrew_train, rep, protocol), protocol)
             for rep in REPRESENTATIONS
@@ -171,11 +160,28 @@ def freeze_models(hebrew_train, glyph_train, protocol):
     }
 
 
-def _dists(model, d, op, st, source_op=None):
+def _probabilities(model, d, op, st, sig, source_op=None):
     dm = model["distances"][str(d)]
-    base = dm["baseline"].get(st, dm["pGlobal"])
+    sm = model["smoothing"]
+    alpha = sm["globalAlpha"]
+    k = sm["signatureAlphabetSize"]
+    gt = dm["globalTotal"]
+    pglobal = (dm["globalCounts"].get(sig, 0) + alpha) / (gt + alpha * k)
+
+    brec = dm["baseline"].get(st)
+    if brec and brec.get("active"):
+        bp = sm["baselineBackoffPseudoCount"]
+        base = (brec["counts"].get(sig, 0) + bp * pglobal) / (brec["total"] + bp)
+    else:
+        base = pglobal
+
     src = op if source_op is None else source_op
-    cond = dm["operator"].get(canonical_json([src, st]), base)
+    orec = dm["operator"].get(canonical_json([src, st]))
+    if orec:
+        opseudo = sm["operatorBackoffPseudoCount"]
+        cond = (orec["counts"].get(sig, 0) + opseudo * base) / (orec["total"] + opseudo)
+    else:
+        cond = base
     return base, cond
 
 
@@ -186,39 +192,39 @@ def _qualify(events, model, protocol):
     counts = Counter((e["distance"], e["operator"]) for e in kept)
     qualified = {}
     for d in map(int, protocol["distances"]):
-        ops = sorted(
+        qualified[d] = sorted(
             o for o in model["operators"]
             if counts[(d, o)] >= int(ec["minimumEvaluationEventsPerOperatorDistance"])
         )
-        qualified[d] = ops
     return kept, qualified
 
 
-def _score_cache(events, model, qualified, protocol):
-    # Preaggregate sealed events so each permutation is only operator-mapping arithmetic.
+def _score_cache(events, model, qualified):
+    qsets = {d: set(ops) for d, ops in qualified.items()}
     cell_counts = defaultdict(Counter)
+    strata_by_target = defaultdict(set)
     for e in events:
         d, op = int(e["distance"]), e["operator"]
-        if op in set(qualified.get(d, [])):
+        if op in qsets.get(d, set()):
             cell_counts[(d, op, e["stratum"])][e["signature"]] += 1
+            strata_by_target[(d, op)].add(e["stratum"])
 
     cache = {}
+    allops = set(model["operators"])
     for d, qops in qualified.items():
-        qset = set(qops)
         for target in qops:
             b = model["operatorFrequencyBin"].get(target)
-            sources = [o for o in model["frequencyBins"].get(str(b), []) if o in set(model["operators"])]
+            sources = [o for o in model["frequencyBins"].get(str(b), []) if o in allops]
             if target not in sources:
                 sources.append(target)
             for source in sources:
                 total_gain = 0.0
                 n = 0
-                for (dd, op, st), cnt in cell_counts.items():
-                    if dd != d or op != target:
-                        continue
-                    base, cond = _dists(model, d, target, st, source)
+                for st in strata_by_target.get((d, target), ()):
+                    cnt = cell_counts[(d, target, st)]
                     for sig, c in cnt.items():
-                        total_gain += c * (math.log2(max(cond[sig], EPS)) - math.log2(max(base[sig], EPS)))
+                        base, cond = _probabilities(model, d, target, st, sig, source)
+                        total_gain += c * (math.log2(max(cond, EPS)) - math.log2(max(base, EPS)))
                         n += c
                 cache[(d, target, source)] = (total_gain / n if n else 0.0, n)
     return cache
@@ -232,10 +238,10 @@ def _actual_curve(cache, qualified):
     return curve
 
 
-def _perm_mapping(model, d, seed):
+def _perm_mapping(model, seed):
     rng = random.Random(seed)
     mapping = {}
-    for b, ops in sorted(model["frequencyBins"].items()):
+    for _, ops in sorted(model["frequencyBins"].items()):
         ops = sorted(ops)
         shuffled = list(ops)
         rng.shuffle(shuffled)
@@ -249,7 +255,7 @@ def _curve_stats(curve):
     peak_d, peak = max(vals, key=lambda x: x[1]) if vals else (None, 0.0)
     pre = sum(max(g, 0.0) for d, g in vals if d < 0)
     post = sum(max(g, 0.0) for d, g in vals if d > 0)
-    denom = sum(max(g, 0.0) for _, g in vals)
+    denom = positive_mass
     center = (sum(d * max(g, 0.0) for d, g in vals) / denom) if denom > 0 else None
     return positive_mass, peak_d, peak, pre, post, center
 
@@ -258,7 +264,7 @@ def evaluate_system(events, model, protocol, lane, label):
     kept, qualified = _qualify(events, model, protocol)
     minimum_ops = int(protocol["evaluation"]["minimumEvaluableOperatorsPerDistance"])
     supported = {d: ops for d, ops in qualified.items() if len(ops) >= minimum_ops}
-    cache = _score_cache(kept, model, supported, protocol)
+    cache = _score_cache(kept, model, supported)
     actual = _actual_curve(cache, supported)
     posmass, peak_d, peak, pre, post, center = _curve_stats(actual)
 
@@ -268,7 +274,7 @@ def evaluate_system(events, model, protocol, lane, label):
     for pidx in range(perms):
         null_curve = {}
         for d, ops in supported.items():
-            mapping = _perm_mapping(model, d, f"mark-v29:{label}:{lane}:{d}:{pidx}")
+            mapping = _perm_mapping(model, f"mark-v29:{label}:{lane}:{d}:{pidx}")
             vals = []
             for target in ops:
                 source = mapping.get(target, target)
