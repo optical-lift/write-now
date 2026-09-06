@@ -1,0 +1,115 @@
+{
+  "schema": "mark_operator_proximal_perturbation_protocol_v30",
+  "experimentId": "mark:operator-proximal-perturbation:v30",
+  "question": "Does matched substitution of the current Hebrew full-morph operator selectively damage its fit to the anonymous proximal post-operator structure localized by V29?",
+  "claimBoundary": "A positive result supports counterfactual structural dependence under the frozen V29 masked-transition projector: the observed anonymous +1/+2 neighborhood is better fit by the actual operator realization than by a matched substitute, beyond equally sized pre-operator and farther post-operator controls. It does not establish semantics, textual causation, a unique generating mechanism, or Hebrew-glyph equivalence.",
+  "lineage": {
+    "parentBranch": "mark-operator-temporal-footprint-v29",
+    "parentHead": "3b858663abbe9f2e8e6b7ca97b453c7a57f21470",
+    "v29Pr": 60,
+    "v29Adjudication": "FULL_MORPH_HAS_TEMPORAL_FOOTPRINT",
+    "v29ResultSha256": "ed0ba4786d3d0492281dfe9b8f9eb0a146a456b3291749180e35b80c85b52279"
+  },
+  "hebrewSource": {
+    "repository": "openscriptures/morphhb",
+    "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+    "commitTree": "50e6be1d06a80cef7d9285b3c8e4dff47e420bf6",
+    "wlcDirectory": "wlc",
+    "exodusBlobSha1": "9397e001f25d14353793a3924d4e9c605cecfc6c"
+  },
+  "representation": "lemmaFullMorph",
+  "hebrewSplit": {
+    "unit": "book",
+    "salt": "mark-v30-proximal-perturbation-book-block-v1",
+    "assignment": "Sort canonical book osisIDs by sha256(salt + ':' + book). Assign rank modulo 5 residues 0,1,2 TRAIN; 3 holdout; 4 control.",
+    "trainRankResidues": [0,1,2],
+    "holdoutRankResidues": [3],
+    "controlRankResidues": [4]
+  },
+  "distances": [-2,-1,1,2,5,6],
+  "bands": {
+    "pre": [-2,-1],
+    "local": [1,2],
+    "far": [5,6]
+  },
+  "masking": {
+    "currentOperatorExcludedFromSignature": true,
+    "method": "Inherit V29 exactly: for each origin occurrence independently, replace the current operator identity with a unique sentinel before computing every target signature.",
+    "sentinel": "<ORIGIN_MASK>"
+  },
+  "signature": {
+    "historyLength": 4,
+    "definition": "Inherit V29 exactly: at target j=i+d in the masked verse, signature = ordered pair [anonymous four-history state immediately before j, anonymous four-history state immediately after j].",
+    "targetMustRemainInsideSameUnit": true,
+    "hebrewUnit": "verse",
+    "semanticLabels": false
+  },
+  "stratification": {
+    "originPositionBuckets": [[0,0],[1,1],[2,3],[4,7],[8,15],[16,1000000]],
+    "originPositionLabels": ["P0","P1","P2_3","P4_7","P8_15","P16P"],
+    "unitLengthBins": [[1,5],[6,10],[11,20],[21,40],[41,1000000]],
+    "unitLengthLabels": ["L1_5","L6_10","L11_20","L21_40","L41P"],
+    "baselineKey": "signed distance + origin-position bucket + unit-length bin"
+  },
+  "training": {
+    "minimumOperatorEvents": 80,
+    "maximumOperatorsPerSystem": 128,
+    "minimumSignatureEventsPerStratum": 25,
+    "globalAlpha": 0.5,
+    "baselineBackoffPseudoCount": 30.0,
+    "operatorBackoffPseudoCount": 40.0,
+    "operatorFrequencyMatchBins": 8
+  },
+  "substitutions": {
+    "classes": ["sameLemmaDifferentFullMorph","differentLemmaSameFullMorph","bothChangedControl"],
+    "matching": "Freeze from TRAIN only. Candidates must be frozen V29-model operators. Rank by V29 frequency-bin distance, then absolute log2 origin-frequency difference, then L1 distance between TRAIN origin-position profiles, then lexical operator key. No sealed event signature or outcome participates in matching.",
+    "sameLemmaDifferentFullMorph": "same lemma; different complete morphology string",
+    "differentLemmaSameFullMorph": "different lemma; identical complete morphology string",
+    "bothChangedControl": "different lemma; different complete morphology string",
+    "positionProfile": "distribution over the frozen V29 origin-position buckets, counted once per origin",
+    "positiveControlClass": "bothChangedControl"
+  },
+  "models": {
+    "baseline": "P(signature | distance, origin-position bucket, unit-length bin), inherited V29 smoothing",
+    "operator": "P(signature | operator, distance, origin-position bucket, unit-length bin), inherited V29 hierarchical smoothing",
+    "eventDamage": "log2 Pactual_operator(signature_actual) - log2 Psubstitute_operator(signature_actual); V29 baseline cancels algebraically",
+    "operatorDistanceDamage": "average eventDamage within actual operator and signed distance",
+    "operatorBandDamage": "average operatorDistanceDamage over the two predeclared distances in each band",
+    "primaryOperatorStatistic": "D_local(op) = localDamage(op) - (preDamage(op) + farDamage(op))/2",
+    "primaryClassStatistic": "operator-balanced mean D_local(op) over qualified actual operators"
+  },
+  "null": {
+    "permutations": 4096,
+    "construction": "Paired operator-level sign-flip null on frozen D_local(op) values within each substitution class. This preserves matched substitutes, evaluation signatures, effect magnitudes, operator support, smoothing, and all six frozen distances while testing exchangeability of actual versus substitute identity.",
+    "pValue": "one-sided (1 + number null means >= observed mean) / (permutations + 1)",
+    "usesEvaluationToChooseBand": false
+  },
+  "evaluation": {
+    "minimumEvaluationEventsPerOperatorDistance": 8,
+    "minimumQualifiedOperatorsPerClass": 12,
+    "primaryPAtMost": 0.05,
+    "replicationRule": "A substitution class passes only if mean D_local > 0 and sign-flip p<=.05 independently in BOTH sealed holdout and control lanes.",
+    "morphologyLoadBearingRule": "sameLemmaDifferentFullMorph passes in both lanes",
+    "lexicalLoadBearingRule": "differentLemmaSameFullMorph passes in both lanes",
+    "positiveControlExpected": "bothChangedControl should show positive local selectivity if the perturbation score is responsive, but it does not determine the scientific adjudication."
+  },
+  "adjudications": [
+    "COMPOSITE_OPERATOR_IDENTITY_LOAD_BEARING",
+    "FULL_MORPHOLOGY_LOAD_BEARING",
+    "LEXICAL_IDENTITY_LOAD_BEARING",
+    "PROXIMAL_FOOTPRINT_NOT_OPERATOR_SPECIFIC",
+    "INSUFFICIENT_MATCHED_PERTURBATION_SUPPORT"
+  ],
+  "custody": {
+    "protocolAndCodeFrozenBeforeSourceAcquisition": true,
+    "freshWholeBookSplit": true,
+    "freezeReceivesTrainBooksOnly": true,
+    "evaluationDownloadsFreezeBeforeSealedData": true,
+    "evaluationReceivesNoTrainData": true,
+    "substituteMatchingUsesTrainOnly": true,
+    "noSongLabelsUsed": true,
+    "noSemanticTransitionLabelsUsed": true,
+    "originRemainsMaskedInEveryStructuralSignature": true,
+    "scientificFailureIsGreen": true
+  }
+}
