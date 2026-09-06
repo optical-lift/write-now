@@ -1,0 +1,180 @@
+name: Mark Operator Temporal Footprint v29
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mark_operator_temporal_footprint_v29_core.py"
+      - "scripts/prepare-mark-operator-temporal-footprint-v29.py"
+      - "scripts/freeze-mark-operator-temporal-footprint-v29.py"
+      - "scripts/evaluate-mark-operator-temporal-footprint-v29.py"
+      - "research/mark/discovery-experiments/operator-temporal-footprint-v29.protocol.json"
+      - ".github/workflows/mark-operator-temporal-footprint-v29.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  MARK_V29_PROTOCOL: research/mark/discovery-experiments/operator-temporal-footprint-v29.protocol.json
+  OSHB_COMMIT: 3d15126fb1ef74867fc1434be1942e837932691f
+  OSHB_TREE: 50e6be1d06a80cef7d9285b3c8e4dff47e420bf6
+  OSHB_EXOD_BLOB: 9397e001f25d14353793a3924d4e9c605cecfc6c
+  MARK_V10_RUN_ID: 33905459943
+
+jobs:
+  custody:
+    name: Build whole-book-custodied Hebrew temporal packets
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V29 protocol and code before source acquisition
+        run: |
+          python3 -m json.tool "$MARK_V29_PROTOCOL" >/dev/null
+          python3 -m py_compile \
+            scripts/mark_operator_temporal_footprint_v29_core.py \
+            scripts/prepare-mark-operator-temporal-footprint-v29.py \
+            scripts/freeze-mark-operator-temporal-footprint-v29.py \
+            scripts/evaluate-mark-operator-temporal-footprint-v29.py
+      - name: Acquire exact Open Scriptures Hebrew Bible commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/morphhb
+          git -C artifact-staging/morphhb init -q
+          git -C artifact-staging/morphhb remote add origin https://github.com/openscriptures/morphhb.git
+          git -C artifact-staging/morphhb fetch -q --depth=1 origin "$OSHB_COMMIT"
+          git -C artifact-staging/morphhb checkout -q --detach FETCH_HEAD
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD)" = "$OSHB_COMMIT"
+          test "$(git -C artifact-staging/morphhb rev-parse HEAD^{tree})" = "$OSHB_TREE"
+          test "$(git -C artifact-staging/morphhb hash-object wlc/Exod.xml)" = "$OSHB_EXOD_BLOB"
+      - name: Parse whole books with frozen V29 custody split
+        env:
+          PYTHONPATH: scripts
+          MARK_V29_WLC: artifact-staging/morphhb/wlc
+          MARK_V29_OUT: artifact-staging/all
+        run: python3 scripts/prepare-mark-operator-temporal-footprint-v29.py
+      - name: Physically separate TRAIN books and sealed evaluation books
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/hebrew-train artifact-staging/hebrew-eval
+          cp artifact-staging/all/train.jsonl artifact-staging/hebrew-train/train.jsonl
+          cp artifact-staging/all/manifest.json artifact-staging/hebrew-train/manifest.json
+          cp artifact-staging/all/holdout.jsonl artifact-staging/hebrew-eval/holdout.jsonl
+          cp artifact-staging/all/control.jsonl artifact-staging/hebrew-eval/control.jsonl
+          cp artifact-staging/all/manifest.json artifact-staging/hebrew-eval/manifest.json
+          rm -rf artifact-staging/all artifact-staging/morphhb
+          test ! -e artifact-staging/hebrew-train/holdout.jsonl
+          test ! -e artifact-staging/hebrew-train/control.jsonl
+          test ! -e artifact-staging/hebrew-eval/train.jsonl
+          test ! -d artifact-staging/morphhb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-hebrew-train
+          path: artifact-staging/hebrew-train/**
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval/**
+          if-no-files-found: error
+          retention-days: 30
+
+  freeze:
+    name: Freeze masked temporal-footprint models
+    needs: custody
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-hebrew-train
+          path: artifact-staging/hebrew-train
+      - name: Download exact inherited V10 glyph TRAIN packet
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-train
+          path: artifact-staging/glyph-train
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove evaluation lanes are absent
+        run: |
+          test -z "$(find artifact-staging -type f \( -name 'holdout.jsonl' -o -name 'control.jsonl' \) -print -quit)"
+          echo "evaluation_visible_to_freeze=false"
+      - name: Freeze V29 masked footprint models
+        env:
+          PYTHONPATH: scripts
+          MARK_V29_HEBREW_TRAIN: artifact-staging/hebrew-train
+          MARK_V29_GLYPH_TRAIN: artifact-staging/glyph-train
+          MARK_V29_FREEZE_OUT: artifacts/mark-operator-temporal-footprint-v29/freeze
+        run: python3 scripts/freeze-mark-operator-temporal-footprint-v29.py
+      - name: Publish pre-evaluation freeze summary
+        run: cat artifacts/mark-operator-temporal-footprint-v29/freeze/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-freeze
+          path: artifacts/mark-operator-temporal-footprint-v29/freeze/**
+          if-no-files-found: error
+          retention-days: 30
+
+  evaluate:
+    name: Map masked operator footprint on sealed lanes
+    needs: [custody, freeze]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable V29 freeze first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-freeze
+          path: artifact-staging/freeze
+      - name: Open sealed Hebrew books only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-hebrew-sealed-evaluation
+          path: artifact-staging/hebrew-eval
+      - name: Open exact inherited V10 glyph sealed packet only after freeze
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-glyph-transition-code-v10-sealed-evaluation
+          path: artifact-staging/glyph-eval
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_V10_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Prove training data are absent
+        run: |
+          test ! -e artifact-staging/hebrew-eval/train.jsonl
+          test ! -e artifact-staging/glyph-eval/train.jsonl
+          test ! -d artifact-staging/hebrew-train
+          test ! -d artifact-staging/glyph-train
+          test ! -d artifact-staging/morphhb
+          echo "training_visible_to_evaluation=false"
+      - name: Evaluate frozen V29 temporal footprint
+        env:
+          PYTHONPATH: scripts
+          MARK_V29_FREEZE: artifact-staging/freeze
+          MARK_V29_HEBREW_EVAL: artifact-staging/hebrew-eval
+          MARK_V29_GLYPH_EVAL: artifact-staging/glyph-eval
+          MARK_V29_RESULT_OUT: artifacts/mark-operator-temporal-footprint-v29/result
+        run: python3 scripts/evaluate-mark-operator-temporal-footprint-v29.py
+      - name: Publish result summary
+        run: cat artifacts/mark-operator-temporal-footprint-v29/result/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish frozen result on PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --body-file artifacts/mark-operator-temporal-footprint-v29/result/summary.md --edit-last --create-if-none
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mark-operator-temporal-footprint-v29-frozen
+          path: artifacts/mark-operator-temporal-footprint-v29/**
+          if-no-files-found: error
+          retention-days: 30
