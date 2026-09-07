@@ -1,0 +1,84 @@
+{
+  "schema": "mark_glyph_hidden_operator_path_protocol_v1",
+  "experimentId": "mark:glyph-hidden-operator-path:v36",
+  "preregistration": "research/mark/discovery-experiments/glyph-hidden-operator-path-v36.preregistration.md",
+  "status": "frozen_before_outcome",
+  "holdoutSelection": {
+    "rule": "exclude V35-P holdout books Isa, Hos, 2Ch, Eze; rank remaining canonical books by md5('v36-holdout|' || canonical_book_code); take four lowest hashes",
+    "books": ["Deu", "Jdg", "Psa", "Job"]
+  },
+  "visibleGlyphUnit": {
+    "qualifyingCodepoints": [1425,1426,1427,1428,1429,1430,1431,1432,1433,1434,1435,1436,1437,1438,1439,1440,1441,1443,1444,1445,1446,1447,1448,1449,1450,1451,1452,1453,1454,1469],
+    "tokenRule": "primary analysis retains tokens carrying exactly one qualifying mark; tokens with zero or multiple qualifying marks are excluded",
+    "pathRule": "three consecutive canonical tokens, each retained by tokenRule"
+  },
+  "hiddenOperator": "lemma_raw × morph",
+  "support": {
+    "operatorTypeMinimumTrainingOccurrences": 20,
+    "operatorPathMinimumTrainingOccurrencesPrimary": 5,
+    "operatorPathMinimumTrainingOccurrencesRobustness": 3
+  },
+  "shapeRepresentations": {
+    "primary": "combined",
+    "replication": ["topology", "geometry", "symmetry"],
+    "topology": {
+      "0": [1425,1430,1433,1434,1436,1437,1441,1444,1445,1448,1451,1453],
+      "1": [1426,1428,1429,1435],
+      "2": [1427],
+      "3": [1431,1443,1452,1469],
+      "4": [1432,1447,1450,1454],
+      "5": [1438,1446],
+      "6": [1439],
+      "7": [1440,1449]
+    },
+    "geometry": {
+      "0": [1425,1450],
+      "1": [1426,1430,1433,1448,1449,1453],
+      "2": [1427,1429,1431,1434,1435,1444,1447,1451],
+      "3": [1428,1469],
+      "4": [1432,1438,1439,1446,1454],
+      "5": [1436,1437,1440,1441,1443,1445,1452]
+    },
+    "symmetry": {
+      "0": [1425,1426,1439,1450],
+      "1": [1427,1430,1433,1436,1437,1438,1445,1446,1448,1453],
+      "2": [1428,1431,1469],
+      "3": [1429,1434,1444,1451],
+      "4": [1432,1435,1440,1441,1443,1447,1449,1452,1454]
+    },
+    "combined": {
+      "0": [1425,1426,1450],
+      "1": [1427,1447],
+      "2": [1428,1469],
+      "3": [1429,1431,1434,1444,1451],
+      "4": [1430,1433,1448,1449,1453],
+      "5": [1432,1438,1446,1454],
+      "6": [1435,1436,1437,1440,1441,1443,1445,1452],
+      "7": [1439]
+    }
+  },
+  "primaryModel": {
+    "description": "training-only glyph-emission model over supported operator types; score a candidate three-operator path by the sum of log P(observed shape cluster_i | candidate operator_i)",
+    "smoothing": "alpha=5 toward the training-wide shape-cluster distribution",
+    "frequencyPriorInStructuralScore": false,
+    "candidatePaths": "three-operator paths observed at least five times in training and composed only of operator types with at least twenty training occurrences"
+  },
+  "primaryEndpoints": [
+    "exact three-operator path top1/top5/top10/top50 and median rank",
+    "individual operator rank",
+    "morphology-path recovery",
+    "lemma-path recovery",
+    "real order versus reversed and deterministic within-path shuffle"
+  ],
+  "baselinesAndControls": [
+    "training path-frequency baseline",
+    "heldout-book-conditioned path-frequency oracle baseline",
+    "exact mark-identity emission model",
+    "reversed glyph order",
+    "deterministic within-path glyph shuffle",
+    "frequency-matched unrelated glyph path",
+    "frequency-stratified shape-scrambled assignments",
+    "morphology-only versus joint lemma×morph recovery"
+  ],
+  "freezeRule": "no feature, holdout, support-threshold, scoring, smoothing, or candidate-inventory change after recovery outcomes are opened; any change becomes a separately labeled robustness analysis or new protocol"
+}
