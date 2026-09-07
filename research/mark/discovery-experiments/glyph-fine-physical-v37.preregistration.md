@@ -100,9 +100,9 @@ A three-token path is admissible only if all three tokens belong to the same sid
 
 ## IV. Visible physical representation is frozen before Hebrew outcomes
 
-The primary glyph carrier is the normalized outline of each qualifying Masoretic codepoint in **Noto Sans Hebrew Regular**, used as a controlled proxy rather than a physical manuscript witness.
+The primary glyph carrier is the normalized rendering of each qualifying Masoretic codepoint in **Noto Sans Hebrew Regular**, used as a controlled proxy rather than a physical manuscript witness.
 
-The font binary itself is not added to the repository. The protocol records its SHA-256, version, and units-per-em. A reproducible extractor records only derived physical measurements and outline hashes.
+The font binary itself is not added to the repository. The protocol records its SHA-256, version, and units-per-em. A reproducible extractor records only derived physical measurements and render hashes.
 
 No conventional mark names, inherited grammatical functions, translations, Hebrew lemmas, morphology labels, or semantic categories are used to construct the physical representation.
 
@@ -118,10 +118,10 @@ The extractor measures continuous or count-valued information including:
 
 Every nonconstant dimension is centered by its median, scaled by MAD×1.4826 (falling back to standard deviation when necessary), and clipped to [-5, 5]. PCA is then fit **only across the 30 visible glyph forms**, retaining the minimum number of components explaining at least 95% of visible physical variance. Retained PC dimensions are re-scaled to unit standard deviation across glyphs.
 
-This produces, before outcome inspection:
+The extractor run completed before any V37 hidden-Hebrew scoring and froze these actual values:
 
-- Lane 2: 48 raw fine individual features → 11 retained PCs (95.66% variance);
-- Lane 3: 80 raw fine + relational/graph features → 13 retained PCs (95.81% variance).
+- Lane 2: 48 raw fine individual features → 8 retained PCs (95.81% variance);
+- Lane 3: 80 raw fine + relational/graph features → 10 retained PCs (95.96% variance).
 
 The derived feature file SHA-256 is frozen in the protocol.
 
@@ -157,7 +157,7 @@ The exact frozen V36 combined topology/geometry/symmetry cluster assignment. Con
 
 ### Lane 2 — fine individual physical state
 
-The 11-PC continuous physical representation derived from topology + geometry + symmetry.
+The 8-PC continuous physical representation derived from topology + geometry + symmetry.
 
 For each supported Hebrew operator and PC dimension, training glyph occurrences estimate a conditional Gaussian. Mean and second moment are shrunk with α=5 toward the training-wide physical distribution. Conditional variance has a frozen floor of 0.0625 in globally standardized PC units.
 
@@ -165,7 +165,7 @@ The candidate-path state score is the sum over positions of the mean per-PC log 
 
 ### Lane 3 — fine relational glyph state
 
-The same continuous Gaussian scoring rule, using the 13-PC representation that additionally contains graph and internal component-relation structure.
+The same continuous Gaussian scoring rule, using the 10-PC representation that additionally contains graph and internal component-relation structure.
 
 ### Lane 4 — ordered physical transformation structure
 
@@ -306,19 +306,19 @@ Ablations are interpreted only after primary lane results are frozen.
 
 ## XI. Identity-within-shape test
 
-The chosen proxy font contains two exact-outline identity collisions, discovered from outline hashes before outcome inspection:
+The chosen proxy font contains two exact-render identity collisions, discovered from render hashes before outcome inspection:
 
 ```text
 U+0596 and U+05AD
 U+059C and U+059D
 ```
 
-Within this font, each pair has an identical recorded outline despite different Unicode identities.
+Within this font, each pair has an identical recorded normalized rendering despite different Unicode identities.
 
 This creates a particularly clean identity-within-shape control. On heldout paths containing one or more of these codepoints compare:
 
 1. the exact-identity model; and
-2. a collapsed-identity model in which each exact-outline pair is a single anonymous category.
+2. a collapsed-identity model in which each exact-render pair is a single anonymous category.
 
 If exact identity materially outperforms collapsed identity on this subset, then information remains that this physical witness cannot express. If the advantage disappears, that favors the physical-proxy explanation for at least these matched forms.
 
