@@ -1,0 +1,441 @@
+{
+  "schema": "mark_structural_regime_first_attempt_set_v46_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "discoveryFeatureArtifactSha256": "0d45b335f8b468bed999d2455b4385b32bb742d7f1c7cf542a54b147ac976caf",
+  "runnerCommit": "f9cfb375c683ba0a6e9ddc054620d2b6ef2c537f",
+  "runnerBlob": "04cfda603db2ab9d3fcfda872c02e43660adf009",
+  "exactAttemptsArtifactSha256": "ebf418e6e653bc8bb6d527e0ae6e15bd11b9a9c0b0e787aebe54c05500021658",
+  "exactAssignmentsArtifactSha256": "c95f5e1dc747e07fbb013163ab80bc996b8e09279f491b3fb88c273e44aef5d3",
+  "rows": 13482,
+  "sources": 431,
+  "attemptCount": 36,
+  "eligibleCount": 15,
+  "selectionEligibility": {
+    "minimumMeanSourceHoldbackARI": 0.6,
+    "minimumMeanSeedARI": 0.85,
+    "minimumClusterFraction": 0.015,
+    "minimumDistinctSourcesPerCluster": 15
+  },
+  "sameKCrossRepresentationARI": {
+    "k2": {
+      "mean": 0.4479068315755945,
+      "R2_R3": 0.9499038452444205
+    },
+    "k3": {
+      "mean": 0.3253566871679152,
+      "R2_R3": 0.9551766991335173
+    },
+    "k4": {
+      "mean": 0.38273703962869043,
+      "R2_R3": 0.7560123421943221
+    },
+    "k5": {
+      "mean": 0.6869330070266316,
+      "R2_R3": 0.888027359232801
+    }
+  },
+  "attempts": [
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 2,
+      "silhouette": 0.3434,
+      "residualCompactness": 0.3456,
+      "meanSeedARI": 0.9975,
+      "meanSourceHoldbackARI": 0.9864,
+      "minClusterFraction": 0.4742,
+      "minDistinctSourcesPerCluster": 298,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 3,
+      "silhouette": 0.2369,
+      "residualCompactness": 0.4233,
+      "meanSeedARI": 0.9921,
+      "meanSourceHoldbackARI": 0.7873,
+      "minClusterFraction": 0.2076,
+      "minDistinctSourcesPerCluster": 239,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 4,
+      "silhouette": 0.2379,
+      "residualCompactness": 0.4906,
+      "meanSeedARI": 0.9908,
+      "meanSourceHoldbackARI": 0.8427,
+      "minClusterFraction": 0.0957,
+      "minDistinctSourcesPerCluster": 160,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 5,
+      "silhouette": 0.2375,
+      "residualCompactness": 0.5443,
+      "meanSeedARI": 0.9993,
+      "meanSourceHoldbackARI": 0.9113,
+      "minClusterFraction": 0.0704,
+      "minDistinctSourcesPerCluster": 157,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 6,
+      "silhouette": 0.2323,
+      "residualCompactness": 0.5842,
+      "meanSeedARI": 0.9926,
+      "meanSourceHoldbackARI": 0.9199,
+      "minClusterFraction": 0.0119,
+      "minDistinctSourcesPerCluster": 85,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 7,
+      "silhouette": 0.2178,
+      "residualCompactness": 0.6146,
+      "meanSeedARI": 0.988,
+      "meanSourceHoldbackARI": 0.9086,
+      "minClusterFraction": 0.0113,
+      "minDistinctSourcesPerCluster": 83,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 8,
+      "silhouette": 0.2206,
+      "residualCompactness": 0.6346,
+      "meanSeedARI": 0.9919,
+      "meanSourceHoldbackARI": 0.8837,
+      "minClusterFraction": 0.0113,
+      "minDistinctSourcesPerCluster": 83,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 9,
+      "silhouette": 0.221,
+      "residualCompactness": 0.6535,
+      "meanSeedARI": 0.99,
+      "meanSourceHoldbackARI": 0.9288,
+      "minClusterFraction": 0.0113,
+      "minDistinctSourcesPerCluster": 55,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R1_FULL_MORPHOLOGY",
+      "k": 10,
+      "silhouette": 0.2029,
+      "residualCompactness": 0.6687,
+      "meanSeedARI": 0.9909,
+      "meanSourceHoldbackARI": 0.7799,
+      "minClusterFraction": 0.0108,
+      "minDistinctSourcesPerCluster": 54,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 2,
+      "silhouette": 0.3549,
+      "residualCompactness": 0.3359,
+      "meanSeedARI": 1,
+      "meanSourceHoldbackARI": 0.9913,
+      "minClusterFraction": 0.4642,
+      "minDistinctSourcesPerCluster": 291,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 3,
+      "silhouette": 0.3124,
+      "residualCompactness": 0.4276,
+      "meanSeedARI": 0.9997,
+      "meanSourceHoldbackARI": 0.9865,
+      "minClusterFraction": 0.1055,
+      "minDistinctSourcesPerCluster": 173,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 4,
+      "silhouette": 0.3081,
+      "residualCompactness": 0.4852,
+      "meanSeedARI": 0.9976,
+      "meanSourceHoldbackARI": 0.8668,
+      "minClusterFraction": 0.0742,
+      "minDistinctSourcesPerCluster": 157,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 5,
+      "silhouette": 0.3257,
+      "residualCompactness": 0.5355,
+      "meanSeedARI": 0.9982,
+      "meanSourceHoldbackARI": 0.8429,
+      "minClusterFraction": 0.0411,
+      "minDistinctSourcesPerCluster": 149,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 6,
+      "silhouette": 0.2423,
+      "residualCompactness": 0.5727,
+      "meanSeedARI": 0.9989,
+      "meanSourceHoldbackARI": 0.9609,
+      "minClusterFraction": 0.0111,
+      "minDistinctSourcesPerCluster": 82,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 7,
+      "silhouette": 0.2284,
+      "residualCompactness": 0.599,
+      "meanSeedARI": 0.9838,
+      "meanSourceHoldbackARI": 0.9434,
+      "minClusterFraction": 0.011,
+      "minDistinctSourcesPerCluster": 60,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 8,
+      "silhouette": 0.2217,
+      "residualCompactness": 0.6212,
+      "meanSeedARI": 0.9888,
+      "meanSourceHoldbackARI": 0.92,
+      "minClusterFraction": 0.011,
+      "minDistinctSourcesPerCluster": 58,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 9,
+      "silhouette": 0.2135,
+      "residualCompactness": 0.6393,
+      "meanSeedARI": 0.972,
+      "meanSourceHoldbackARI": 0.8229,
+      "minClusterFraction": 0.0066,
+      "minDistinctSourcesPerCluster": 55,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R2_SCALE_NORMALIZED",
+      "k": 10,
+      "silhouette": 0.2072,
+      "residualCompactness": 0.6553,
+      "meanSeedARI": 0.98,
+      "meanSourceHoldbackARI": 0.755,
+      "minClusterFraction": 0.0062,
+      "minDistinctSourcesPerCluster": 46,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 2,
+      "silhouette": 0.3732,
+      "residualCompactness": 0.3431,
+      "meanSeedARI": 1,
+      "meanSourceHoldbackARI": 0.9846,
+      "minClusterFraction": 0.4597,
+      "minDistinctSourcesPerCluster": 298,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 3,
+      "silhouette": 0.3365,
+      "residualCompactness": 0.446,
+      "meanSeedARI": 1,
+      "meanSourceHoldbackARI": 0.9829,
+      "minClusterFraction": 0.1046,
+      "minDistinctSourcesPerCluster": 170,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 4,
+      "silhouette": 0.3542,
+      "residualCompactness": 0.5055,
+      "meanSeedARI": 1,
+      "meanSourceHoldbackARI": 0.9384,
+      "minClusterFraction": 0.0474,
+      "minDistinctSourcesPerCluster": 167,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 5,
+      "silhouette": 0.3551,
+      "residualCompactness": 0.5572,
+      "meanSeedARI": 0.9941,
+      "meanSourceHoldbackARI": 0.9537,
+      "minClusterFraction": 0.0256,
+      "minDistinctSourcesPerCluster": 133,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 6,
+      "silhouette": 0.2769,
+      "residualCompactness": 0.5968,
+      "meanSeedARI": 0.9972,
+      "meanSourceHoldbackARI": 0.9605,
+      "minClusterFraction": 0.0111,
+      "minDistinctSourcesPerCluster": 81,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 7,
+      "silhouette": 0.2648,
+      "residualCompactness": 0.6272,
+      "meanSeedARI": 0.9999,
+      "meanSourceHoldbackARI": 0.9563,
+      "minClusterFraction": 0.011,
+      "minDistinctSourcesPerCluster": 63,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 8,
+      "silhouette": 0.2677,
+      "residualCompactness": 0.6513,
+      "meanSeedARI": 0.9809,
+      "meanSourceHoldbackARI": 0.9516,
+      "minClusterFraction": 0.0111,
+      "minDistinctSourcesPerCluster": 59,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 9,
+      "silhouette": 0.2577,
+      "residualCompactness": 0.6719,
+      "meanSeedARI": 0.987,
+      "meanSourceHoldbackARI": 0.9134,
+      "minClusterFraction": 0.0065,
+      "minDistinctSourcesPerCluster": 57,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R3_TOPOLOGY_ECOLOGY",
+      "k": 10,
+      "silhouette": 0.2546,
+      "residualCompactness": 0.6875,
+      "meanSeedARI": 0.9647,
+      "meanSourceHoldbackARI": 0.855,
+      "minClusterFraction": 0.0062,
+      "minDistinctSourcesPerCluster": 40,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 2,
+      "silhouette": 0.3833,
+      "residualCompactness": 0.1346,
+      "meanSeedARI": 0.9989,
+      "meanSourceHoldbackARI": 0.9491,
+      "minClusterFraction": 0.1775,
+      "minDistinctSourcesPerCluster": 344,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 3,
+      "silhouette": 0.4003,
+      "residualCompactness": 0.2231,
+      "meanSeedARI": 0.9709,
+      "meanSourceHoldbackARI": 0.9196,
+      "minClusterFraction": 0.0837,
+      "minDistinctSourcesPerCluster": 241,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 4,
+      "silhouette": 0.3885,
+      "residualCompactness": 0.2776,
+      "meanSeedARI": 0.9967,
+      "meanSourceHoldbackARI": 0.8743,
+      "minClusterFraction": 0.0443,
+      "minDistinctSourcesPerCluster": 191,
+      "selectionEligible": true
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 5,
+      "silhouette": 0.3078,
+      "residualCompactness": 0.3314,
+      "meanSeedARI": 0.997,
+      "meanSourceHoldbackARI": 0.9286,
+      "minClusterFraction": 0.0111,
+      "minDistinctSourcesPerCluster": 94,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 6,
+      "silhouette": 0.1966,
+      "residualCompactness": 0.3678,
+      "meanSeedARI": 0.9992,
+      "meanSourceHoldbackARI": 0.9464,
+      "minClusterFraction": 0.011,
+      "minDistinctSourcesPerCluster": 69,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 7,
+      "silhouette": 0.2014,
+      "residualCompactness": 0.3896,
+      "meanSeedARI": 0.987,
+      "meanSourceHoldbackARI": 0.8647,
+      "minClusterFraction": 0.0097,
+      "minDistinctSourcesPerCluster": 65,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 8,
+      "silhouette": 0.1925,
+      "residualCompactness": 0.4105,
+      "meanSeedARI": 0.9738,
+      "meanSourceHoldbackARI": 0.8309,
+      "minClusterFraction": 0.0081,
+      "minDistinctSourcesPerCluster": 62,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 9,
+      "silhouette": 0.1847,
+      "residualCompactness": 0.4302,
+      "meanSeedARI": 0.9624,
+      "meanSourceHoldbackARI": 0.9148,
+      "minClusterFraction": 0.0072,
+      "minDistinctSourcesPerCluster": 55,
+      "selectionEligible": false
+    },
+    {
+      "representation": "R4_SOURCE_RELATIVE_NORMALIZED",
+      "k": 10,
+      "silhouette": 0.1186,
+      "residualCompactness": 0.4463,
+      "meanSeedARI": 0.95,
+      "meanSourceHoldbackARI": 0.8379,
+      "minClusterFraction": 0.0072,
+      "minDistinctSourcesPerCluster": 51,
+      "selectionEligible": false
+    }
+  ],
+  "boundaries": {
+    "selectionPerformedInExactRunner": false,
+    "provenanceOpened": false,
+    "validationOpened": false,
+    "confirmationOpened": false
+  }
+}
