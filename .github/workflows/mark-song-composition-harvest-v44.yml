@@ -1,0 +1,52 @@
+name: Mark V44 bounded Phase A
+
+on:
+  push:
+    branches:
+      - mark-song-composition-harvest-v44
+    paths:
+      - "research/mark/discovery-experiments/song-composition-harvest-v44.phase-a.run-request"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  phase-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify bounded-cache mathematical equivalence
+        run: python scripts/mark-v44/test-mark-v44-bounded-equivalence.py
+      - name: Verify inherited V9 engine invariants
+        run: python scripts/mark-v44/test-mark-operator-algebra-v9.py
+      - name: Download frozen V5 packet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 33807154154 -n mark-critical-edge-correspondence-v5-frozen -D artifact-staging/v5
+      - name: Execute frozen V44 Phase A
+        run: |
+          mkdir -p artifacts/v44
+          python scripts/run-mark-song-composition-harvest-v44.py \
+            --config research/mark/discovery-experiments/song-composition-harvest-v44.phase-a.execution-freeze.json \
+            --v5-packet artifact-staging/v5 \
+            --work artifacts/v44/work \
+            --out-candidates artifacts/v44/song-composition-harvest-v44.phase-a.candidates.json \
+            --out-summary artifacts/v44/song-composition-harvest-v44.phase-a.summary.json
+      - name: Upload V44 blind Phase-A outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-song-composition-harvest-v44-phase-a
+          path: |
+            artifacts/v44/song-composition-harvest-v44.phase-a.candidates.json
+            artifacts/v44/song-composition-harvest-v44.phase-a.summary.json
+            artifacts/v44/work/primary/freeze/operator-algebra-freeze.json
+            artifacts/v44/work/primary/result/operator-composition-algebra.json
+            artifacts/v44/work/topology-ablation/freeze/operator-algebra-freeze.json
+            artifacts/v44/work/topology-ablation/result/operator-composition-algebra.json
+          if-no-files-found: error
+          retention-days: 30
