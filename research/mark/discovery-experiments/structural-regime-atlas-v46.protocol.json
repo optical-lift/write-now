@@ -1,0 +1,126 @@
+{
+  "schema": "mark_structural_regime_atlas_v46_protocol_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "parent": {
+    "v45PhaseAFreezeSha": "3ab58910b60b90c7bb682788e742503feeb5f329",
+    "v45PostfreezeRejoinSha": "b953916415655e76b74ba91144c74d4ace2b087f"
+  },
+  "sourceWorld": {
+    "runId": 33755743472,
+    "sealedEvidenceArtifactId": 9893738364,
+    "sealedEvidenceArtifactSha256": "5aee2d958875d711a148e08c37c613457eeb734efc8e2c773fa63782faad1a20",
+    "fullCompilerBlindInputSha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+    "sources": 714,
+    "observations": 23161,
+    "newAcquisitionAllowed": false
+  },
+  "exclusion": {
+    "sourceManifest": "mark_edge_pair_manifest_v5.selectedObservationIds",
+    "sourceManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "observations": 435,
+    "canonicalSortedObservationIdsSha256": "1735dbadeb93241237af7af3efbe22a7b4a942a80cf94db301e43caaef827076"
+  },
+  "untouchedPool": {
+    "observations": 22726,
+    "sources": 714,
+    "canonicalSortedObservationIdsSha256": "8d8a37a7fa80d42e1bff753b30539497a3bdbda1ce694e410b22328c23ce7b13"
+  },
+  "sourcePartition": {
+    "expression": "first_32_bits(sha256(\"mark-v46-structural-regime-atlas|\" + sourceGroupId)) mod 100",
+    "discovery": {
+      "buckets": "0-59",
+      "sources": 431,
+      "observations": 13482,
+      "sourceListSha256": "a36f428e48c0fcfb70a81c3f6c6aa743740985046928c3d8bb8c4a648fb302df",
+      "observationListSha256": "a79d274f4b747359aaa891d8d1a8901a2702bce1856b8bed4fb0cc55d0a8f93e"
+    },
+    "validation": {
+      "buckets": "60-79",
+      "sources": 137,
+      "observations": 4372,
+      "sourceListSha256": "326e9e77e10d31790a50624df15f0cd7634e1d1c90440a4a2b0d2d2602c54b40",
+      "observationListSha256": "17311f30d5e7e0140d816e62b10cda21a1f58978eab7e6785ba3b1b73dd07e34"
+    },
+    "confirmation": {
+      "buckets": "80-99",
+      "sources": 146,
+      "observations": 4872,
+      "sourceListSha256": "217b6832f575aece03d6b38687cfa7e53f9ca9e94460283f87b279714e9bfc4a",
+      "observationListSha256": "f25739969cd0e4f3620949801b54a8fbd54863eca21ac206b38c6f24f4555ca3"
+    }
+  },
+  "blindness": {
+    "throughConfirmation": true,
+    "allowed": [
+      "opaque source/observation ids",
+      "physical observation geometry",
+      "blind graph topology",
+      "proposal kind/scale",
+      "V45 anonymous operator identities",
+      "V45 frozen probability functions",
+      "source-local grouping for cross-scale analysis"
+    ],
+    "forbidden": [
+      "institution",
+      "title",
+      "language",
+      "culture",
+      "chronology",
+      "geography",
+      "OCR/transcription",
+      "named glyph identity",
+      "writing/ornament/wear semantic labels",
+      "Song ontology labels"
+    ]
+  },
+  "featureFamilies": [
+    "graph_morphology",
+    "operator_ecology",
+    "v45_law_ecology",
+    "higher_order_operator_programs",
+    "cross_scale_persistence_transition"
+  ],
+  "discovery": {
+    "adaptive": true,
+    "allAttemptsMustBePreserved": true,
+    "initialSequenceLengths": [
+      2,
+      3,
+      4
+    ],
+    "provenanceInterpretationAllowed": false,
+    "selectionCriteria": [
+      "structural stability",
+      "source recurrence",
+      "residual compactness",
+      "out-of-sample assignability"
+    ],
+    "forbiddenSelectionCriterion": "post-hoc semantic excitement"
+  },
+  "validation": {
+    "opensAfterRegimeFreeze": true,
+    "sourceRefitForbidden": true
+  },
+  "confirmation": {
+    "opensAfterSelectionClosed": true,
+    "sourceRefitForbidden": true
+  },
+  "requiredOutputs": [
+    "regime_atlas",
+    "operator_ecology",
+    "higher_order_programs",
+    "cross_scale_transition_map",
+    "residual_ledger",
+    "confirmation_report",
+    "postconfirmation_context_rejoin",
+    "next_bridge_decision_record"
+  ],
+  "branchOutcomes": [
+    "UNIVERSAL_SUBSTRATE",
+    "REGIME_SPECIFIC_OPERATOR_VOCABULARY",
+    "HIGHER_ORDER_SEPARATION",
+    "CROSS_SCALE_ORGANIZATION",
+    "UNEXPLAINED_RESIDUAL"
+  ],
+  "songSemanticsUsedBeforeContextRejoin": false
+}
