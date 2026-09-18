@@ -1,0 +1,82 @@
+{
+  "schema": "mark_regime_transition_pairwise_discovery_v47_custody_v1",
+  "experimentId": "mark:regime-transition-grammar:v47",
+  "status": "PAIRWISE_HARVEST_COMPLETE",
+  "geometrySha256": "480c174ff503ad877f5d08cdf0dae78007750334873045bd0d8e91a9e8513f55",
+  "mappingSha256": "633918a3bad435adfdef9859a33743b9fa88bfcf59a79a4ed8a59b71141d9d90",
+  "rawDiscoveryResultSha256": "e0623f374b3d065288ded3c9c4a1ff636835632b8675ba081045bedfabe564ff",
+  "runnerStdoutSha256": "0d28a173f068ef811acf7e09c5d6b557b268b249c44dff19c085aa62704791d0",
+  "runnerStderrSha256": "5b6e09e611c658aa9af99f688e19ee606688c0725740b83f8fad66c63b0354cb",
+  "linkedEdges": 5134,
+  "observedTransitionKeys": 73,
+  "eligibleBeforeCap": 7,
+  "harvestedCount": 7,
+  "harvested": [
+    {
+      "transitionKey": "local|RG-002->neighborhood|RG-002",
+      "occurrences": 611,
+      "distinctSources": 95,
+      "conditionalProbability": 0.8392857142857143,
+      "lift": 2.0002138579982893,
+      "nullQ99Lift": 1.8372946935528427,
+      "nullExcessLift": 0.16291916444544663
+    },
+    {
+      "transitionKey": "neighborhood|RG-002->field|RG-002",
+      "occurrences": 643,
+      "distinctSources": 79,
+      "conditionalProbability": 0.9133522727272727,
+      "lift": 2.2137182203389827,
+      "nullQ99Lift": 2.020226150807847,
+      "nullExcessLift": 0.1934920695311355
+    },
+    {
+      "transitionKey": "local|RG-004->neighborhood|RG-004",
+      "occurrences": 719,
+      "distinctSources": 72,
+      "conditionalProbability": 0.8832923832923832,
+      "lift": 2.080179695564311,
+      "nullQ99Lift": 1.9833913754252592,
+      "nullExcessLift": 0.09678832013905159
+    },
+    {
+      "transitionKey": "neighborhood|RG-004->field|RG-004",
+      "occurrences": 726,
+      "distinctSources": 58,
+      "conditionalProbability": 0.9552631578947368,
+      "lift": 2.1827317962015558,
+      "nullQ99Lift": 2.0941086746429165,
+      "nullExcessLift": 0.08862312155863927
+    },
+    {
+      "transitionKey": "local|RG-001->neighborhood|RG-001",
+      "occurrences": 150,
+      "distinctSources": 36,
+      "conditionalProbability": 0.7389162561576355,
+      "lift": 6.839271394203231,
+      "nullQ99Lift": 5.943972071274263,
+      "nullExcessLift": 0.8952993229289676
+    },
+    {
+      "transitionKey": "neighborhood|RG-001->field|RG-001",
+      "occurrences": 163,
+      "distinctSources": 28,
+      "conditionalProbability": 0.9157303370786517,
+      "lift": 8.099965249623537,
+      "nullQ99Lift": 7.019283082888384,
+      "nullExcessLift": 1.0806821667351532
+    },
+    {
+      "transitionKey": "neighborhood|RG-003->field|RG-003",
+      "occurrences": 44,
+      "distinctSources": 14,
+      "conditionalProbability": 0.6376811594202898,
+      "lift": 17.938702779757662,
+      "nullQ99Lift": 13.453513406156905,
+      "nullExcessLift": 4.4851893736007575
+    }
+  ],
+  "validationOpened": false,
+  "confirmationOpened": false,
+  "provenanceConsumed": false
+}
