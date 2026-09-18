@@ -236,6 +236,20 @@ def main():
     for path,key in ((PRIMARY_PROTOCOL,"primary_protocol_blob_sha1"),(TOPOLOGY_PROTOCOL,"topology_protocol_blob_sha1")):
         if git_blob_sha1(path)!=config[key]:
             raise RuntimeError("V44 operator reference protocol drift")
+    engine_paths={
+        "core":REF/"mark_operator_algebra_v9_core.py",
+        "split":REF/"split-mark-operator-algebra-v9.py",
+        "induce":REF/"induce-mark-operator-algebra-v9.py",
+        "evaluate":REF/"evaluate-mark-operator-algebra-v9.py",
+        "tests":REF/"test-mark-operator-algebra-v9.py",
+    }
+    for key,path in engine_paths.items():
+        if git_blob_sha1(path)!=config["reference_engine_blobs"][key]:
+            raise RuntimeError(f"V44 engine blob drift: {key}")
+    eq=REF/"test-mark-v44-bounded-equivalence.py"
+    if git_blob_sha1(eq)!=config["bounded_equivalence_blob_sha1"]:
+        raise RuntimeError("V44 bounded-equivalence test blob drift")
+    subprocess.run([sys.executable,str(eq)],check=True,cwd=str(ROOT))
     subprocess.run([sys.executable,str(REF/"test-mark-operator-algebra-v9.py")],check=True,cwd=str(REF))
     work=Path(args.work); split_dir=work/"split"; split_dir.mkdir(parents=True,exist_ok=True)
     run_cmd(REF/"split-mark-operator-algebra-v9.py",{
