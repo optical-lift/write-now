@@ -1,0 +1,37 @@
+{
+  "schema": "mark_regime_transition_grammar_v47_partition_freeze_v1",
+  "experiment_id": "mark:regime-transition-grammar:v47",
+  "source_pool": {
+    "sources": 283,
+    "observations": 9244,
+    "source_list_sha256": "b9cc1accbca97380178d8408e7c4d38f9b18ad22c64a785c5f5a8e835c82c729",
+    "fixed_assignment_mapping_sha256": "633918a3bad435adfdef9859a33743b9fa88bfcf59a79a4ed8a59b71141d9d90"
+  },
+  "partition_rule": {
+    "hash_prefix": "mark-v47-regime-transition-grammar|",
+    "discovery": "0-59",
+    "validation": "60-79",
+    "confirmation": "80-99"
+  },
+  "partitions": {
+    "discovery": {
+      "sources": 171,
+      "observations": 5305,
+      "source_list_sha256": "b77f4f48353764d42888a0de4fb6f1027c78d11565b69ecefe88dd74dffbddbc",
+      "observation_id_list_sha256": "c219978ab6ad8e81bf3ce55634ea9c167c00d4d666e214c43bef093dd2b13795"
+    },
+    "validation": {
+      "sources": 59,
+      "observations": 2332,
+      "source_list_sha256": "daa2f0e62f0925ad3ebf7cd533ce3ceb9a27f68585d3209fbf5de9066e3b34e4",
+      "observation_id_list_sha256": "d1a5a58178866bd61fc4f671e8c08d30e09f225da010c485a46640d20a19d91c"
+    },
+    "confirmation": {
+      "sources": 53,
+      "observations": 1607,
+      "source_list_sha256": "4d947806cb30d62785165a75b2b718da750e476b719711a0a8fa8abc9bd99599",
+      "observation_id_list_sha256": "9652f6d2411e6dc975466bddfe8ba1cd98b69affaec012168e550d51cba387e2"
+    }
+  },
+  "source_overlap_forbidden": true
+}
