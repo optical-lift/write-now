@@ -1,0 +1,92 @@
+{
+  "schema": "mark_regime_boundary_dynamics_v48_protocol_v1",
+  "experimentId": "mark:regime-boundary-dynamics:v48",
+  "parentV47FinalFreeze": "88bad42d5610aa97e01e97d2605647eb392f280c",
+  "roles": {
+    "coordinateFit": {
+      "sources": 171,
+      "observations": 5305,
+      "sourceListSha256": "b77f4f48353764d42888a0de4fb6f1027c78d11565b69ecefe88dd74dffbddbc",
+      "observationListSha256": "c219978ab6ad8e81bf3ce55634ea9c167c00d4d666e214c43bef093dd2b13795"
+    },
+    "boundaryDevelopment": {
+      "sources": 59,
+      "observations": 2332,
+      "sourceListSha256": "daa2f0e62f0925ad3ebf7cd533ce3ceb9a27f68585d3209fbf5de9066e3b34e4",
+      "observationListSha256": "d1a5a58178866bd61fc4f671e8c08d30e09f225da010c485a46640d20a19d91c"
+    },
+    "boundaryValidation": {
+      "sources": 53,
+      "observations": 1607,
+      "sourceListSha256": "4d947806cb30d62785165a75b2b718da750e476b719711a0a8fa8abc9bd99599",
+      "observationListSha256": "9652f6d2411e6dc975466bddfe8ba1cd98b69affaec012168e550d51cba387e2"
+    },
+    "finalConfirmation": {
+      "sources": 431,
+      "observations": 13482,
+      "sourceListSha256": "a36f428e48c0fcfb70a81c3f6c6aa743740985046928c3d8bb8c4a648fb302df",
+      "observationListSha256": "a79d274f4b747359aaa891d8d1a8901a2702bce1856b8bed4fb0cc55d0a8f93e"
+    }
+  },
+  "equivalentR3": {
+    "standardization": "StandardScaler",
+    "pca": "retain >=95% variance, full SVD",
+    "kmeans": {
+      "k": 5,
+      "randomState": 4601,
+      "nInit": 20,
+      "maxIter": 500,
+      "algorithm": "lloyd"
+    },
+    "alignment": "one-to-one permutation maximizing agreement with canonical V46 assignments on coordinate-fit observations",
+    "minimumAlignedARI": 0.85,
+    "minimumObservationsPerAlignedRegime": 50,
+    "minimumSourcesPerAlignedRegime": 20
+  },
+  "boundaryAttempts": [
+    "B0_scale_pair",
+    "B1_child_RG",
+    "B2_child_RG_plus_scale_pair",
+    "C1_B2_plus_child_R3_continuous",
+    "C2_C1_plus_R3_displacement",
+    "C3_C2_plus_R4_source_relative"
+  ],
+  "modelFamily": "L2 logistic regression",
+  "CGrid": [
+    0.01,
+    0.1,
+    1,
+    10
+  ],
+  "developmentSelection": {
+    "primary": "mean source-grouped held-out log-loss gain bits/edge over B2",
+    "tieBreakers": [
+      "positive-source fraction",
+      "Brier score",
+      "simpler model",
+      "lower C"
+    ]
+  },
+  "null": {
+    "iterations": 100,
+    "batches": 10,
+    "iterationsPerBatch": 10,
+    "shuffle": "persist/change target within sourceGroupId x scalePair x childRG strata",
+    "quantile": 0.99
+  },
+  "validationGate": {
+    "selectedModelBeatsB2": true,
+    "gainBitsPerEdgeStrictlyPositive": true,
+    "gainStrictlyAboveMatchedNullQ99": true,
+    "minimumPositiveSourceFraction": 0.55,
+    "minimumEdgesPerSourceForSourceGate": 5,
+    "requireBothOutcomeClasses": true
+  },
+  "forbiddenBeforeFinalConfirmation": [
+    "provenance",
+    "OCR",
+    "semantic class",
+    "Song labels",
+    "new source acquisition"
+  ]
+}
