@@ -420,6 +420,24 @@
       "name": "mark-white-paint-grammar-v1-frozen",
       "sha256": "a97c29a6ae8a87f86232c4b64646226f3c446eed414c402bb4abc2b3d254ea5d",
       "verdict": "controlled calibration gates all pass for operation, relation modifier, degree and closure; not universality evidence"
+    },
+    {
+      "key": "white-paint-glyph-transfer-v2",
+      "branch": "mark-white-paint-glyph-transfer-v2",
+      "run_id": 33810144498,
+      "artifact_id": 9914487254,
+      "name": "mark-white-paint-glyph-transfer-v2-context",
+      "sha256": "9f80558619e75b3c4801cd34b9c1c07a7d1ea4dbac39799c82e8938f12158c3a",
+      "verdict": "mixed: 3/5 predictions pass; repetition degree and closure-phase pass; operation recurrence and relation portability fail; appearance-system classification exceeds white-paint grammar"
+    },
+    {
+      "key": "white-paint-physical-witness-v3",
+      "branch": "mark-white-paint-physical-witness-v3",
+      "run_id": 33811822722,
+      "artifact_id": 9915192837,
+      "name": "mark-white-paint-physical-witness-v3-context",
+      "sha256": "8dd067e996a437591102f0a00dc214855b8b55fe218c30c62a449989e5a32333",
+      "verdict": "mixed: 2/3 predictions pass; repetition physical passes in 3/4 systems; closure physical fails; appearance-system classification substantially exceeds white-paint grammar"
     }
   ],
   "repository_results": [
@@ -511,14 +529,14 @@
       "note": "Repository contains execution-failure custody, not a scientific outcome."
     },
     {
-      "key": "white-paint-v2-v4",
-      "status": "PARTIAL_RECOVERY",
-      "note": "Blind/context or workflow lineage recovered; deeper scientific adjudication not yet packetized in this checkpoint."
-    },
-    {
       "key": "pre-v4-universal-observable-v2-and-conveyor",
       "status": "PARTIAL_RECOVERY",
       "note": "Workflow artifacts recovered, but distinct scientific claims need de-duplication against V5/V6/V7 lineage before packetization."
+    },
+    {
+      "key": "white-paint-v4-candidate-projector",
+      "status": "NO_DISTINCT_SCIENTIFIC_ADJUDICATION_RECOVERED",
+      "note": "Branch/workflow lineage recovered but no separate frozen scientific verdict located; do not infer from projector execution alone."
     }
   ]
 }
