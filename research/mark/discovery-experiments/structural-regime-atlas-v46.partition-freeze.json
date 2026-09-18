@@ -1,0 +1,44 @@
+{
+  "schema": "mark_structural_regime_atlas_v46_partition_freeze_v1",
+  "experiment_id": "mark:structural-regime-atlas:v46",
+  "full_world_input_sha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+  "excluded_observations": {
+    "count": 435,
+    "source_manifest_sha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "canonical_sorted_id_list_sha256": "1735dbadeb93241237af7af3efbe22a7b4a942a80cf94db301e43caaef827076"
+  },
+  "untouched": {
+    "count": 22726,
+    "source_count": 714,
+    "canonical_sorted_id_list_sha256": "8d8a37a7fa80d42e1bff753b30539497a3bdbda1ce694e410b22328c23ce7b13"
+  },
+  "partition_rule": {
+    "input": "sourceGroupId",
+    "hash_prefix": "mark-v46-structural-regime-atlas|",
+    "function": "first 32 bits of SHA-256 interpreted as unsigned integer, modulo 100",
+    "discovery": "0-59",
+    "validation": "60-79",
+    "confirmation": "80-99"
+  },
+  "partitions": {
+    "discovery": {
+      "sources": 431,
+      "observations": 13482,
+      "source_list_sha256": "a36f428e48c0fcfb70a81c3f6c6aa743740985046928c3d8bb8c4a648fb302df",
+      "observation_id_list_sha256": "a79d274f4b747359aaa891d8d1a8901a2702bce1856b8bed4fb0cc55d0a8f93e"
+    },
+    "validation": {
+      "sources": 137,
+      "observations": 4372,
+      "source_list_sha256": "326e9e77e10d31790a50624df15f0cd7634e1d1c90440a4a2b0d2d2602c54b40",
+      "observation_id_list_sha256": "17311f30d5e7e0140d816e62b10cda21a1f58978eab7e6785ba3b1b73dd07e34"
+    },
+    "confirmation": {
+      "sources": 146,
+      "observations": 4872,
+      "source_list_sha256": "217b6832f575aece03d6b38687cfa7e53f9ca9e94460283f87b279714e9bfc4a",
+      "observation_id_list_sha256": "f25739969cd0e4f3620949801b54a8fbd54863eca21ac206b38c6f24f4555ca3"
+    }
+  },
+  "source_overlap_forbidden": true
+}
