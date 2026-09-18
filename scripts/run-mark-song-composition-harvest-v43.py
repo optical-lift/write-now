@@ -36,6 +36,10 @@ def sha_file(path):
 def canonical_sha(value):
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")).hexdigest()
 
+def git_blob_sha1(path):
+    data=Path(path).read_bytes()
+    return hashlib.sha1(b"blob "+str(len(data)).encode("ascii")+b"\0"+data).hexdigest()
+
 def run_cmd(script, env):
     subprocess.run([sys.executable, str(script)], check=True, env={**os.environ, **env})
 
@@ -227,10 +231,10 @@ def main():
     config=load(args.config)
     if not config.get("implementation_sha") or config.get("preexecution_freeze_sha") in (None,"","PENDING"):
         raise RuntimeError("V43 refuses to execute before implementation and preexecution freeze SHAs are recorded")
-    if sha_file(__file__)!=config["runner_sha256"]:
+    if git_blob_sha1(__file__)!=config["runner_blob_sha1"]:
         raise RuntimeError("V43 runner bytes differ from frozen config")
-    for path,key in ((PRIMARY_PROTOCOL,"primary_protocol_sha256"),(TOPOLOGY_PROTOCOL,"topology_protocol_sha256")):
-        if sha_file(path)!=config[key]:
+    for path,key in ((PRIMARY_PROTOCOL,"primary_protocol_blob_sha1"),(TOPOLOGY_PROTOCOL,"topology_protocol_blob_sha1")):
+        if git_blob_sha1(path)!=config[key]:
             raise RuntimeError("V43 operator reference protocol drift")
     subprocess.run([sys.executable,str(REF/"test-mark-operator-algebra-v9.py")],check=True,cwd=str(REF))
     work=Path(args.work); split_dir=work/"split"; split_dir.mkdir(parents=True,exist_ok=True)
@@ -323,7 +327,7 @@ def main():
         "phase":"A",
         "implementation_sha":config["implementation_sha"],
         "preexecution_freeze_sha":config["preexecution_freeze_sha"],
-        "runner_sha256":config["runner_sha256"],
+        "runner_blob_sha1":config["runner_blob_sha1"],
         "candidate_construction_sha256":canonical_sha(config["candidate_specs"]),
         "inputs":config["inputs"],
         "engine_custody":{
