@@ -1,0 +1,92 @@
+{
+  "schema": "mark_regime_transition_pairwise_validation_v47_custody_v1",
+  "experimentId": "mark:regime-transition-grammar:v47",
+  "status": "VALIDATION_SUPPORTED",
+  "rawValidationResultSha256": "e1f2ebfe4d89713159f2a55b1baa7e5d70fb0dafc54e90c4670b3ad0025163ef",
+  "runnerStdoutSha256": "38d816bf85830ca5bff19feda265e66b14b33ecd6fb91cbd4506f86806f592a9",
+  "runnerStderrSha256": "2fc78780b4654e5367a9d6867a85450914b5013392ce036346cdb592b07b4cad",
+  "geometrySha256": "2108eec52d9f20539305a98a56d59dd0abc9d0904d3ca8f02fb541e221cefe40",
+  "mappingSha256": "633918a3bad435adfdef9859a33743b9fa88bfcf59a79a4ed8a59b71141d9d90",
+  "pairwiseDiscoverySha256": "e0623f374b3d065288ded3c9c4a1ff636835632b8675ba081045bedfabe564ff",
+  "linkedEdges": 2273,
+  "counts": {
+    "transferred": 7,
+    "rejected": 0,
+    "insufficientContrast": 0
+  },
+  "rules": [
+    {
+      "transitionKey": "local|RG-001->neighborhood|RG-001",
+      "status": "TRANSFERRED",
+      "context": 82,
+      "target": 69,
+      "sources": 13,
+      "conditional": 0.8414634146341463,
+      "lift": 7.477747045511692,
+      "predictiveGainBits": 2.053086382529156
+    },
+    {
+      "transitionKey": "local|RG-002->neighborhood|RG-002",
+      "status": "TRANSFERRED",
+      "context": 240,
+      "target": 196,
+      "sources": 29,
+      "conditional": 0.8166666666666667,
+      "lift": 2.532254196642686,
+      "predictiveGainBits": 0.4771576811737859
+    },
+    {
+      "transitionKey": "local|RG-004->neighborhood|RG-004",
+      "status": "TRANSFERRED",
+      "context": 440,
+      "target": 401,
+      "sources": 23,
+      "conditional": 0.9113636363636364,
+      "lift": 1.7115369380075263,
+      "predictiveGainBits": 0.7590391798595122
+    },
+    {
+      "transitionKey": "neighborhood|RG-001->field|RG-001",
+      "status": "TRANSFERRED",
+      "context": 82,
+      "target": 76,
+      "sources": 9,
+      "conditional": 0.926829268292683,
+      "lift": 7.523092890503373,
+      "predictiveGainBits": 2.5486222532157092
+    },
+    {
+      "transitionKey": "neighborhood|RG-002->field|RG-002",
+      "status": "TRANSFERRED",
+      "context": 245,
+      "target": 220,
+      "sources": 20,
+      "conditional": 0.8979591836734694,
+      "lift": 2.854761904761905,
+      "predictiveGainBits": 0.7477356814967921
+    },
+    {
+      "transitionKey": "neighborhood|RG-003->field|RG-003",
+      "status": "TRANSFERRED",
+      "context": 19,
+      "target": 10,
+      "sources": 4,
+      "conditional": 0.5263157894736842,
+      "lift": 33.46491228070175,
+      "predictiveGainBits": 1.5230519598511354
+    },
+    {
+      "transitionKey": "neighborhood|RG-004->field|RG-004",
+      "status": "TRANSFERRED",
+      "context": 416,
+      "target": 403,
+      "sources": 25,
+      "conditional": 0.96875,
+      "lift": 1.772556954436451,
+      "predictiveGainBits": 0.9768199030442462
+    }
+  ],
+  "refitPerformed": false,
+  "confirmationOpened": false,
+  "provenanceConsumed": false
+}
