@@ -41,6 +41,23 @@ For the two representations that remove most absolute-scale influence while reta
 
 R4 source-relative solutions are stable internally but deliberately orthogonal to the absolute/topological atlas; they are preserved as a competing within-source representation rather than discarded.
 
+## Additional blind discovery audits
+
+### Proposal-mechanism audit
+
+For the selected R3 K=5 assignment, normalized mutual information with both proposal kind and proposal scale is approximately **0.0207**. The selected regimes therefore are not simply a restatement of the proposal machinery.
+
+### Coarse-to-fine hierarchy audit
+
+Within R3, the eligible K=2→3→4→5 sequence is mostly nested. Child-cluster parent purities were:
+
+- K2→K3: **1.000 / 0.873 / 1.000**
+- K3→K4: **0.974 / 0.999 / 0.991 / 0.844**
+- K4→K5: **0.959 / 0.980 / 1.000 / 0.974 / 0.718**
+
+This supports reading K=5 as the deepest supported discovery partition before K=6 creates an under-mass split, rather than as an isolated arbitrary clustering.
+
+
 ## Selected first atlas
 
 **Selected attempt: `R3_TOPOLOGY_ECOLOGY:K5`.**
@@ -83,8 +100,10 @@ No semantic names are assigned.
 
 ## Frozen selected-model artifacts
 
-- exact selected-model JSON SHA-256: `5a0a430f8e127f46f31b207fd0be554d8cf622d11550dcb4b0987a5bd1705a5a`
-- exact selected discovery assignments SHA-256: `5f56e130f30f371c55cab601e9a1232d5a84398ee61c793a55e8388aea2eafe7`
+- selected model path: `research/mark/discovery-experiments/structural-regime-atlas-v46.discovery-selected-model.json`
+- selected model commit: `829ae8193f2ebb5ba660d565c19de7abc71468e6`
+- selected model Git blob: `8cd936b3aa7d1f4b34b127bccdc92a002de07352`
+- exact selected discovery assignments SHA-256 after deterministic anonymous regime renaming: `a01f00c4bce32c97ecb1679135457063e60de8df50b73f2d5972f4c650461b15`
 
 The selected model is fully determined by:
 
@@ -94,7 +113,7 @@ The selected model is fully determined by:
 - KMeans K=5, random state 4601, n_init=20, max_iter=500, Lloyd algorithm;
 - the frozen discovery feature bytes.
 
-The exact model JSON hash above is the custody identity for the resulting fitted scaler/PCA/centers.
+The selected-model Git blob above is the repository custody identity for the resulting fitted scaler/PCA/centers and now includes the deterministic raw-label → RG-ID map.
 
 ## Anonymous structural signatures
 
