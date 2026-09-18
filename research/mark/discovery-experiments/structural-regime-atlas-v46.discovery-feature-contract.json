@@ -1,0 +1,15 @@
+{
+  "schema": "mark_structural_feature_contract_v46_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "measurable": {
+    "graph_morphology": "MEASURED",
+    "operator_ecology": "PARTIAL: V46 local D4 topology-token ecology only",
+    "v45_law_ecology": "UNAVAILABLE: exact V5 critical-edge projector is absent from the V46 parent branch; no approximate substitution",
+    "higher_order_operator_programs": "UNAVAILABLE in feature compiler v1; may be added as a preserved discovery attempt",
+    "cross_scale_persistence_transition": "DEFERRED: requires source-local joins over compiled records, not additional pixel extraction"
+  },
+  "normalization": "none in compiler output",
+  "missingValues": "no imputation; unavailable feature families remain explicit status fields",
+  "rowSchema": "mark_structural_feature_row_v46_v1",
+  "rowsSha256": "0d45b335f8b468bed999d2455b4385b32bb742d7f1c7cf542a54b147ac976caf"
+}
