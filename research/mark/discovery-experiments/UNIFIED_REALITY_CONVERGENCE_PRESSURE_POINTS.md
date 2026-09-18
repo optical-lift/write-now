@@ -47,4 +47,12 @@ The central research question is therefore not, “Can Atlas invent a universal 
 
 > **Can independently recovered witnesses reveal the same prior relational order strongly enough that a computer can recognize, test, and eventually operate within it without confusing interpretation with reality itself?**
 
+## Whole-system reconstruction destination
+
+The concrete Mark roadmap for testing whether apparently separate source systems are partial projections of a larger relational grammar is preserved in:
+
+**[`WHOLE_SYSTEM_RECONSTRUCTION_ROADMAP.md`](./WHOLE_SYSTEM_RECONSTRUCTION_ROADMAP.md)**
+
+That roadmap is the long-range destination while the required smaller instruments and independently frozen local law catalogues are built. Its controlling order is: **independent discovery first, abstract comparison second, global grammar last.**
+
 This note is a hypothesis/pressure-point document, not a scientific result. Future Mark experiments may use it to generate falsifiable tests, but no experiment should treat it as evidence.
