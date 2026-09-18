@@ -1,0 +1,498 @@
+{
+  "schema": "mark_song_composition_harvest_v45_phase_a_candidates_v1",
+  "experiment_id": "mark:song-composition-harvest:v45",
+  "phase": "A",
+  "implementation_sha": "c6d51f22357ddbc457c886965a79d30a913b0b1b",
+  "preexecution_freeze_sha": "f561a17386c2a292db2c0dae245ef78ee4ca1ac6",
+  "runner_blob_sha1": "8c38403e6ec5fdd72e352e3763ea1ab79b6e672e",
+  "candidate_construction_sha256": "78f5c82613b5619703c590a400124d1ab1df2e2765e2c549bc464b66e9778c8e",
+  "raw_runner_packet_sha256": "4701952d164c21dd39105d74f1fe4441e423c80259d3f6887f9f6697ad690ed6",
+  "inputs": {
+    "v5_run_id": 33807154154,
+    "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+    "v5_artifact_zip_sha256": "dfa99eb8b858efd599203b05e610ad950dc376cd0a2715ead1b8f79cd4adf75f",
+    "critical_edge_world_canonical_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+    "pair_eligible_observations": 433,
+    "lane_inventory": {
+      "train": {
+        "observations": 84,
+        "distinct_sources": 43,
+        "sha256": "d57b7f9049674a0ac38c4ada3690ef1cfd8edd45cced6b3775e5f7689d257931"
+      },
+      "holdout": {
+        "observations": 230,
+        "distinct_sources": 154,
+        "sha256": "89fb772b88b9c444e4fa5414f60c7e6a85f1373e71d2864790e75c5de2a6363a"
+      },
+      "control": {
+        "observations": 119,
+        "distinct_sources": 63,
+        "sha256": "af7f21dca4984a5be11a0023ba21f71b4404721a441634950387f67e9d59cbbf"
+      }
+    }
+  },
+  "engine_custody": {
+    "primary_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+    "primary_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3",
+    "topology_freeze_file_sha256": "7b4280663a593a3860fec5b9fe5c02740117d8b701831a7d51a3bd04581a20ac",
+    "topology_result_file_sha256": "86e3d0d5ddb21a4008eb9b04123882aa19170952eb63742d7c6718b1440f6625",
+    "song_semantics_opened": false,
+    "role_labels_opened": false,
+    "new_source_acquisition": false
+  },
+  "candidates": [
+    {
+      "rule_id": "CR-001",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "A four-center anonymous path u-v-w-x supplies two ordered two-port operators A and B and boundary states s0,s1,s2; test whether the frozen one-step kernels compose as K_A K_B.",
+      "preconditions": "Simple four-center path; both operators pass train-only support thresholds; boundary states map through the train-frozen state vocabulary.",
+      "operational_delta": "The consequence distribution for s2 after A then B is the matrix product of the frozen one-step consequence kernels, without direct pair refitting.",
+      "positive_witnesses": [
+        {
+          "source_group_id": "S000CD9B9CDAB347F",
+          "observation_id": "O44C9E8D8B07ECAD8",
+          "center_event_ids": [
+            "E3a5c80611747f96ce702",
+            "E1b98a88f6d58d156db70",
+            "E501bec46d9bb99d396d8",
+            "Eae8b9730e82f7fe592d1"
+          ],
+          "operator_a": "OP23d708bd88ae15fd7526b374",
+          "operator_b": "OP660b8ea273c246f5dd0c4f79",
+          "state_in": "M1|L0|FROM:JUNCTION|D3|TO:JUNCTION|D3",
+          "state_mid": "M1|L1|FROM:JUNCTION|D3|TO:JUNCTION|D4",
+          "state_out": "M1|L1|FROM:JUNCTION|D4|TO:JUNCTION|D3"
+        },
+        {
+          "source_group_id": "S08D2070B1CF8C96A",
+          "observation_id": "O00A018ECA43E13AD",
+          "center_event_ids": [
+            "Ea42f9e6f36e2c2436252",
+            "E0142e21354527c9e3c75",
+            "Ebdac6e7967ef91c57590",
+            "E5e05b76744953cdbecec"
+          ],
+          "operator_a": "OPb4a956fa650ce80fd44fa4a0",
+          "operator_b": "OP690e352bb9d2c542e4fce685",
+          "state_in": "M1|L0|FROM:JUNCTION|D2|TO:JUNCTION|D2",
+          "state_mid": "M1|L0|FROM:JUNCTION|D2|TO:JUNCTION|D3",
+          "state_out": "M1|L1|FROM:JUNCTION|D3|TO:JUNCTION|D2"
+        }
+      ],
+      "near_counterexamples": [
+        {
+          "source_group_id": "S000CD9B9CDAB347F",
+          "observation_id": "O44C9E8D8B07ECAD8",
+          "center_event_ids": [
+            "Edda79ecadaffe0e1ac3a",
+            "E0ae76fb7017a3b4f8f2e",
+            "E7208cd8367ac724bb129",
+            "E519cc8accf9e3b2b8442"
+          ],
+          "operator_a": "OP8dfbeb580376420853b07666",
+          "operator_b": "OPb36f063e7238a2145baa5965"
+        },
+        {
+          "source_group_id": "S000CD9B9CDAB347F",
+          "observation_id": "O44C9E8D8B07ECAD8",
+          "center_event_ids": [
+            "Eefad87edb4621599f7f9",
+            "E2631acecc10198a8cc92",
+            "Eb17831d94d2cc0e909c9",
+            "E62b6d3c9b0a9864349f3"
+          ],
+          "operator_a": "OPc0c371b1c0310974fb9277bc",
+          "operator_b": "OP14dd0a772de8e0c774539569"
+        }
+      ],
+      "ablation": {
+        "status": "RUN",
+        "method": "remove operator identity entirely (input-only) and separately remove one side (A-only or B-only)"
+      },
+      "invariance_control": {
+        "status": "RUN",
+        "method": "repeat the identical frozen composition gate with normalized path length removed",
+        "result": {
+          "lengthAwareFullGate": true,
+          "topologyFullGate": true
+        }
+      },
+      "matched_or_null_control": {
+        "status": "RUN",
+        "method": "input-only, A-only, B-only, and direct A,B pair controls"
+      },
+      "held_out_transfer": {
+        "status": "RUN",
+        "result": {
+          "holdout": {
+            "observations": 230,
+            "coveredCompositionPaths": 1344512,
+            "coveredPathFraction": 0.4353417264439973,
+            "coveredDistinctSources": 151,
+            "gainsBitsPerPath": {
+              "compositionOverInputOnly": 4.265791698251705,
+              "compositionOverFirstOperatorOnly": 2.130713582685557,
+              "compositionOverSecondOperatorOnly": 0.1787937438860276,
+              "directPairAdvantageOverComposition": 0.054695802080115596
+            },
+            "sourceFractionCompositionBeatsInputOnly": 1
+          },
+          "control": {
+            "observations": 119,
+            "coveredCompositionPaths": 138940,
+            "coveredPathFraction": 0.09932032699791551,
+            "coveredDistinctSources": 59,
+            "gainsBitsPerPath": {
+              "compositionOverInputOnly": 4.200223677773149,
+              "compositionOverFirstOperatorOnly": 2.177663593356607,
+              "compositionOverSecondOperatorOnly": 0.2545196755720199,
+              "directPairAdvantageOverComposition": 0.03489084663957359
+            },
+            "sourceFractionCompositionBeatsInputOnly": 1
+          }
+        }
+      },
+      "downstream_preservation": {
+        "status": "RUN",
+        "result": {
+          "direct_pair_advantage_bits": 0.054695802080115596
+        }
+      },
+      "known_failures": [],
+      "residual_unexplained_features": [
+        "Recursive nesting, filled-region enclosure, and direct split/join mutation are not claimed by this candidate."
+      ],
+      "provenance": [
+        {
+          "v5_run_id": 33807154154,
+          "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+          "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+          "critical_edge_world_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+          "primary_engine_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+          "primary_engine_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3"
+        }
+      ],
+      "status": "HARVESTED_RULE"
+    },
+    {
+      "rule_id": "CR-002",
+      "feature_family": "repetition_count",
+      "feature_definition": "For a train-supported anonymous operator A, test whether repeating A produces a consequence kernel indistinguishable within the frozen tolerance from one application of A.",
+      "preconditions": "A,A pair meets train occurrence/source thresholds and train kernel total-variation threshold.",
+      "operational_delta": "A followed by A preserves the one-step A consequence relation within the frozen holdout log-loss tolerance.",
+      "positive_witnesses": [
+        {
+          "source_group_id": "S000CD9B9CDAB347F",
+          "observation_id": "OBD80CE657A33D2CF",
+          "center_event_ids": [
+            "E4df8731f65c31b0f476f",
+            "E002b7436568cdf0475f0",
+            "Efabed9f426db34d15019",
+            "E4dd1c736155e4f46f1bc"
+          ],
+          "operator_a": "OP338ba849524d4cfa8fa45e13",
+          "operator_b": "OP338ba849524d4cfa8fa45e13",
+          "absolute_path_logloss_difference_bits": 0.021511014731554222
+        },
+        {
+          "source_group_id": "S08D2070B1CF8C96A",
+          "observation_id": "O00A018ECA43E13AD",
+          "center_event_ids": [
+            "E35ed29f4554cb9ac4bda",
+            "E072c3ac98010b0197739",
+            "Ebbb85f9ef45fb504a4e3",
+            "E95159590b0c9871e2183"
+          ],
+          "operator_a": "OP3742cd67f9425055b1a91ee4",
+          "operator_b": "OP3742cd67f9425055b1a91ee4",
+          "absolute_path_logloss_difference_bits": 0.06802904718191603
+        }
+      ],
+      "near_counterexamples": [
+        {
+          "source_group_id": "S08D2070B1CF8C96A",
+          "observation_id": "O00A018ECA43E13AD",
+          "center_event_ids": [
+            "Ebbb85f9ef45fb504a4e3",
+            "E072c3ac98010b0197739",
+            "E35ed29f4554cb9ac4bda",
+            "E55d32219acaba8b9c09d"
+          ],
+          "absolute_path_logloss_difference_bits": 0.1401119844162495
+        },
+        {
+          "source_group_id": "S08D2070B1CF8C96A",
+          "observation_id": "O00A018ECA43E13AD",
+          "center_event_ids": [
+            "Ef45f3b457ef72a20aa2a",
+            "E1818b2f2f32da2e23291",
+            "E3a0f94f121529f09c4b0",
+            "E362b19540ab32bd1188f"
+          ],
+          "absolute_path_logloss_difference_bits": 0.14360705190949363
+        }
+      ],
+      "ablation": {
+        "status": "RUN",
+        "method": "remove the second A and compare A∘A against the frozen one-step A kernel"
+      },
+      "invariance_control": {
+        "status": "RUN",
+        "method": "rerun the identical frozen law discovery/evaluation with topology-only boundary states",
+        "result": {
+          "primary_holdout_transferred": 8,
+          "topology_holdout_transferred": 9
+        }
+      },
+      "matched_or_null_control": {
+        "status": "RUN",
+        "method": "compare A∘A against the frozen one-step A kernel"
+      },
+      "held_out_transfer": {
+        "status": "RUN",
+        "result": {
+          "train_frozen_candidates": 8,
+          "holdout_transferred": 8,
+          "control_transferred": 8,
+          "topology_holdout_transferred": 9
+        }
+      },
+      "downstream_preservation": {
+        "status": "RUN",
+        "result": "same frozen boundary-state consequence criterion evaluated on holdout without refit"
+      },
+      "known_failures": [],
+      "residual_unexplained_features": [
+        "This is operator repetition, not a claim that every repeated physical mark is idempotent."
+      ],
+      "provenance": [
+        {
+          "v5_run_id": 33807154154,
+          "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+          "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+          "critical_edge_world_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+          "primary_engine_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+          "primary_engine_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3"
+        }
+      ],
+      "status": "HARVESTED_RULE"
+    },
+    {
+      "rule_id": "CR-003",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For a train-supported ordered pair A,B, test whether the composite returns the outgoing boundary toward the incoming boundary state more strongly than either operator alone.",
+      "preconditions": "A,B meets train pair support and frozen train identity-return/gain thresholds.",
+      "operational_delta": "A then B increases exact boundary-state return relative to frozen single-operator and input-only controls.",
+      "positive_witnesses": [
+        {
+          "source_group_id": "S000CD9B9CDAB347F",
+          "observation_id": "OBD80CE657A33D2CF",
+          "center_event_ids": [
+            "E2bad2b96dc735b09eea1",
+            "E006d67ca6f6077f2eea0",
+            "E738531510275e91eeca4",
+            "E29f020d9a5c364b170c5"
+          ],
+          "operator_a": "OPe53e371692686d38f84d5dad",
+          "operator_b": "OP660b8ea273c246f5dd0c4f79",
+          "returns_to_input_state": true
+        },
+        {
+          "source_group_id": "S0B6FA01FD1099102",
+          "observation_id": "O3990D8BE994180E0",
+          "center_event_ids": [
+            "E6282e88e5e4b7c930a9e",
+            "E00d1d23f61533c50a22a",
+            "Efa3bb2058ec6da79a4cd",
+            "E2da7654e4f301080a0ec"
+          ],
+          "operator_a": "OP660b8ea273c246f5dd0c4f79",
+          "operator_b": "OP3415413f11366f33bc085c12",
+          "returns_to_input_state": true
+        }
+      ],
+      "near_counterexamples": [
+        {
+          "source_group_id": "S1444332E1F771E21",
+          "observation_id": "O21EC81BF74BA90AC",
+          "center_event_ids": [
+            "E53ba175e16606e97c3ee",
+            "E6ad86f4db1165f1d7298",
+            "Eccd54c29cca05c881fcf",
+            "Eafe0f717211a9b6ad0c0"
+          ],
+          "returns_to_input_state": false
+        },
+        {
+          "source_group_id": "S1967EA3A4EFCCA93",
+          "observation_id": "O89115C393820A664",
+          "center_event_ids": [
+            "E111950716ac5bd0c5158",
+            "E4c1c876ea7188258758a",
+            "Ec7a4d541ef9ea67ae4b8",
+            "Ee837991b28b5c588c185"
+          ],
+          "returns_to_input_state": false
+        }
+      ],
+      "ablation": {
+        "status": "RUN",
+        "method": "compare composite identity return against either single operator and the input-only expected identity return"
+      },
+      "invariance_control": {
+        "status": "RUN",
+        "method": "rerun the identical frozen law discovery/evaluation with topology-only boundary states",
+        "result": {
+          "primary_holdout_transferred": 20,
+          "topology_holdout_transferred": 20
+        }
+      },
+      "matched_or_null_control": {
+        "status": "RUN",
+        "method": "single-operator and input-only identity-return controls"
+      },
+      "held_out_transfer": {
+        "status": "RUN",
+        "result": {
+          "train_frozen_candidates": 20,
+          "holdout_transferred": 20,
+          "control_transferred": 20,
+          "topology_holdout_transferred": 20
+        }
+      },
+      "downstream_preservation": {
+        "status": "RUN",
+        "result": "same frozen boundary-state consequence criterion evaluated on holdout without refit"
+      },
+      "known_failures": [],
+      "residual_unexplained_features": [
+        "A positive result is operational cancellation only; it does not assign inverse semantics or historical meaning."
+      ],
+      "provenance": [
+        {
+          "v5_run_id": 33807154154,
+          "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+          "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+          "critical_edge_world_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+          "primary_engine_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+          "primary_engine_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3"
+        }
+      ],
+      "status": "HARVESTED_RULE"
+    },
+    {
+      "rule_id": "CR-004",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For train-supported A,B and B,A, test whether reversing operator order changes the frozen consequence kernel and whether each observed order predicts its own held-out consequences better than the swapped order.",
+      "preconditions": "Both orders independently meet train support; the train kernel total-variation distance clears the frozen threshold.",
+      "operational_delta": "A then B and B then A are noncommutative at the frozen anonymous boundary-state resolution.",
+      "positive_witnesses": [],
+      "near_counterexamples": [],
+      "ablation": {
+        "status": "RUN",
+        "method": "swap A,B order while preserving the same frozen operators and incoming interface state"
+      },
+      "invariance_control": {
+        "status": "RUN",
+        "result": {
+          "primary_holdout_transferred": 0,
+          "topology_holdout_transferred": 0
+        }
+      },
+      "matched_or_null_control": {
+        "status": "RUN",
+        "method": "swapped-order control"
+      },
+      "held_out_transfer": {
+        "status": "RUN",
+        "result": {
+          "train_frozen_candidates": 0,
+          "holdout_transferred": 0,
+          "control_transferred": 0,
+          "topology_holdout_transferred": 0
+        }
+      },
+      "downstream_preservation": {
+        "status": "RUN",
+        "result": "same frozen boundary-state consequence criterion evaluated on holdout without refit"
+      },
+      "known_failures": [
+        "No train-supported A,B and B,A candidate cleared the frozen contrast threshold."
+      ],
+      "residual_unexplained_features": [
+        "Order sensitivity remains unresolved because the frozen corpus supplied insufficient qualifying contrast."
+      ],
+      "provenance": [
+        {
+          "v5_run_id": 33807154154,
+          "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+          "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+          "critical_edge_world_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+          "primary_engine_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+          "primary_engine_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3"
+        }
+      ],
+      "status": "INSUFFICIENT_CONTRAST"
+    },
+    {
+      "rule_id": "CR-005",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For a fixed train-supported A,B pair, test whether different incoming anonymous boundary states stably select different outgoing consequence states.",
+      "preconditions": "At least two train-supported incoming states have different dominant outgoing states above the frozen dominance threshold.",
+      "operational_delta": "The same A,B composition has a held-out consequence conditioned by incoming structural state rather than a single pair-level output.",
+      "positive_witnesses": [],
+      "near_counterexamples": [],
+      "ablation": {
+        "status": "RUN",
+        "method": "collapse the incoming-state distinction and compare against one pair-level dominant output",
+        "result": {
+          "occurrences": 0,
+          "input_specific_accuracy": 0,
+          "collapsed_pair_accuracy": 0
+        }
+      },
+      "invariance_control": {
+        "status": "RUN",
+        "result": {
+          "primary_holdout_transferred": 0,
+          "topology_holdout_transferred": 0
+        }
+      },
+      "matched_or_null_control": {
+        "status": "RUN",
+        "method": "collapsed incoming-state control"
+      },
+      "held_out_transfer": {
+        "status": "RUN",
+        "result": {
+          "train_frozen_candidates": 0,
+          "holdout_transferred": 0,
+          "control_transferred": 0,
+          "topology_holdout_transferred": 0
+        }
+      },
+      "downstream_preservation": {
+        "status": "RUN",
+        "result": "same frozen boundary-state consequence criterion evaluated on holdout without refit"
+      },
+      "known_failures": [
+        "No train-supported pair supplied the preregistered multi-input dominant-output contrast."
+      ],
+      "residual_unexplained_features": [
+        "Input-conditional composition remains unresolved because the frozen corpus supplied insufficient qualifying contrast."
+      ],
+      "provenance": [
+        {
+          "v5_run_id": 33807154154,
+          "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+          "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+          "critical_edge_world_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+          "primary_engine_freeze_file_sha256": "1d4a15ccb08fc27137695504a865c1cbd8d36954e07d0552a151582fcee9b0f3",
+          "primary_engine_result_file_sha256": "06e9d515dc898dd330d962c304c1ad0e61631a058a6191ffa10ed87a06ca05e3"
+        }
+      ],
+      "status": "INSUFFICIENT_CONTRAST"
+    }
+  ]
+}
