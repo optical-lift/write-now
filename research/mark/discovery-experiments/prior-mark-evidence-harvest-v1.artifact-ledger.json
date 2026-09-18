@@ -1,0 +1,524 @@
+{
+  "schema": "mark_prior_evidence_artifact_ledger_v1",
+  "status": "ACTIVE_HARVEST_LEDGER",
+  "created_at": "2026-09-18",
+  "repository": "optical-lift/write-now",
+  "branch": "mark-prior-evidence-harvest-v1",
+  "instrument_freeze": "be94c2c36fa6510b299f989fd6eb5252816f0718",
+  "rule": "Workflow artifact digests are frozen provenance. This ledger records recovered verdicts without creating cross-source equivalences or universal-law labels.",
+  "recovered": [
+    {
+      "key": "blind-discovery-v1",
+      "branch": "mark-blind-discovery-experiment-v1",
+      "run_id": 33714906675,
+      "artifact_id": 9878637516,
+      "name": "mark-blind-discovery-v1-frozen",
+      "sha256": "b533677dc88f52a2bfb722bdb9bc313f172b18998bbf255655c1616c8873958b",
+      "verdict": "one Tier-A attraction rule and one exploratory exclusion; heldout/control directions transfer"
+    },
+    {
+      "key": "source-rule-atlas-v1",
+      "branch": "mark-source-rule-atlas-v1",
+      "run_id": 33755743472,
+      "artifact_id": 9894808209,
+      "name": "mark-source-rule-atlas-v1-frozen",
+      "sha256": "9e3a706a98a2849007d36900d2d87e8bed472328f0d5b0d7a71f398b1ec81f34",
+      "verdict": "713 source contexts; 36.5M center events; exact blind source-rule atlas projection"
+    },
+    {
+      "key": "relational-state-discovery-v1",
+      "branch": "mark-relational-state-discovery-v1",
+      "run_id": 33763572040,
+      "artifact_id": 9896508600,
+      "name": "mark-relational-state-discovery-v1-frozen",
+      "sha256": "3a889d58bd52d9cea45e2c1f11e023349aa5797b6d152e7a8b1d86f704f18435",
+      "verdict": "one strong attraction and one strong exclusion; two construction regimes; structural twins retained"
+    },
+    {
+      "key": "local-state-field-v1",
+      "branch": "mark-local-state-field-v1",
+      "run_id": 33772361952,
+      "artifact_id": 9901371991,
+      "name": "mark-local-state-field-v1-frozen",
+      "sha256": "bafcb48d3bf7253ba63ed7ce8dd1e7a01c3ef79fb28164e003df0375eebf1286",
+      "verdict": "three blind local states; strong spatial same-state lift; most sources mix states; source regime recoverable from mixtures"
+    },
+    {
+      "key": "state-transition-grammar-v1",
+      "branch": "mark-state-transition-grammar-v1",
+      "run_id": 33773740050,
+      "artifact_id": 9900704251,
+      "name": "mark-state-transition-grammar-v1-frozen",
+      "sha256": "2707b04a81fd244ec6ff4d85b90b7e8ccf3cd9363dd2091a998e28bc5ab5089f",
+      "verdict": "strong transition and program deviations; commitment:return asymmetry; source regime recoverable from transition dynamics"
+    },
+    {
+      "key": "masked-slot-substitution-v1",
+      "branch": "mark-masked-slot-substitution-v1",
+      "run_id": 33795158847,
+      "artifact_id": 9909939968,
+      "name": "mark-masked-slot-substitution-v1-frozen",
+      "sha256": "640fb2824a809c27bc74bea396567e2e8c08ef7bd4e3c5f74906602f87d571c4",
+      "verdict": "two occupant families show near-identical slot distributions across lanes, but two-family random-pair null is degenerate; substitution claim underidentified"
+    },
+    {
+      "key": "typed-construction-grammar-v1",
+      "branch": "mark-typed-construction-grammar-v1",
+      "run_id": 33817206058,
+      "artifact_id": 9916955462,
+      "name": "mark-typed-construction-grammar-v1-frozen",
+      "sha256": "980b0bc53037e941a757d328f589b292d6c8479e0c8185f62176e31a194c9276",
+      "verdict": "retrospective synthesis: typed topology/hierarchy/state-program architecture favored over flat shape-feature model"
+    },
+    {
+      "key": "operator-port-arity-v1",
+      "branch": "mark-operator-port-arity-v1",
+      "run_id": 33821916098,
+      "artifact_id": 9918555542,
+      "name": "mark-operator-port-arity-v1-frozen",
+      "sha256": "c1ed6093d7ef1a3c64e5b3ebfabdc222f97a4d03e2b3ee954ce29317c668d9ee",
+      "verdict": "typed critical structure transfers better than residual geometry"
+    },
+    {
+      "key": "state-memory-v1",
+      "branch": "mark-state-memory-v1",
+      "run_id": 33821934542,
+      "artifact_id": 9918560047,
+      "name": "mark-state-memory-v1-frozen",
+      "sha256": "e7448310b489f645bcc1d8e54870b4fb2e828615b199421a5613e78c004cebbb",
+      "verdict": "second-order structural history adds small but transferable predictive information"
+    },
+    {
+      "key": "legal-rewrite-identity-v1",
+      "branch": "mark-legal-rewrite-identity-v1",
+      "run_id": 33821932147,
+      "artifact_id": 9918560585,
+      "name": "mark-legal-rewrite-identity-v1-frozen",
+      "sha256": "ef42564f10580843e1fc3cda2ce35df3da38d723d232c37d15ca0c80cbb1b03f",
+      "verdict": "transitive functional-equivalence rewrite fails transfer; control effect reverses"
+    },
+    {
+      "key": "symbolic-specificity-v1",
+      "branch": "mark-symbolic-specificity-v1",
+      "run_id": 33826468446,
+      "artifact_id": 9920519516,
+      "name": "mark-symbolic-specificity-v1-frozen",
+      "sha256": "cbfbee84837219f74ecb3af637b89f36a1af725c08d49d62bacd93fe5aca87a7",
+      "verdict": "infeasible: only four eligible photo controls"
+    },
+    {
+      "key": "protected-relationship-intervention-v1",
+      "branch": "mark-protected-relationship-intervention-v1",
+      "run_id": 33829536076,
+      "artifact_id": 9921197438,
+      "name": "mark-protected-relationship-intervention-v1-result",
+      "sha256": "c84b7987522c6c05b918fdce12fa427ea8af5ef3fb4c501ad4c3eb40feb8d91b",
+      "verdict": "generic graph damage compatible; no protected relationship effect"
+    },
+    {
+      "key": "relational-intervention-v1",
+      "branch": "mark-relational-intervention-v1",
+      "run_id": 33879070819,
+      "artifact_id": 9939523067,
+      "name": "mark-relational-intervention-v1-frozen",
+      "sha256": "6dd38d84efb1880784642c5f4411573c4bbe19cecf731526664f5a75883d6305",
+      "verdict": "literal relationship rewiring not distinguished from edge-realization reassignment"
+    },
+    {
+      "key": "typed-relational-intervention-v2",
+      "branch": "mark-typed-relational-intervention-v2",
+      "run_id": 33904945195,
+      "artifact_id": 9950249635,
+      "name": "mark-typed-relational-intervention-v2-frozen",
+      "sha256": "28a4ca01ea4d63428927d724b18ac7ed154428310bd810b1bb81e59df1ddb5c7",
+      "verdict": "typed relation class not independently distinguished; diagnostics attractive but reused opened lanes"
+    },
+    {
+      "key": "sibling-role-substitution-v2",
+      "branch": "mark-sibling-role-substitution-v2",
+      "run_id": 33798179424,
+      "artifact_id": 9910002614,
+      "name": "mark-sibling-role-substitution-v2-frozen",
+      "sha256": "2d101f8f411db3d4e56ea41b8765f126629df83db095b54ec8c454b509fc1e52",
+      "verdict": "five frozen candidate family substitutions; none strong-transfer"
+    },
+    {
+      "key": "recursive-composition-intervention-v3",
+      "branch": "mark-recursive-composition-intervention-v3",
+      "run_id": 33913770297,
+      "artifact_id": 9953300577,
+      "name": "mark-recursive-composition-intervention-v3-frozen",
+      "sha256": "ce3b85d0b77d9221bc7d8430ce757261cb0b4289ebd4f498b1f3939c8479d619",
+      "verdict": "recursive composition not distinguished"
+    },
+    {
+      "key": "topology-edit-invariance-v3",
+      "branch": "mark-topology-edit-invariance-v3",
+      "run_id": 33800387594,
+      "artifact_id": 9910811431,
+      "name": "mark-topology-edit-invariance-v3-frozen",
+      "sha256": "d905c9d2c1ce3a1ed4228a7f2b05f795c9b6a510a5a4bcc9f3368f5e0921c4aa",
+      "verdict": "multiple topology-edit atoms transfer across lanes"
+    },
+    {
+      "key": "critical-center-correspondence-v4",
+      "branch": "mark-critical-center-correspondence-v4",
+      "run_id": 33802582222,
+      "artifact_id": 9911747670,
+      "name": "mark-critical-center-correspondence-v4-frozen",
+      "sha256": "0bafb38e6f28280a296f6e2c2f962f830d14308ea397f5feb72f52f28d249045",
+      "verdict": "transferable literal vertex-edit constraints; six of eight selected atoms pass"
+    },
+    {
+      "key": "critical-edge-correspondence-v5",
+      "branch": "mark-critical-edge-correspondence-v5",
+      "run_id": 33807154154,
+      "artifact_id": 9913458910,
+      "name": "mark-critical-edge-correspondence-v5-frozen",
+      "sha256": "dfa99eb8b858efd599203b05e610ad950dc376cd0a2715ead1b8f79cd4adf75f",
+      "verdict": "six transferable edge-edit atoms including length, junction adjacency, multiplicity, deletion and symmetric difference"
+    },
+    {
+      "key": "matched-edge-geometry-v6",
+      "branch": "mark-matched-edge-geometry-v6",
+      "run_id": 33812383388,
+      "artifact_id": 9915302897,
+      "name": "mark-matched-edge-geometry-v6-frozen",
+      "sha256": "c9c9a750938f98f452d3c446e40e01cc7739eca2da4a1bb6572e5185997f4f98",
+      "verdict": "V5 turn-rate counter-signal collapses after structural matching; geometry not protected"
+    },
+    {
+      "key": "local-wiring-motif-correspondence-v7",
+      "branch": "mark-local-wiring-motif-correspondence-v7",
+      "run_id": 33817695589,
+      "artifact_id": 9917385496,
+      "name": "mark-local-wiring-motif-correspondence-v7-frozen",
+      "sha256": "a9b91e8d11cd66b7fc7716f39c5c033d333a05014896fc9ad8304f828e69b9bd",
+      "verdict": "radius-2 length-aware motif mutation passes; radius-1 primary features do not"
+    },
+    {
+      "key": "hierarchical-graph-compression-v8",
+      "branch": "mark-hierarchical-graph-compression-v8",
+      "run_id": 33821017246,
+      "artifact_id": 9921273379,
+      "name": "mark-hierarchical-graph-compression-v8-frozen",
+      "sha256": "1efa5c52d9270ad6bc34d3dc751fc8d18cf056167af5f4bc155ab0b0eb92b7fd",
+      "verdict": "hierarchical generative architecture tracks preserved role; topology ablation retains adjudication"
+    },
+    {
+      "key": "operator-composition-algebra-v9",
+      "branch": "mark-operator-composition-algebra-v9",
+      "run_id": 33877094086,
+      "artifact_id": 9938762327,
+      "name": "mark-operator-composition-algebra-v9-frozen",
+      "sha256": "68cf13b3dbbbd88b1de962a88203c5785773ea437b9f78d55eb6f5c072a73ae5",
+      "verdict": "first-order operator algebra transfers; idempotence and cancellation candidate families transfer; order/conditional families absent"
+    },
+    {
+      "key": "glyph-transition-code-v10",
+      "branch": "mark-glyph-transition-code-v10",
+      "run_id": 33905459943,
+      "artifact_id": 9949509398,
+      "name": "mark-glyph-transition-code-v10-frozen",
+      "sha256": "d7599fcaee7739db1a14fb3ba6341e08840fc37f33f5ebafc1d1bdc386744535",
+      "verdict": "glyph identity predicts consequence but finite functional quotient fails"
+    },
+    {
+      "key": "counterfactual-glyph-substitution-v11",
+      "branch": "mark-counterfactual-glyph-substitution-v11",
+      "run_id": 33922169128,
+      "artifact_id": 9955442383,
+      "name": "mark-counterfactual-glyph-substitution-v11-frozen",
+      "sha256": "cc4bc1e63b8d719faac37e15c086931ddcb133f78507bba6ec3f1935d49f4f6a",
+      "verdict": "glyph-specific counterfactual consequence transfers when incoming state is held fixed"
+    },
+    {
+      "key": "state-operator-separation-v12",
+      "branch": "mark-state-operator-separation-v12",
+      "run_id": 33924264305,
+      "artifact_id": 9956251245,
+      "name": "mark-state-operator-separation-v12-frozen",
+      "sha256": "2788b9e713d4f4c9616730a705a708f3bb3e71c97888d368acb1179bc91d9e9f",
+      "verdict": "latent state compression plus operator effect transfers; composition gate fails holdout; order-2 ngram remains slightly better"
+    },
+    {
+      "key": "matched-direct-pair-residual-v13",
+      "branch": "mark-direct-pair-residual-v13",
+      "run_id": 33926617649,
+      "artifact_id": 9957045557,
+      "name": "mark-matched-direct-pair-residual-v13-frozen",
+      "sha256": "30a15afadd94e99afb1a74f820c1a2bbaa519eb0b324b63146f9d1248ed6f2f0",
+      "verdict": "no transferable matched direct-pair residual"
+    },
+    {
+      "key": "structural-role-factorization-v14",
+      "branch": "mark-structural-role-factorization-v14",
+      "run_id": 33929782613,
+      "artifact_id": 9958115065,
+      "name": "mark-structural-role-factorization-v14-frozen",
+      "sha256": "2ebc336407d44091e81cad27178064680d111f0817c352fd4a2dc5e22393ab1e",
+      "verdict": "no transferable structural-role conditioning"
+    },
+    {
+      "key": "hebrew-glyph-operator-fingerprint-v15",
+      "branch": "mark-hebrew-glyph-operator-fingerprint-v15",
+      "run_id": 33941474333,
+      "artifact_id": 9961968095,
+      "name": "mark-hebrew-glyph-operator-fingerprint-v15-frozen",
+      "sha256": "1a2a55c29f98f664a61393f357a697eb65a18f30425032dd0cbf5f487d95ed48",
+      "verdict": "cross-corpus operator fingerprint matches transfer under original design"
+    },
+    {
+      "key": "hebrew-glyph-operator-stress-v16",
+      "branch": "mark-hebrew-glyph-operator-stress-v16",
+      "run_id": 33941882434,
+      "artifact_id": 9962098202,
+      "name": "mark-hebrew-glyph-operator-stress-v16-frozen",
+      "sha256": "e052fc751c83317d883d2221619d9977d4e142b0fa9c17e41a5b4d1e7dd9f31e",
+      "verdict": "V15 cross-corpus matches do not survive stronger stress controls"
+    },
+    {
+      "key": "hebrew-glyph-ablation-ladder-v17",
+      "branch": "mark-hebrew-glyph-ablation-ladder-v17",
+      "run_id": 33946433771,
+      "artifact_id": 9963481847,
+      "name": "mark-hebrew-glyph-ablation-ladder-v17-frozen",
+      "sha256": "31ba660a8d5bd1c35c61efd7395ffa8e9f97c1d17b2deaacc01638ace26a40ee",
+      "verdict": "attempted V15 baseline not reproduced under V17; no single confound isolated"
+    },
+    {
+      "key": "hebrew-glyph-exact-v15-ablation-v18",
+      "branch": "mark-hebrew-glyph-exact-v15-ablation-v18",
+      "run_id": 33946841135,
+      "artifact_id": 9963610971,
+      "name": "mark-hebrew-glyph-exact-v15-ablation-v18-frozen",
+      "sha256": "c5f07cc04830fd8e30a70f3871fcb9a2bf6b8536ba5224922f69ae53aefc1975",
+      "verdict": "exact V15 baseline reproduced; proper-noun exclusion is an isolated breaker; several other ablations support-thinning confounded"
+    },
+    {
+      "key": "hebrew-glyph-annotation-competition-v19",
+      "branch": "mark-hebrew-glyph-annotation-competition-v19",
+      "run_id": 33976392033,
+      "artifact_id": 9972445188,
+      "name": "mark-hebrew-glyph-annotation-competition-v19-frozen",
+      "sha256": "577fcbdb625b3e80fd3475e63cd5d01d7a3434b5d5252f9bba961280e97f42e6",
+      "verdict": "common label-blind fixed pairing does not transfer"
+    },
+    {
+      "key": "context-conditioned-operator-v20",
+      "branch": "mark-context-conditioned-operator-v20",
+      "run_id": 33985742063,
+      "artifact_id": 9975100968,
+      "name": "mark-context-conditioned-operator-v20-frozen",
+      "sha256": "8c8561b273c94f15f5641efb34113cbf11ee1c9791a1c1e49c05b67dcebc9dc7",
+      "verdict": "glyph-only context conditioning; Hebrew context gain fails"
+    },
+    {
+      "key": "hebrew-operator-representation-v21",
+      "branch": "mark-hebrew-operator-representation-v21",
+      "run_id": 33986094131,
+      "artifact_id": 9975212640,
+      "name": "mark-hebrew-operator-representation-v21-frozen",
+      "sha256": "e92f8ce1c00fd3ffd3e3be51a7cc620a82217a2e01f98dc1f2adfd3410c1b6ff",
+      "verdict": "morphology refinement does not rescue Hebrew context conditioning"
+    },
+    {
+      "key": "hebrew-consequence-representation-v22",
+      "branch": "mark-hebrew-consequence-representation-v22",
+      "run_id": 33987183415,
+      "artifact_id": 9975567188,
+      "name": "mark-hebrew-consequence-representation-v22-frozen",
+      "sha256": "1f946a1bd6774c8b9a80babb6992e3535eab8f3774bac8a88c6bd5735626c029",
+      "verdict": "no recurrence-consequence representation rescues Hebrew interaction"
+    },
+    {
+      "key": "structural-transition-consequence-v23",
+      "branch": "mark-structural-transition-consequence-v23",
+      "run_id": 33989875332,
+      "artifact_id": 9976297332,
+      "name": "mark-structural-transition-consequence-v23-frozen",
+      "sha256": "a8bf1c0b19763e835fa1cd4bbdbe21a718b6482c583694587a828597fa6ded3e",
+      "verdict": "glyph-only structural transformation interaction; no shared Hebrew-glyph transition profile"
+    },
+    {
+      "key": "first-passage-trajectory-v24",
+      "branch": "mark-first-passage-trajectory-v24",
+      "run_id": 33993154255,
+      "artifact_id": 9977268161,
+      "name": "mark-first-passage-trajectory-v24-frozen",
+      "sha256": "fd530a2e3e6bf4ee390a67c08d0956478c09b5969b6514d49218825d6ffa53ae",
+      "verdict": "no transferable first-passage context interaction; high unit-end/no-departure censoring"
+    },
+    {
+      "key": "verse-boundary-continuity-v25",
+      "branch": "mark-verse-boundary-continuity-v25",
+      "run_id": 33993953091,
+      "artifact_id": 9977490480,
+      "name": "mark-verse-boundary-continuity-v25-frozen",
+      "sha256": "497e18c1e91c4da2955f55226ad10427ec2bf4e98c9c0bf4ad1cb8a4bf1e3006",
+      "verdict": "no verse-boundary continuity signal"
+    },
+    {
+      "key": "coarse-boundary-book-block-v26",
+      "branch": "mark-coarse-boundary-confirmation-v26",
+      "run_id": 33994812075,
+      "artifact_id": 9977731108,
+      "name": "mark-coarse-boundary-book-block-v26-frozen",
+      "sha256": "97772972623a1a202aacfa9aad7855714dec3ad48c94bb23c1ed9545d715e8e2",
+      "verdict": "shuffled continuation matches or beats real across disjoint books"
+    },
+    {
+      "key": "competing-resolution-v27",
+      "branch": "mark-competing-resolution-v27",
+      "run_id": 33996391147,
+      "artifact_id": 9978195283,
+      "name": "mark-competing-resolution-v27-frozen",
+      "sha256": "aef5db12d40cedcf2a5e35672b4248a5ff9e62cf19608103c2fc769d4428849f",
+      "verdict": "no context-conditioned competing-resolution interaction"
+    },
+    {
+      "key": "operator-selection-grammar-v28",
+      "branch": "mark-operator-selection-grammar-v28",
+      "run_id": 33999405311,
+      "artifact_id": 9979036674,
+      "name": "mark-operator-selection-grammar-v28-frozen",
+      "sha256": "1b370f279e8991d54df33ae54205b5ea40ce74435effe46dae6f0d8a73dfa2f2",
+      "verdict": "no operator-selection grammar under tested state/prefix representation"
+    },
+    {
+      "key": "operator-temporal-footprint-v29",
+      "branch": "mark-operator-temporal-footprint-v29",
+      "run_id": 34001582852,
+      "artifact_id": 9979684748,
+      "name": "mark-operator-temporal-footprint-v29-frozen",
+      "sha256": "85ab018ffcc1271623be81eec2fef9c541259fdb08c27013b84ccbcbd2d46080",
+      "verdict": "full-morph Hebrew representation has a narrow proximal temporal footprint"
+    },
+    {
+      "key": "operator-proximal-perturbation-v30",
+      "branch": "mark-operator-proximal-perturbation-v30",
+      "run_id": 34009500253,
+      "artifact_id": 9982023299,
+      "name": "mark-operator-proximal-perturbation-v30-frozen",
+      "sha256": "48eed83f9988a2b9a6d714b52858567e10dbf7bc2c2c56b841de35feb7c151ae",
+      "verdict": "V29 proximal footprint not demonstrated operator-specific under matched perturbation"
+    },
+    {
+      "key": "v5-real-corpus-challenge",
+      "branch": "mark-v5-real-corpus-challenge",
+      "run_id": 33693813135,
+      "artifact_id": 9871031195,
+      "name": "mark-v5-blind-challenge",
+      "sha256": "fd8ad9b936ec528ae7d980ee0a66c4eca3dd3568b5b02070fe0febc9450703d9",
+      "verdict": "training families accept 24/47 holdout observations with abstention; 0/2 control whole objects accepted; spatial recurrence destroyed by topology null"
+    },
+    {
+      "key": "white-paint-grammar-v1",
+      "branch": "mark-white-paint-grammar-v1",
+      "run_id": 33809154740,
+      "artifact_id": 9914102497,
+      "name": "mark-white-paint-grammar-v1-frozen",
+      "sha256": "a97c29a6ae8a87f86232c4b64646226f3c446eed414c402bb4abc2b3d254ea5d",
+      "verdict": "controlled calibration gates all pass for operation, relation modifier, degree and closure; not universality evidence"
+    }
+  ],
+  "repository_results": [
+    {
+      "key": "v35-p",
+      "source": "research/mark/discovery-experiments/glyph-hidden-operator-path-v36.preregistration.md",
+      "provenance": "post_result_synthesis",
+      "verdict": "full neighboring morphology reconstruction fails; physical glyph form carries positive directional transition information across four untouched books"
+    },
+    {
+      "key": "v36",
+      "source": "research/mark/discovery-experiments/glyph-hidden-operator-path-v36.result.md",
+      "provenance": "frozen_result",
+      "verdict": "real glyph order carries hidden operator-path information; exact mark identity stronger than coarse form; morphology stronger overall than lemma"
+    },
+    {
+      "key": "v38",
+      "source": "research/mark/discovery-experiments/hebrew-latent-structural-field-v38.phase-a.result.md + phase-b.result.md",
+      "provenance": "frozen_result",
+      "verdict": "small Hebrew-only structural signal; partial external Masoretic correspondence; exact skeleton stronger"
+    },
+    {
+      "key": "v39",
+      "source": "research/mark/discovery-experiments/hebrew-relational-field-v39.phase-a.result.md + phase-b.result.md",
+      "provenance": "frozen_result",
+      "verdict": "immediate local categorical relations overfragment and fail independent Hebrew generalization; full-set witness gains do not survive anti-lookup"
+    },
+    {
+      "key": "v40",
+      "source": "research/mark/discovery-experiments/hebrew-context-field-v40.result.md",
+      "provenance": "frozen_result",
+      "verdict": "center-blind context carries distributed information; correct placement beats all destruction nulls; cadence complements intrinsic state"
+    },
+    {
+      "key": "v42",
+      "source": "research/mark/discovery-experiments/hebrew-centerless-latent-field-v42.phase-a-results.md",
+      "provenance": "frozen_result",
+      "verdict": "exact centerless multiset field fails; small same-window association remains"
+    },
+    {
+      "key": "v45",
+      "source": "research/mark/discovery-experiments/song-composition-harvest-v45.phase-a.result.md",
+      "provenance": "frozen_result_on_branch",
+      "verdict": "factorized composition, subset idempotence and ordered-pair cancellation transfer; small pair residual remains"
+    },
+    {
+      "key": "v46",
+      "source": "structural-regime-atlas-v46 validation/confirmation artifacts",
+      "provenance": "frozen_result_on_branch",
+      "verdict": "five-region structural atlas transfers strongly under fixed coordinates"
+    },
+    {
+      "key": "v47",
+      "source": "regime-transition-grammar-v47.result.md",
+      "provenance": "frozen_result_on_branch",
+      "verdict": "scale persistence for RG-001/2/4; RG-003 fails final persistence gate; no longer-history program layer"
+    },
+    {
+      "key": "v48",
+      "source": "regime-boundary-dynamics-v48.cp1-result.json",
+      "provenance": "frozen_result_on_branch",
+      "verdict": "source-restricted refit fails coordinate-equivalence ARI gate while retaining all five supported regions"
+    }
+  ],
+  "explicit_gaps": [
+    {
+      "key": "v31-v34",
+      "status": "NO_RESULT_LINEAGE_RECOVERED",
+      "note": "No matching branches, commits, PRs, or current repository result artifacts found. Do not infer content."
+    },
+    {
+      "key": "v37",
+      "status": "PREREGISTERED_PREOUTCOME_ONLY",
+      "note": "Preregistration, extractor and physical-PC freeze recovered; no scientific result artifact found."
+    },
+    {
+      "key": "v41",
+      "status": "PREREGISTERED_PREOUTCOME_ONLY",
+      "note": "Preregistration and implementation note recovered; no result artifact found."
+    },
+    {
+      "key": "v43",
+      "status": "EXECUTION_BLOCKED",
+      "note": "Repository contains execution-blocked/failure custody, not a scientific outcome."
+    },
+    {
+      "key": "v44",
+      "status": "EXECUTION_FAILURE",
+      "note": "Repository contains execution-failure custody, not a scientific outcome."
+    },
+    {
+      "key": "white-paint-v2-v4",
+      "status": "PARTIAL_RECOVERY",
+      "note": "Blind/context or workflow lineage recovered; deeper scientific adjudication not yet packetized in this checkpoint."
+    },
+    {
+      "key": "pre-v4-universal-observable-v2-and-conveyor",
+      "status": "PARTIAL_RECOVERY",
+      "note": "Workflow artifacts recovered, but distinct scientific claims need de-duplication against V5/V6/V7 lineage before packetization."
+    }
+  ]
+}
