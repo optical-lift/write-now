@@ -1,0 +1,61 @@
+{
+  "schema": "mark_regime_transition_higher_order_discovery_v47_custody_v1",
+  "experimentId": "mark:regime-transition-grammar:v47",
+  "status": "NO_HIGHER_ORDER_PROGRAM_HARVESTED",
+  "rawHigherOrderResultSha256": "38366c254af010eee3dad557f02f76d42527481c9e416983db22136077e94b12",
+  "runnerStdoutSha256": "0ec95ca8dc6555efb48919ef52a3629f0410d94ca6bb8d996c99f79b730e6e76",
+  "runnerStderrSha256": "fcfd853bc9f73ac4d7873b43f542d63ae8c2422c924eaae2600dd82e468ed088",
+  "length3": {
+    "chains": 3708,
+    "observedContexts": 56,
+    "eligibleBeforeCap": 0,
+    "harvested": []
+  },
+  "length4": {
+    "chains": 1838,
+    "observedContexts": 57,
+    "eligibleBeforeCap": 0,
+    "harvested": []
+  },
+  "notableNullFailedContexts": [
+    {
+      "programKey": "local|RG-001>neighborhood|RG-002>field|RG-002",
+      "length": 3,
+      "dominantOccurrences": 24,
+      "dominantDistinctSources": 18,
+      "dominantProbability": 0.6,
+      "gainOverFirstOrderBits": 0.7247,
+      "nullQ99GainBits": 1.1418
+    },
+    {
+      "programKey": "neighborhood|RG-004>field|RG-002>object|RG-002",
+      "length": 3,
+      "dominantOccurrences": 21,
+      "dominantDistinctSources": 16,
+      "dominantProbability": 0.656,
+      "gainOverFirstOrderBits": 0.5949,
+      "nullQ99GainBits": 0.8575
+    },
+    {
+      "programKey": "local|RG-002>neighborhood|RG-004>field|RG-004",
+      "length": 3,
+      "dominantOccurrences": 35,
+      "dominantDistinctSources": 21,
+      "dominantProbability": 0.745,
+      "gainOverFirstOrderBits": 0.3501,
+      "nullQ99GainBits": 0.4474
+    },
+    {
+      "programKey": "local|RG-003>neighborhood|RG-002>field|RG-002>object|RG-002",
+      "length": 4,
+      "dominantOccurrences": 52,
+      "dominantDistinctSources": 17,
+      "dominantProbability": 0.825,
+      "gainOverFirstOrderBits": 0.0718,
+      "nullQ99GainBits": 0.225
+    }
+  ],
+  "validationOpened": false,
+  "confirmationOpened": false,
+  "provenanceConsumed": false
+}
