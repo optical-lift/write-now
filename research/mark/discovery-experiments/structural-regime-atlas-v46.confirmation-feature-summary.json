@@ -1,0 +1,18 @@
+{
+  "schema": "mark_structural_feature_summary_v46_confirmation_custody_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "lane": "confirmation",
+  "scientificFreezeEligible": true,
+  "sourceBlindInputSha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+  "sealedEvidenceZipSha256": "5aee2d958875d711a148e08c37c613457eeb734efc8e2c773fa63782faad1a20",
+  "exclusionIdListSha256": "1735dbadeb93241237af7af3efbe22a7b4a942a80cf94db301e43caaef827076",
+  "partitionSourceListSha256": "217b6832f575aece03d6b38687cfa7e53f9ca9e94460283f87b279714e9bfc4a",
+  "partitionObservationListSha256": "f25739969cd0e4f3620949801b54a8fbd54863eca21ac206b38c6f24f4555ca3",
+  "sources": 146,
+  "observations": 4872,
+  "rowsSha256": "2064f7d8bb605199709bc72aca92176360fdfcba7aac3181c7b1e7fb6b57ab27",
+  "exactLocalSummarySha256": "fdd3bab3cf876f1a191f006d8dfda9919c4e2c8f31042e58822d77d2f12350b3",
+  "exactLocalFeatureContractSha256": "f9dcb6df3fba18a38ba53b0aaba15cc1332077b260aa48efa3f410ed072ee142",
+  "compilerGitBlob": "05ad94392a59d5207f1a78f79f495f4154d9971c",
+  "provenanceOpened": false
+}
