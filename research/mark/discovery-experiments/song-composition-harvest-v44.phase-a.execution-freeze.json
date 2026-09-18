@@ -1,0 +1,129 @@
+{
+  "schema": "mark_song_composition_harvest_v44_phase_a_execution_freeze_v1",
+  "experiment_id": "mark:song-composition-harvest:v44",
+  "phase": "A",
+  "implementation_sha": "ad25874a2a87c2aea1923b3f419e25987afda1ea",
+  "preexecution_freeze_sha": "PENDING",
+  "runner_blob_sha1": "42252c2e1cbc959ad22969405fd03ceb383c86c1",
+  "primary_protocol_blob_sha1": "a91e8280832ecad75679120d28ff8e64bd9081f2",
+  "topology_protocol_blob_sha1": "c99cf9aced9d14b1f6b0dd388ba2fba13afe9613",
+  "reference_engine_blobs": {
+    "core": "6dee34d6200134700b752ed1bc76cb38f9ce0729",
+    "split": "b3250f7b8899bb2ec2a74c40c6a78879050de21f",
+    "induce": "e471eb366e4485b3e16334295394483ee0e62f3b",
+    "evaluate": "02efc627bf2d0d9db6e6ca71c6ff1780c7ba6b6c",
+    "tests": "59935136d136b64b95d03e2bf415f9545fe75735"
+  },
+  "inputs": {
+    "v5_run_id": 33807154154,
+    "v5_artifact": "mark-critical-edge-correspondence-v5-frozen",
+    "v5_artifact_id": 9913458910,
+    "v5_artifact_zip_sha256": "dfa99eb8b858efd599203b05e610ad950dc376cd0a2715ead1b8f79cd4adf75f",
+    "expected_edge_pair_manifest_sha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "critical_edge_world_canonical_sha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "critical_edge_world_file_sha256": "7a0a4f0e08da180b8618f4e2956b3a276eda353a4118881acb698a130adeb635",
+    "projector_rows_sha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+    "pair_eligible_observations": 433,
+    "lane_inventory": {
+      "train": {
+        "observations": 84,
+        "distinct_sources": 43,
+        "sha256": "d57b7f9049674a0ac38c4ada3690ef1cfd8edd45cced6b3775e5f7689d257931"
+      },
+      "holdout": {
+        "observations": 230,
+        "distinct_sources": 154,
+        "sha256": "89fb772b88b9c444e4fa5414f60c7e6a85f1373e71d2864790e75c5de2a6363a"
+      },
+      "control": {
+        "observations": 119,
+        "distinct_sources": 63,
+        "sha256": "af7f21dca4984a5be11a0023ba21f71b4404721a441634950387f67e9d59cbbf"
+      }
+    }
+  },
+  "null_and_control_freeze": {
+    "random_null_iterations": 0,
+    "random_null_seed": "mark-v44-phase-a-null-v1-unused",
+    "reason": "Phase-A T5 is satisfied with preregistered matched controls already present in the frozen operator experiment: input-only, one-sided A/B, direct-pair, one-step A, identity-return baseline, swapped order, and collapsed incoming-state controls. No stochastic null is generated.",
+    "matched_controls_frozen_before_execution": true
+  },
+  "candidate_specs": [
+    {
+      "rule_id": "CR-001",
+      "engine_law": "composition",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "A four-center anonymous path u-v-w-x supplies two ordered two-port operators A and B and boundary states s0,s1,s2; test whether the frozen one-step kernels compose as K_A K_B.",
+      "preconditions": "Simple four-center path; both operators pass train-only support thresholds; boundary states map through the train-frozen state vocabulary.",
+      "operational_delta": "The consequence distribution for s2 after A then B is the matrix product of the frozen one-step consequence kernels, without direct pair refitting.",
+      "residual_unexplained_features": [
+        "Recursive nesting, filled-region enclosure, and direct split/join mutation are not claimed by this candidate."
+      ]
+    },
+    {
+      "rule_id": "CR-002",
+      "engine_law": "idempotence",
+      "feature_family": "repetition_count",
+      "feature_definition": "For a train-supported anonymous operator A, test whether repeating A produces a consequence kernel indistinguishable within the frozen tolerance from one application of A.",
+      "preconditions": "A,A pair meets train occurrence/source thresholds and train kernel total-variation threshold.",
+      "operational_delta": "A followed by A preserves the one-step A consequence relation within the frozen holdout log-loss tolerance.",
+      "residual_unexplained_features": [
+        "This is operator repetition, not a claim that every repeated physical mark is idempotent."
+      ]
+    },
+    {
+      "rule_id": "CR-003",
+      "engine_law": "cancellation",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For a train-supported ordered pair A,B, test whether the composite returns the outgoing boundary toward the incoming boundary state more strongly than either operator alone.",
+      "preconditions": "A,B meets train pair support and frozen train identity-return/gain thresholds.",
+      "operational_delta": "A then B increases exact boundary-state return relative to frozen single-operator and input-only controls.",
+      "residual_unexplained_features": [
+        "A positive result is operational cancellation only; it does not assign inverse semantics or historical meaning."
+      ]
+    },
+    {
+      "rule_id": "CR-004",
+      "engine_law": "orderSensitivity",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For train-supported A,B and B,A, test whether reversing operator order changes the frozen consequence kernel and whether each observed order predicts its own held-out consequences better than the swapped order.",
+      "preconditions": "Both orders independently meet train support; the train kernel total-variation distance clears the frozen threshold.",
+      "operational_delta": "A then B and B then A are noncommutative at the frozen anonymous boundary-state resolution.",
+      "residual_unexplained_features": [
+        "Order sensitivity is not a directional reading or semantic sequence."
+      ]
+    },
+    {
+      "rule_id": "CR-005",
+      "engine_law": "conditionalComposition",
+      "feature_family": "sequential_operator_composition",
+      "feature_definition": "For a fixed train-supported A,B pair, test whether different incoming anonymous boundary states stably select different outgoing consequence states.",
+      "preconditions": "At least two train-supported incoming states have different dominant outgoing states above the frozen dominance threshold.",
+      "operational_delta": "The same A,B composition has a held-out consequence conditioned by incoming structural state rather than a single pair-level output.",
+      "residual_unexplained_features": [
+        "The incoming state is anonymous physical interface structure, not a lexical or semantic context."
+      ]
+    }
+  ],
+  "max_witnesses_per_candidate": 6,
+  "max_near_counterexamples_per_candidate": 6,
+  "phase_a_forbidden": {
+    "song_semantics": true,
+    "translations": true,
+    "named_glyph_meanings": true,
+    "provenance_rejoin": true,
+    "new_source_acquisition": true,
+    "atlas_noel_production": true
+  },
+  "parent_v43_execution_failure_sha": "5843d6a1fe1bdf5e12a0fa1ef5c507027932b9d1",
+  "bounded_equivalence_blob_sha1": "7c184c263d3e1fd412cea8cd0ddf23dd449162ec",
+  "implementation_amendment": {
+    "only_change": "pcomp cache is exact mapped-key LRU instead of unbounded dictionary",
+    "cache_max_entries": 8192,
+    "equation_changed": false,
+    "summation_order_changed": false,
+    "state_mapping_changed": false,
+    "scientific_thresholds_changed": false,
+    "candidate_specs_changed": false
+  }
+}
