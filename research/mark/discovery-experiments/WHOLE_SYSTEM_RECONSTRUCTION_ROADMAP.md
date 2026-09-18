@@ -319,3 +319,21 @@ The re-reading produced **84 MCR projections**, of which **28** are eligible obs
 The key methodological result is that Mark's strongest law-shaped evidence is usually not a literal absent event. It is a demonstrated constraint of the form: **remove/reorder/replace part of the relevant relation while holding important controls fixed, and the previous consequence structure cannot remain unchanged**; or, in supported invariance cases, a changed physical path is constrained to preserve or return the consequence.
 
 Next governed checkpoint: **Canon Constraint Adjudication** — present anonymized eligible Mark constraint signatures to the canon lane without Mark nouns or proposed biblical labels, recover the canon's own condition/consequence rule, freeze it, and only then compare.
+
+### Step 4 — Canon Constraint Adjudication v1
+
+**Complete on 2026-09-18.**
+
+Twenty-eight eligible Mark constraints were anonymized, the Mark↔CCA mapping was sealed, and a **24-rule canon-only inventory** was built from Noel's existing promoted conclusions, surviving hypotheses, condition-first rules, appointed-state registry, organic observations and neutral function observations.
+
+Blind adjudication was frozen before opening the map:
+
+- **14 direct** structural matches;
+- **9 partial** matches;
+- **5 no-matches**.
+
+After unsealing, the 14 direct matches collapsed onto only **7 canon rules**, concentrated around condition-governed consequence, actor/jurisdiction beyond state, order/arrangement beyond component inventory, ordered history/composition, history-sensitive continuation, generated state through prior sequence, and relative timing.
+
+No universal-law identity has been assigned.
+
+Next governed checkpoint: **Targeted Canon Constraint Search v2** for the five preserved no-matches only.
