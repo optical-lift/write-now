@@ -285,3 +285,15 @@ Until those conditions are met, intermediate work is **instrument construction a
 That is the destination.
 
 The small experiments are the bridge to it.
+
+## Current bridge status
+
+### Step 1 — Relational-law description language
+
+**Pilot passed on 2026-09-18.**
+
+The instrument is being frozen on branch `mark-relational-law-observation-packet-v1` with a 27-finding stress test covering positive, negative, diagnostic, sequence, composition, field, representation, and population-sensitivity evidence.
+
+The packet deliberately assigns no universal laws and performs no new cross-source equivalence matching.
+
+Next governed checkpoint after the instrument freeze: **Prior-Mark Evidence and Constraint Harvest**.
