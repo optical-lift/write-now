@@ -102,7 +102,12 @@ During local discovery:
 - Noel does not define the Mark ontology.
 - Natural-world analogies do not enter local discovery.
 
-The `isolation` block therefore requires:
+The packet now separates two questions that the pilot showed must not be conflated:
+
+1. **What scope did the historical experiment itself use?** `discovery_lane.experiment_scope` records whether the evidence came from a source-local lane, a blind multi-source lane, a cross-system test, an external-witness comparison, or a mixed experiment family.
+2. **Did packet construction itself perform new matching?** `isolation.packet_construction_independent = true` requires that the neutral packet be written without doing a new cross-source equivalence search.
+
+The `isolation` block also requires:
 
 - `cross_source_matching_performed = false`;
 - an empty external semantic label list;
@@ -121,7 +126,9 @@ A source/container boundary is a custody boundary, not an assertion that the con
 
 ### `evidence`
 
-Preserves the frozen finding, provenance, result status, and quantitative anchors.
+Preserves the finding, its evidentiary provenance, result status, and quantitative anchors.
+
+`evidence.provenance_class` distinguishes a frozen result from a later post-result synthesis or diagnostic source. This was added after the pilot exposed that treating a synthesis note as epistemically identical to a frozen result would flatten important custody.
 
 The packet should not strengthen the wording of the source result.
 
@@ -230,3 +237,13 @@ That harvest will produce source-local packets at scale.
 Only after source-local catalogues are independently frozen do we design law-level equivalence criteria.
 
 No global grammar is built during this instrument stage.
+
+## Pilot-driven schema pressure retained for later revision
+
+The 27-record pilot fit without assigning universal-law labels, but it exposed additional recurring dimensions that are not yet mandatory in v1:
+
+- structured control/null design;
+- explicit scale/granularity coordinates;
+- explicit censoring/observation-boundary state.
+
+The schema now provides optional `observation.comparison_design` and `observation.scale_coordinates` sockets. Boundary/censoring information remains in `relational.boundary_conditions` for v1. These should be promoted only if the full evidence harvest shows repeated need.
