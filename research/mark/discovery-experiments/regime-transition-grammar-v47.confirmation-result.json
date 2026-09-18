@@ -1,0 +1,94 @@
+{
+  "schema": "mark_regime_transition_pairwise_confirmation_v47_custody_v1",
+  "experimentId": "mark:regime-transition-grammar:v47",
+  "status": "CONFIRMATION_RESIDUAL",
+  "confirmationSupported": false,
+  "rawConfirmationResultSha256": "fa0a3634be01deeaffa009f322bfa1127b7984edfc8075da7995ed8a92825313",
+  "runnerStdoutSha256": "28a3b9bd8cb2e83e34066afc1458390510703affe58cd53ed7441b9d925513c6",
+  "runnerStderrSha256": "92b630c74563a7cf234dc4b82b7574088707f1c73d4b41e9e5a9430bdf5ed3c6",
+  "geometrySha256": "812aba2f2e813f3d53961753e48d1ee510cad937817815c7dee36ba1f9cc2ad5",
+  "mappingSha256": "633918a3bad435adfdef9859a33743b9fa88bfcf59a79a4ed8a59b71141d9d90",
+  "pairwiseDiscoverySha256": "e0623f374b3d065288ded3c9c4a1ff636835632b8675ba081045bedfabe564ff",
+  "linkedEdges": 1554,
+  "counts": {
+    "transferred": 6,
+    "rejected": 1,
+    "insufficientContrast": 0
+  },
+  "rules": [
+    {
+      "transitionKey": "local|RG-001->neighborhood|RG-001",
+      "status": "TRANSFERRED",
+      "context": 79,
+      "target": 65,
+      "sources": 15,
+      "conditional": 0.8227848101265823,
+      "lift": 5.602332527378752,
+      "predictiveGainBits": 1.9681676804343216
+    },
+    {
+      "transitionKey": "local|RG-002->neighborhood|RG-002",
+      "status": "TRANSFERRED",
+      "context": 255,
+      "target": 215,
+      "sources": 35,
+      "conditional": 0.8431372549019608,
+      "lift": 1.7865076100370219,
+      "predictiveGainBits": 0.5526705558578917
+    },
+    {
+      "transitionKey": "local|RG-004->neighborhood|RG-004",
+      "status": "TRANSFERRED",
+      "context": 185,
+      "target": 153,
+      "sources": 18,
+      "conditional": 0.827027027027027,
+      "lift": 2.5967791625822714,
+      "predictiveGainBits": 0.4758101359721397
+    },
+    {
+      "transitionKey": "neighborhood|RG-001->field|RG-001",
+      "status": "TRANSFERRED",
+      "context": 77,
+      "target": 69,
+      "sources": 12,
+      "conditional": 0.8961038961038961,
+      "lift": 5.939560439560439,
+      "predictiveGainBits": 2.3515596292327885
+    },
+    {
+      "transitionKey": "neighborhood|RG-002->field|RG-002",
+      "status": "TRANSFERRED",
+      "context": 246,
+      "target": 221,
+      "sources": 25,
+      "conditional": 0.8983739837398373,
+      "lift": 1.786382113821138,
+      "predictiveGainBits": 0.7493565591984606
+    },
+    {
+      "transitionKey": "neighborhood|RG-003->field|RG-003",
+      "status": "REJECTED_ON_CONFIRMATION",
+      "context": 23,
+      "target": 11,
+      "sources": 5,
+      "conditional": 0.4782608695652174,
+      "lift": 13.013729977116705,
+      "predictiveGainBits": 1.255027874146605,
+      "failedGate": "conditionalProbability>=0.50"
+    },
+    {
+      "transitionKey": "neighborhood|RG-004->field|RG-004",
+      "status": "TRANSFERRED",
+      "context": 168,
+      "target": 148,
+      "sources": 14,
+      "conditional": 0.8809523809523809,
+      "lift": 2.9009705793145284,
+      "predictiveGainBits": 0.5573159492469122
+    }
+  ],
+  "refitPerformed": false,
+  "provenanceOpened": false,
+  "provenanceConsumed": false
+}
