@@ -1,0 +1,16 @@
+{
+  "candidate_count": 5,
+  "status_counts": {
+    "HARVESTED_RULE": 3,
+    "INSUFFICIENT_CONTRAST": 2
+  },
+  "candidates": [
+    {"rule_id":"CR-001","family":"sequential_operator_composition","status":"HARVESTED_RULE","positive_witnesses":6,"near_counterexamples":6},
+    {"rule_id":"CR-002","family":"repetition_count","status":"HARVESTED_RULE","positive_witnesses":6,"near_counterexamples":6},
+    {"rule_id":"CR-003","family":"sequential_operator_composition","status":"HARVESTED_RULE","positive_witnesses":6,"near_counterexamples":6},
+    {"rule_id":"CR-004","family":"sequential_operator_composition","status":"INSUFFICIENT_CONTRAST","positive_witnesses":0,"near_counterexamples":0},
+    {"rule_id":"CR-005","family":"sequential_operator_composition","status":"INSUFFICIENT_CONTRAST","positive_witnesses":0,"near_counterexamples":0}
+  ],
+  "raw_candidate_file_sha256": "4701952d164c21dd39105d74f1fe4441e423c80259d3f6887f9f6697ad690ed6",
+  "raw_summary_file_sha256": "1af05d7fadad125ae8c9996682fd9ed42e9161dc2e44236db206c9590d1b3cf7"
+}
