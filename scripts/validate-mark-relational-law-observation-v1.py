@@ -86,8 +86,8 @@ def main() -> None:
         if p["schema_version"] != "mark_relational_law_observation_packet_v1":
             fail(f"{where}: wrong schema_version")
 
-        evidence = p["evidence"]
-        if not evidence.get("source_refs"):
+        lane = p["discovery_lane"]\n        if lane.get("experiment_scope") not in {"source_local", "multi_source_blind", "cross_system_test", "external_witness_comparison", "experiment_family_mixed"}:\n            fail(f"{where}: invalid or missing discovery_lane.experiment_scope")\n\n        evidence = p["evidence"]
+        if evidence.get("provenance_class") not in {"frozen_result", "post_result_synthesis", "diagnostic_result", "protocol_or_design_only"}:\n            fail(f"{where}: invalid or missing evidence.provenance_class")\n        if not evidence.get("source_refs"):
             fail(f"{where}: evidence.source_refs must not be empty")
         if not evidence.get("observation_summary"):
             fail(f"{where}: evidence.observation_summary must not be empty")
@@ -104,7 +104,7 @@ def main() -> None:
             fail(f"{where}: epistemic ceiling is incomplete")
 
         iso = p["isolation"]
-        if iso.get("cross_source_matching_performed") is not False:
+        if iso.get("packet_construction_independent") is not True:\n            fail(f"{where}: packet construction independence not affirmed")\n        if iso.get("cross_source_matching_performed") is not False:
             fail(f"{where}: cross-source matching contamination")
         if iso.get("external_semantic_labels_used") != []:
             fail(f"{where}: external semantic labels present")
@@ -115,7 +115,7 @@ def main() -> None:
 
     print(
         "PASS: 27 packets parsed; IDs complete; provenance present; "
-        "epistemic ceilings present; no universal-law labels, candidate "
+        "epistemic ceilings present; packet-construction independence affirmed; no universal-law labels, candidate "
         "equivalences, external semantic labels, or new cross-source matching."
     )
 
