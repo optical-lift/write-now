@@ -438,6 +438,24 @@
       "name": "mark-white-paint-physical-witness-v3-context",
       "sha256": "8dd067e996a437591102f0a00dc214855b8b55fe218c30c62a449989e5a32333",
       "verdict": "mixed: 2/3 predictions pass; repetition physical passes in 3/4 systems; closure physical fails; appearance-system classification substantially exceeds white-paint grammar"
+    },
+    {
+      "key": "early-blind-world-v4",
+      "branch": "mark-v4-falsifiability",
+      "run_id": 33691679387,
+      "artifact_id": 9870257448,
+      "name": "mark-conveyor-blind-v1",
+      "sha256": "dd4d58106b03fdd5dc28987573c5e80911199b9a3d3da2670d093c3eebca89c5",
+      "verdict": "125-observation blind world: cross-source tightness and recurrence far above 64 null worlds; 10/45 holdout observations accepted with 35 abstentions"
+    },
+    {
+      "key": "early-blind-world-v6-replication",
+      "branch": "mark-v6-relational-program-discovery",
+      "run_id": 33704681205,
+      "artifact_id": 9874779884,
+      "name": "mark-conveyor-blind-v1",
+      "sha256": "8c3341ba9ad76e584eb4f89e916f6cc583e1c87991e79b1a8e43853e012a41b5",
+      "verdict": "post-intake/relational-program replication of the 125-observation blind world: same 10/45 holdout acceptance, recurrence/tightness remain far above nulls"
     }
   ],
   "repository_results": [
@@ -529,14 +547,14 @@
       "note": "Repository contains execution-failure custody, not a scientific outcome."
     },
     {
-      "key": "pre-v4-universal-observable-v2-and-conveyor",
-      "status": "PARTIAL_RECOVERY",
-      "note": "Workflow artifacts recovered, but distinct scientific claims need de-duplication against V5/V6/V7 lineage before packetization."
-    },
-    {
       "key": "white-paint-v4-candidate-projector",
       "status": "NO_DISTINCT_SCIENTIFIC_ADJUDICATION_RECOVERED",
       "note": "Branch/workflow lineage recovered but no separate frozen scientific verdict located; do not infer from projector execution alone."
+    },
+    {
+      "key": "v7-sparse-relational-compiler",
+      "status": "ENGINEERING_EQUIVALENCE_ONLY",
+      "note": "Exact rowless sufficient-statistics equivalence and 10x scale gates recovered; retained as scientific custody/instrument validation rather than a relational-law finding."
     }
   ]
 }
