@@ -33,7 +33,8 @@
         "container_id",
         "container_kind",
         "experiment_id",
-        "local_label"
+        "local_label",
+        "experiment_scope"
       ],
       "properties": {
         "container_id": {
@@ -55,6 +56,15 @@
             "string",
             "null"
           ]
+        },
+        "experiment_scope": {
+          "enum": [
+            "source_local",
+            "multi_source_blind",
+            "cross_system_test",
+            "external_witness_comparison",
+            "experiment_family_mixed"
+          ]
         }
       },
       "additionalProperties": false
@@ -62,6 +72,7 @@
     "evidence": {
       "type": "object",
       "required": [
+        "provenance_class",
         "status",
         "source_refs",
         "observation_summary",
@@ -117,6 +128,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "provenance_class": {
+          "enum": [
+            "frozen_result",
+            "post_result_synthesis",
+            "diagnostic_result",
+            "protocol_or_design_only"
+          ]
         }
       },
       "additionalProperties": false
@@ -189,6 +208,45 @@
           "items": {
             "type": "string"
           }
+        },
+        "scale_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "comparison_design": {
+          "type": "object",
+          "properties": {
+            "comparison_type": {
+              "type": "string"
+            },
+            "held_fixed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "changed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "baselines_or_controls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "comparison_type",
+            "held_fixed",
+            "changed",
+            "baselines_or_controls"
+          ],
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -364,16 +422,13 @@
     "isolation": {
       "type": "object",
       "required": [
-        "source_local_only",
+        "packet_construction_independent",
         "cross_source_matching_performed",
         "external_semantic_labels_used",
         "universal_law_label",
         "candidate_equivalences"
       ],
       "properties": {
-        "source_local_only": {
-          "type": "boolean"
-        },
         "cross_source_matching_performed": {
           "const": false
         },
@@ -387,6 +442,9 @@
         "candidate_equivalences": {
           "type": "array",
           "maxItems": 0
+        },
+        "packet_construction_independent": {
+          "const": true
         }
       },
       "additionalProperties": false
