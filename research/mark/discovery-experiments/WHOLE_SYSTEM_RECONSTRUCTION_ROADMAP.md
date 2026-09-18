@@ -307,3 +307,15 @@ The harvest preserves the recovered scientific outcome history as **90 RLOP pack
 The harvest includes supported findings, negative constraints, diagnostics, unresolved/underidentified results, representation failures, boundary censoring, population sensitivity, and explicit no-outcome custody. It performs no new cross-source equivalence matching and assigns no universal-law labels.
 
 Next governed checkpoint: **Law-Equivalence Adjudication Language** — define substrate-neutral rules for deciding when independently discovered observations may count as the same law, specialization, inverse, composition, contextual variant, or unrelated before opening candidate matches.
+
+### Step 3 — Constraint Re-Reading
+
+**Complete and ready to freeze on 2026-09-18.**
+
+All **84 canonical active Mark evidence packets** were re-read as constraint statements without opening canon matches or creating cross-source equivalences.
+
+The re-reading produced **84 MCR projections**, of which **28** are eligible observed-system law candidates. The remaining projections are representation, cross-system, measurement, or calibration constraints and are retained as supporting/falsifying structure rather than promoted into ontological laws.
+
+The key methodological result is that Mark's strongest law-shaped evidence is usually not a literal absent event. It is a demonstrated constraint of the form: **remove/reorder/replace part of the relevant relation while holding important controls fixed, and the previous consequence structure cannot remain unchanged**; or, in supported invariance cases, a changed physical path is constrained to preserve or return the consequence.
+
+Next governed checkpoint: **Canon Constraint Adjudication** — present anonymized eligible Mark constraint signatures to the canon lane without Mark nouns or proposed biblical labels, recover the canon's own condition/consequence rule, freeze it, and only then compare.
