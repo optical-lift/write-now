@@ -1,0 +1,55 @@
+{
+  "schema": "mark_regime_boundary_cp1_custody_v48_v1",
+  "experimentId": "mark:regime-boundary-dynamics:v48",
+  "status": "EQUIVALENCE_GATE_FAILED",
+  "fitterCommit": "f71b0ab200376f84b2d602f4f94fce015549789d",
+  "fitterGitBlob": "6b45ef87f3ce7fa9a3d71c20ed5db30e6378e7ac",
+  "fitterFileSha256": "61197bf7107465e37df1f7fe5d53b605fa5115460578a6f80f4cd03939f16982",
+  "coordinateFitSources": 171,
+  "coordinateFitObservations": 5305,
+  "sourceListSha256": "b77f4f48353764d42888a0de4fb6f1027c78d11565b69ecefe88dd74dffbddbc",
+  "observationListSha256": "c219978ab6ad8e81bf3ce55634ea9c167c00d4d666e214c43bef093dd2b13795",
+  "canonicalSubsetMappingSha256": "433fa6c1aaa5190522175f2545faa3c9cdff3ffab0b564bddda255d5a43e4c00",
+  "artifacts": {
+    "r3EquivalentModelSha256": "2392f5be84b89bee61246cb548fc076c6877dabe2746c0c896f19d7d2555dc20",
+    "r4SourceRelativeModelSha256": "775a074078f8ebdf8dff6e44659c2f9766d4f91aa74990523805377c3b22ad68",
+    "coordinateFitAssignmentsSha256": "5c1f2fd0988cc9bb8d237117a6fdebe84367f98c7e906a2e82b9571787cc5e45",
+    "cp1SummarySha256": "e99b1dd47077e86febaa08680c1bd5b355a4adbf4371f370313cba8c030d8b99"
+  },
+  "r3": {
+    "rawFeatureCount": 32,
+    "pcaComponents": 12,
+    "explainedVarianceRatio": 0.9550961153121091,
+    "alignedAgreementFraction": 0.7758718190386428,
+    "alignedARI": 0.6106618239720786,
+    "regimeObservationCounts": {
+      "RG-001": 596,
+      "RG-002": 2036,
+      "RG-003": 728,
+      "RG-004": 1880,
+      "RG-005": 65
+    },
+    "regimeSourceCounts": {
+      "RG-001": 58,
+      "RG-002": 120,
+      "RG-003": 81,
+      "RG-004": 112,
+      "RG-005": 39
+    },
+    "gates": {
+      "alignedARI": false,
+      "minimumObservationsPerAlignedRegime": true,
+      "minimumSourcesPerAlignedRegime": true
+    }
+  },
+  "r4": {
+    "rawFeatureCount": 37,
+    "pcaComponents": 17,
+    "explainedVarianceRatio": 0.951588823069981
+  },
+  "targetsConsumed": false,
+  "boundaryDevelopmentOpened": false,
+  "boundaryValidationOpened": false,
+  "finalConfirmationOpened": false,
+  "provenanceConsumed": false
+}
