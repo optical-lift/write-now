@@ -1,0 +1,107 @@
+{
+  "schema": "mark_regime_transition_grammar_v47_protocol_v1",
+  "experimentId": "mark:regime-transition-grammar:v47",
+  "parentV46DecisionSha": "f4b338e37b8323166feb7669569889b85637f52b",
+  "frozenAlphabet": [
+    "RG-001",
+    "RG-002",
+    "RG-003",
+    "RG-004",
+    "RG-005"
+  ],
+  "sourcePool": {
+    "sources": 283,
+    "observations": 9244,
+    "sourceListSha256": "b9cc1accbca97380178d8408e7c4d38f9b18ad22c64a785c5f5a8e835c82c729",
+    "fixedAssignmentMappingSha256": "633918a3bad435adfdef9859a33743b9fa88bfcf59a79a4ed8a59b71141d9d90",
+    "excludesV46DiscoverySources": true
+  },
+  "partition": {
+    "salt": "mark-v47-regime-transition-grammar|",
+    "function": "first 32 bits of SHA-256 as unsigned integer modulo 100",
+    "discovery": {
+      "buckets": "0-59",
+      "sources": 171,
+      "observations": 5305,
+      "sourceListSha256": "b77f4f48353764d42888a0de4fb6f1027c78d11565b69ecefe88dd74dffbddbc",
+      "observationListSha256": "c219978ab6ad8e81bf3ce55634ea9c167c00d4d666e214c43bef093dd2b13795"
+    },
+    "validation": {
+      "buckets": "60-79",
+      "sources": 59,
+      "observations": 2332,
+      "sourceListSha256": "daa2f0e62f0925ad3ebf7cd533ce3ceb9a27f68585d3209fbf5de9066e3b34e4",
+      "observationListSha256": "d1a5a58178866bd61fc4f671e8c08d30e09f225da010c485a46640d20a19d91c"
+    },
+    "confirmation": {
+      "buckets": "80-99",
+      "sources": 53,
+      "observations": 1607,
+      "sourceListSha256": "4d947806cb30d62785165a75b2b718da750e476b719711a0a8fa8abc9bd99599",
+      "observationListSha256": "9652f6d2411e6dc975466bddfe8ba1cd98b69affaec012168e550d51cba387e2"
+    }
+  },
+  "scaleRanks": {
+    "local": 1,
+    "neighborhood": 2,
+    "field": 3,
+    "object": 4
+  },
+  "parentRule": {
+    "sameSource": true,
+    "minimumChildContainmentFraction": 0.95,
+    "chooseLowestEligibleHigherScale": true,
+    "tieBreak": [
+      "maximum_child_containment",
+      "minimum_parent_area",
+      "lexicographic_parent_observation_id"
+    ],
+    "maxParentsPerObservation": 1,
+    "regimeBlind": true
+  },
+  "nullModel": {
+    "permutations": 100,
+    "operation": "permute frozen regime labels within each sourceGroupId x proposalScale stratum",
+    "preserves": [
+      "source",
+      "scale",
+      "region_geometry",
+      "parent_edges",
+      "per_source_per_scale_regime_marginals"
+    ]
+  },
+  "phaseA": {
+    "candidateMaximum": 15,
+    "minimumOccurrences": 20,
+    "minimumDistinctSources": 10,
+    "minimumConditionalProbability": 0.5,
+    "minimumLiftOverScalePairMarginal": 1.25,
+    "requireLiftAboveMatchedNullQuantile": 0.99
+  },
+  "phaseB": {
+    "allowedChainLengths": [
+      3,
+      4
+    ],
+    "opensOnlyIfPhaseAHarvestsCandidate": true,
+    "minimumDistinctSources": 10,
+    "comparison": [
+      "first_order_transition_model",
+      "scale_only_marginal",
+      "matched_permutation_null"
+    ]
+  },
+  "forbidden": [
+    "provenance",
+    "institution",
+    "title",
+    "provider",
+    "language",
+    "chronology",
+    "geography",
+    "OCR",
+    "semantic class",
+    "Song labels",
+    "new source acquisition"
+  ]
+}
