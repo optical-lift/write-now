@@ -148,7 +148,6 @@ def evaluate(rows,by_id,labels,length:int,chains):
         higher_loss/=total; first_loss/=total; scale_loss/=total
         dominant=max(REGIMES,key=lambda rg:(ctx_counts[ck][rg],-REGIMES.index(rg)))
         dom_n=ctx_counts[ck][dominant]
-        # Full program key = context prefix plus dominant final state.
         prefix=ck.rsplit("->",1)[0]; next_scale=ck.rsplit("->",1)[1]
         pk=prefix+f">{next_scale}|{dominant}"
         out[ck]={
