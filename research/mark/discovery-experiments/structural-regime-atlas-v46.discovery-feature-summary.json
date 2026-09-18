@@ -1,0 +1,45 @@
+{
+  "schema": "mark_structural_feature_summary_v46_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "lane": "discovery",
+  "scientificFreezeEligible": true,
+  "sourceBlindInputSha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+  "sealedEvidenceZipSha256": "5aee2d958875d711a148e08c37c613457eeb734efc8e2c773fa63782faad1a20",
+  "exclusionIdListSha256": "1735dbadeb93241237af7af3efbe22a7b4a942a80cf94db301e43caaef827076",
+  "partitionSourceListSha256": "a36f428e48c0fcfb70a81c3f6c6aa743740985046928c3d8bb8c4a648fb302df",
+  "partitionObservationListSha256": "a79d274f4b747359aaa891d8d1a8901a2702bce1856b8bed4fb0cc55d0a8f93e",
+  "sources": 431,
+  "observations": 13482,
+  "rowsSha256": "0d45b335f8b468bed999d2455b4385b32bb742d7f1c7cf542a54b147ac976caf",
+  "totalObservationAreaPixels": 2932809396,
+  "totalSkeletonPixels": 174189982,
+  "featureAvailabilityCounts": {
+    "cross_scale_persistence_transition:DEFERRED_TO_SOURCE_LOCAL_DISCOVERY_JOIN": 13482,
+    "graph_morphology:MEASURED": 13482,
+    "higher_order_operator_programs:UNAVAILABLE_IN_FEATURE_COMPILER_V1": 13482,
+    "operator_ecology:PARTIAL_V46_LOCAL_TOPOLOGY_ONLY": 13482,
+    "v45_law_ecology:UNAVAILABLE_EXACT_V5_PROJECTOR_NOT_PRESENT": 13482
+  },
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "opencv": "4.13.0",
+    "scikitImage": "0.26.0"
+  },
+  "featureContract": {
+    "sourceBlind": true,
+    "semanticLabelsConsumed": false,
+    "provenanceConsumed": false,
+    "newSourceAcquisition": false,
+    "threshold": "OpenCV Otsu on exact observation crop",
+    "foreground": "gray <= Otsu threshold",
+    "skeleton": "skimage.morphology.skeletonize binary mask",
+    "graphAdjacency": "8-neighbor pixel graph",
+    "localTopologyToken": "8-neighbor occupancy bitmask canonicalized over D4 rotations/reflections",
+    "normalizationAtCompiler": "none; raw deterministic features only",
+    "missingValueRule": "feature families requiring unavailable exact machinery are named UNAVAILABLE/PARTIAL; numeric features mathematically defined on empty skeleton are zero; no imputation",
+    "v45ExactnessClaimed": false,
+    "v45SubstitutionForbidden": true
+  },
+  "runtimeSeconds": 366.7900538444519
+}
