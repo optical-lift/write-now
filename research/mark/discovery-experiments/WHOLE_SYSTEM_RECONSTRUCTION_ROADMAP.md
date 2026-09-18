@@ -337,3 +337,18 @@ After unsealing, the 14 direct matches collapsed onto only **7 canon rules**, co
 No universal-law identity has been assigned.
 
 Next governed checkpoint: **Targeted Canon Constraint Search v2** for the five preserved no-matches only.
+
+### Step 5 — Targeted Canon Constraint Search v2
+
+**Complete on 2026-09-18.**
+
+The five preserved v1 no-matches were searched individually against Noel/canon evidence. Three new canon rules were frozen before re-adjudication: connection/membership edits with identity persistence, member placement/function within a larger whole, and duration-invariance under a persistent governing condition.
+
+All five gaps upgrade to **partial**; none upgrades to direct.
+
+Preserve the provenance distinction:
+
+- blind v1: **14 direct / 9 partial / 5 no-match**;
+- post-hoc targeted v2: **14 direct / 14 partial / 0 no-match**.
+
+Next governed checkpoint: **Law-Equivalence Adjudication Language** at the constraint level.
