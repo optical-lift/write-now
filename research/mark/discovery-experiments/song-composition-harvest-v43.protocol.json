@@ -1,0 +1,67 @@
+{
+  "protocol_version": "v43_song_composition_harvest_1",
+  "experiment_id": "mark:song-composition-harvest:v43",
+  "base_repository": "optical-lift/write-now",
+  "base_main_sha": "76f7eedbc5a6d154d3bfea3c5bea044317b703ae",
+  "phase_a": {
+    "mode": "blind_physical_operational",
+    "forbidden_labels": [
+      "Song relation-family names",
+      "historical glyph meanings",
+      "translations",
+      "semantic glosses",
+      "theological labels"
+    ],
+    "candidate_feature_families": [
+      "enclosure_boundary",
+      "adjacency_contact_connectivity",
+      "orientation_direction_reorientation",
+      "junction_branching_port_arity",
+      "repetition_multiplicity_count",
+      "nesting_depth_recursive_embedding",
+      "split_join_topology_edit",
+      "ordered_operator_composition",
+      "symmetry_mirror_reversal",
+      "endpoint_terminal_open_closed"
+    ],
+    "tests": [
+      "positive_witnesses",
+      "near_counterexamples",
+      "ablation",
+      "invariance_control",
+      "matched_or_null_control",
+      "held_out_transfer_when_available",
+      "downstream_preservation_when_applicable"
+    ],
+    "allowed_statuses": [
+      "HARVESTED_RULE",
+      "OPEN_RULE",
+      "REJECTED_RULE",
+      "SURFACE_ONLY",
+      "INSUFFICIENT_CONTRAST"
+    ],
+    "target_candidate_count": {"min": 5, "max": 10}
+  },
+  "phase_b": {
+    "opens_after": [
+      "phase-a.candidates committed",
+      "phase-a.result committed",
+      "phase-a.freeze committed"
+    ],
+    "song_repository": "optical-lift/song-ontology",
+    "required_song_files": [
+      "compiler/RECONSTRUCTION_CRITERIA_V0.1.md",
+      "compiler/COVERAGE_V0.1.md",
+      "compiler/schema/song_ir_v0.1.schema.json"
+    ],
+    "allowed_dispositions": [
+      "EXISTING_SONG_STRUCTURE",
+      "COMPOSITION_OF_EXISTING_STRUCTURES",
+      "MISSING_COMPOSITION_RULE",
+      "UNRESOLVED",
+      "SURFACE_ONLY"
+    ]
+  },
+  "selection_rule": "first compiler candidate is chosen by strongest physical evidence and cleanest counterfactual contrast, not semantic importance",
+  "no_product_runtime_changes": true
+}

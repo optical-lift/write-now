@@ -1,0 +1,24 @@
+{
+  "experiment_id": "mark:song-composition-harvest:v43",
+  "phase": "A",
+  "candidates": [
+    {
+      "rule_id": "CR-001",
+      "feature_family": "",
+      "feature_definition": "",
+      "preconditions": [],
+      "operational_delta": "",
+      "positive_witnesses": [],
+      "near_counterexamples": [],
+      "ablation": {"status": "NOT_RUN", "method": "", "result": ""},
+      "invariance_control": {"status": "NOT_RUN", "method": "", "result": ""},
+      "matched_or_null_control": {"status": "NOT_RUN", "method": "", "result": ""},
+      "held_out_transfer": {"status": "NOT_AVAILABLE", "lane": "", "result": ""},
+      "downstream_preservation": {"status": "NOT_APPLICABLE", "result": ""},
+      "known_failures": [],
+      "residual_unexplained_features": [],
+      "provenance": [],
+      "status": "OPEN_RULE"
+    }
+  ]
+}
