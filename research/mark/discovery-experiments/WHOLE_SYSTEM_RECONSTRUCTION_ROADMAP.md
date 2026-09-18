@@ -297,3 +297,13 @@ The instrument is being frozen on branch `mark-relational-law-observation-packet
 The packet deliberately assigns no universal laws and performs no new cross-source equivalence matching.
 
 Next governed checkpoint after the instrument freeze: **Prior-Mark Evidence and Constraint Harvest**.
+
+### Step 2 — Prior-Mark Evidence and Constraint Harvest
+
+**Complete and ready to freeze on 2026-09-18.**
+
+The harvest preserves the recovered scientific outcome history as **90 RLOP packets**, with **84 canonical active packets** after superseding the first six synthesis-based instrument-pilot records with direct frozen-result replacements.
+
+The harvest includes supported findings, negative constraints, diagnostics, unresolved/underidentified results, representation failures, boundary censoring, population sensitivity, and explicit no-outcome custody. It performs no new cross-source equivalence matching and assigns no universal-law labels.
+
+Next governed checkpoint: **Law-Equivalence Adjudication Language** — define substrate-neutral rules for deciding when independently discovered observations may count as the same law, specialization, inverse, composition, contextual variant, or unrelated before opening candidate matches.
