@@ -1,0 +1,172 @@
+{
+  "schema": "mark_operator_composition_algebra_protocol_v9",
+  "experimentId": "mark:operator-composition-algebra:v9",
+  "question": "When a glyph is treated as a system of structural consequences rather than a container of labels, do blindly defined two-port operators compose as state transformations, and do any algebraic laws of composition transfer to unseen glyph observations?",
+  "conceptualCorrection": {
+    "forbiddenStartingAssumption": "a glyph is a record whose strokes directly encode predeclared fields or meanings",
+    "workingQuestion": "what structural consequence becomes possible, impossible, preserved, reversed, repeated, or context-dependent because an operation occurs here?",
+    "semanticClaimLimit": "A positive result supports machine-readable operational structure. It does not translate an operator, assign a word meaning, or prove that the historical users conceptualized the system as a computer program."
+  },
+  "rationaleParentV7": {
+    "branchHead": "50c35843a81dd66fab8b55f62ff38227ab5bfab4",
+    "runId": 33817695589,
+    "result": "radius2_composes_candidate_structural_syllables",
+    "passingPrimaryFeature": "r2LengthAwareTokenMutation",
+    "consumedAsData": false,
+    "purpose": "V7 established a transferable radius-2 length-aware wiring signal. V9 deliberately does not consume V7 motifs; it returns to the frozen graph world and asks whether structural consequences factor and compose."
+  },
+  "parentV5": {
+    "expectedRunId": 33807154154,
+    "expectedArtifactName": "mark-critical-edge-correspondence-v5-frozen",
+    "expectedEdgePairManifestSha256": "75e28e9e45bcc2245015b1d6a23000f9589b5b9f4a0104dad4e792d1cd445a36",
+    "expectedCriticalEdgeWorldSha256": "8061fa13da32f869c9a001432a659a2a7647cfefa876175df7d21b5d9d138aea",
+    "expectedProjectorRowsSha256": "e3dadcd6daf2921433c856458a651fcbfea6569852c67954d45d704699d71e2e",
+    "expectedRolePairRowsSha256": "3dcad71b767f9e69bcf07b7f93c7e4ff4be3efd83a500c93c9a152bd05822296",
+    "expectedPairEligibleObservations": 433
+  },
+  "lanes": {
+    "induction": "train",
+    "transfer": "holdout",
+    "control": "control",
+    "rule": "Only Cleveland/train may induce states, operators, kernels, pair models, or candidate laws. Bavaria/holdout and LOC/control remain evaluation-only and may not change the frozen model."
+  },
+  "primitiveGraph": {
+    "observations": "V5 pair-eligible critical-edge observations only",
+    "nodeLabel": ["ENDPOINT/JUNCTION kind", "full critical-center degree class"],
+    "degreeCap": 6,
+    "parallelEdges": "collapse all literal non-self center paths between the same unordered center pair to one bundle",
+    "multiplicityCap": 3,
+    "primaryVariant": "lengthAware",
+    "ablationVariant": "topology",
+    "lengthAwareEdgeLabel": "parallel multiplicity class plus mean observation-diagonal-normalized path-step bin",
+    "topologyEdgeLabel": "parallel multiplicity class only",
+    "normalizedLengthBinWidth": 0.05,
+    "selfLoops": "retained only as capped multiplicity in the operator's center context; they are not traversable ports",
+    "residualGeometryForbidden": ["turnRate", "tortuosity", "turnCount", "pathSha256"],
+    "absolutePositionForbidden": true,
+    "absoluteOrientationForbidden": true,
+    "eventIdentityForbidden": true,
+    "sourceIdentityForbiddenFromStateAndOperator": true
+  },
+  "interfaceState": {
+    "definition": "A directed traversable edge-bundle interface: edge-bundle label + origin critical-center class + destination critical-center class.",
+    "interpretation": "This is an anonymous machine state at a boundary, not a semantic label.",
+    "trainMinimumOccurrences": 20,
+    "trainMinimumDistinctSources": 2,
+    "rareAndUnseenState": "OTHER",
+    "holdoutRule": "State vocabulary freezes after train induction; every unseen holdout/control state maps to OTHER."
+  },
+  "operator": {
+    "occurrence": "An ordered two-port transit u -> v -> w through one critical center v using two distinct non-self neighbor bundles.",
+    "identityIncludes": [
+      "center v node class",
+      "input-port neighbor node class",
+      "output-port neighbor node class",
+      "capped self-loop multiplicity at v",
+      "identity-free sorted multiset of every side branch excluding u and w, each side branch represented by its edge-bundle label and neighbor node class"
+    ],
+    "identityExcludes": [
+      "incoming interface edge-bundle value",
+      "outgoing interface edge-bundle value",
+      "event IDs",
+      "source IDs",
+      "coordinates",
+      "absolute orientation"
+    ],
+    "minimumTrainOccurrences": 20,
+    "minimumDistinctTrainSources": 3,
+    "reverse": "The formal reverse operator swaps only the input-port and output-port neighbor classes. Side context and center context remain unchanged."
+  },
+  "composition": {
+    "occurrence": "An oriented simple four-center path u-v-w-x. Operator A is the transit u->v->w; operator B is v->w->x; the observed state sequence is s0=(u->v), s1=(v->w), s2=(w->x).",
+    "simplePathRequirement": "u, v, w, and x must all be distinct",
+    "kernel": "K_A(s_out | s_in)",
+    "globalBackoff": "P0(s_out | s_in)",
+    "globalAdditiveAlpha": 0.5,
+    "operatorBackoffPseudoCount": 8.0,
+    "factorizedPrediction": "K_AB(s2 | s0) = sum_s1 K_A(s1 | s0) * K_B(s2 | s1)",
+    "baselines": {
+      "inputOnly": "P0_2(s2 | s0) learned directly from all train two-operator paths without operator identity",
+      "firstOperatorOnly": "P_A2(s2 | s0, A) learned directly from train two-operator paths",
+      "secondOperatorOnly": "P_B2(s2 | s0, B) learned directly from train two-operator paths",
+      "directPair": "P_AB_direct(s2 | s0, A, B) learned directly from train; it backs off to the factorized composition and is diagnostic for irreducible pair interaction"
+    },
+    "baselineBackoffPseudoCount": 8.0
+  },
+  "predictiveTransferGate": {
+    "minimumCoveredPathFraction": 0.10,
+    "minimumCoveredDistinctSources": 20,
+    "minimumGainOverInputOnlyBitsPerPath": 0.05,
+    "minimumGainOverEachOneSidedBaselineBitsPerPath": 0.01,
+    "maximumDirectPairAdvantageOverCompositionBitsPerPath": 0.10,
+    "minimumSourceFractionCompositionBeatsInputOnly": 0.60,
+    "primaryLane": "holdout",
+    "controlLaneRequiredForClaim": false
+  },
+  "lawDiscovery": {
+    "variant": "lengthAware",
+    "minimumPairOccurrences": 20,
+    "minimumPairDistinctSources": 3,
+    "maximumCandidatesPerLaw": 20,
+    "idempotence": {
+      "definition": "A followed by A behaves like A.",
+      "selection": "Among supported A,A pairs, rank by smallest train weighted total-variation distance between K_A*K_A and K_A.",
+      "maximumTrainKernelTv": 0.15,
+      "transferMaximumAbsoluteLogLossDifferenceBitsPerPath": 0.10
+    },
+    "cancellation": {
+      "definition": "A followed by B returns the boundary state toward identity more strongly than either operator alone.",
+      "selection": "Rank supported A,B pairs by predicted identity-return probability of K_A*K_B after requiring a material gain over both one-step operators.",
+      "minimumTrainCompositeIdentityProbability": 0.60,
+      "minimumTrainIdentityGainOverEitherSingle": 0.15,
+      "transferMinimumIdentityGainOverInputOnly": 0.10
+    },
+    "orderSensitivity": {
+      "definition": "A then B and B then A have materially different consequence kernels.",
+      "selection": "Both orders must be independently supported in train; pairs for which both operators are self-reverse are excluded from this law test; rank by weighted TV distance between K_A*K_B and K_B*K_A.",
+      "minimumTrainKernelTv": 0.20,
+      "transferMinimumOwnOrderLogLossAdvantageBitsPerPath": 0.05
+    },
+    "conditionalComposition": {
+      "definition": "The same ordered pair A,B produces different stable consequences for different incoming interface states.",
+      "minimumOccurrencesPerInputState": 10,
+      "minimumTrainDominantOutcomeProbability": 0.70,
+      "minimumDistinctInputStatesWithDifferentDominantOutcomes": 2,
+      "transferMinimumAccuracyPerFrozenInputOutcome": 0.60
+    }
+  },
+  "adjudication": {
+    "firstOrderOperatorAlgebra": "If the primary lengthAware factorized composition clears coverage, beats input-only and both one-sided baselines, and the direct-pair model has <=0.10 bits/path advantage, call first_order_operator_algebra_transfers.",
+    "contextRequired": "If operator-aware models transfer but direct-pair or a one-sided context model materially beats factorized composition, call contextual_or_higher_order_operator_state_required rather than forcing a simple algebra.",
+    "operatorWithoutComposition": "If operator identity improves prediction but factorized composition does not beat one-sided baselines, call operator_consequence_without_first_order_composition.",
+    "noOperationalSignal": "If the factorized model does not materially beat input-only on Bavaria, call no_transferable_operator_consequence_under_v9.",
+    "lawClaims": "Idempotence, cancellation, order sensitivity, and conditional composition are reported independently and only as transferred when their frozen Cleveland candidate satisfies the corresponding Bavaria criterion.",
+    "topologyAblation": "If topology-only independently clears the full predictive transfer gate, normalized length is not required for the first-order operational claim. If only lengthAware clears it, retain lengthAware without claiming length is causal."
+  },
+  "developmentDisclosure": {
+    "clevelandOnlyFeasibilityUsedBeforeFreeze": true,
+    "statement": "Operator/state support thresholds and predictive practicality thresholds were checked for feasibility using Cleveland/train only before this protocol was frozen. No Bavaria/holdout or LOC/control score was used to choose the protocol."
+  },
+  "falsifiers": {
+    "parentDrift": "Abort if the frozen V5 manifest, edge world, or projector rows hashes drift.",
+    "labelLeakage": "Abort if role-pair labels remain inside the analysis packet during induction or evaluation.",
+    "holdoutLeakage": "Abort if the inducer sees any non-train observation or if the model hash changes after holdout is opened.",
+    "lowCoverage": "Do not make a system-level composition claim if Bavaria coverage or source support misses the frozen minimum.",
+    "oneSidedWins": "If A-only or B-only predicts materially better than K_A*K_B, simple factorized composition is false at this state resolution.",
+    "pairInteraction": "If direct A,B pair prediction beats factorized composition by >0.10 bits/path, hidden context or higher-order interaction remains and first-order algebra is not sufficient.",
+    "lawNontransfer": "A train algebraic identity that does not satisfy its frozen Bavaria transfer criterion is not a law."
+  },
+  "custody": {
+    "consumeFrozenV5ArtifactOnly": true,
+    "v7ArtifactConsumed": false,
+    "v8ArtifactConsumed": false,
+    "roleLabelsUsed": false,
+    "sourcePixelsMustNotBeDownloaded": true,
+    "topologyMustNotBeReprojected": true,
+    "trainModelMustFreezeBeforeHoldoutEvaluation": true,
+    "noProvenance": true,
+    "noStateVocabularyFromOtherExperiments": true,
+    "noSemanticDictionary": true,
+    "otherExperimentBranchesMustNotBeReadOrMutated": true
+  }
+}
