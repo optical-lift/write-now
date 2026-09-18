@@ -19,6 +19,7 @@ FULL_INPUT_SHA256 = "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b
 POOL_SOURCE_SHA256 = "b9cc1accbca97380178d8408e7c4d38f9b18ad22c64a785c5f5a8e835c82c729"
 POOL_OBSERVATIONS = 9244
 POOL_SOURCES = 283
+EXCLUSION_ID_LIST_SHA256 = "1735dbadeb93241237af7af3efbe22a7b4a942a80cf94db301e43caaef827076"
 SALT = "mark-v47-regime-transition-grammar|"
 SCALE_RANK = {"local":1,"neighborhood":2,"field":3,"object":4}
 
@@ -77,7 +78,11 @@ def load_pool(doc: dict[str,Any], v46_partition: dict[str,Any], exclusions: dict
     if list_sha(source_ids)!=POOL_SOURCE_SHA256:
         raise RuntimeError("V47 source pool SHA drift")
     source_set=set(source_ids)
-    obs=[o for o in doc["observations"] if o["sourceGroupId"] in source_set]
+    excluded_ids=sorted(exclusions.get("observation_ids",[]))
+    if len(excluded_ids)!=435 or list_sha(excluded_ids)!=EXCLUSION_ID_LIST_SHA256:
+        raise RuntimeError("V46 exclusion custody drift")
+    excluded=set(excluded_ids)
+    obs=[o for o in doc["observations"] if o["sourceGroupId"] in source_set and o["id"] not in excluded]
     obs.sort(key=lambda o:(o["sourceGroupId"],o["id"]))
     if len(obs)!=POOL_OBSERVATIONS:
         raise RuntimeError(f"V47 observation pool count drift: {len(obs)}")
@@ -170,13 +175,15 @@ def main() -> None:
     ap=argparse.ArgumentParser()
     ap.add_argument("--blind-input",type=Path,required=True)
     ap.add_argument("--v46-partition-freeze",type=Path,required=True)
+    ap.add_argument("--v46-exclusions",type=Path,required=True)
     ap.add_argument("--out",type=Path,required=True)
     args=ap.parse_args()
 
     doc=json.loads(args.blind_input.read_text())
     verify_blind_input(doc)
     v46=json.loads(args.v46_partition_freeze.read_text())
-    obs,source_set=load_pool(doc,v46)
+    exclusions=json.loads(args.v46_exclusions.read_text())
+    obs,source_set=load_pool(doc,v46,exclusions)
     parts=verify_partitions(obs,source_set)
     args.out.mkdir(parents=True,exist_ok=True)
 
