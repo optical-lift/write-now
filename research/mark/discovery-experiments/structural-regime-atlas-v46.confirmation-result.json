@@ -1,0 +1,57 @@
+{
+  "schema": "mark_structural_regime_confirmation_v46_custody_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "status": "CONFIRMATION_SUPPORTED",
+  "confirmationSupported": true,
+  "modelSha256": "5a0a430f8e127f46f31b207fd0be554d8cf622d11550dcb4b0987a5bd1705a5a",
+  "discoveryFeatureSha256": "0d45b335f8b468bed999d2455b4385b32bb742d7f1c7cf542a54b147ac976caf",
+  "confirmationFeatureSha256": "2064f7d8bb605199709bc72aca92176360fdfcba7aac3181c7b1e7fb6b57ab27",
+  "evaluatorGitBlob": "c2890f98c5ab01cc9e27a7edfdfed52ff82a3fce",
+  "evaluatorFileSha256": "d0f52c771d8c790db0cd4ddd58f324cd1648f5a7b381997580cf81e2c135d685",
+  "exactLocalResultSha256": "ebde3058af89ce0634dcbd8144ec5b8d5d7a4c7d5553cba4c5f72ba345c4353f",
+  "exactLocalAssignmentsSha256": "d5adadc55517a6dbfbdd1cf060653727f614a27692822b63235fcce52a102f7c",
+  "assignmentRule": "frozen discovery scaler -> frozen discovery PCA -> nearest frozen K=5 centroid",
+  "supportRule": "assigned-regime discovery-only 99th percentile squared centroid distance",
+  "overallConfirmationInDistributionFraction": 0.9885057471264368,
+  "occupancyJensenShannonBits": 0.012230445764547546,
+  "overallMedianCentroidMargin": 0.7593137345363283,
+  "regimes": [
+    {
+      "regimeId": "RG-001",
+      "confirmationObservations": 661,
+      "confirmationFraction": 0.13567323481116583,
+      "distinctConfirmationSources": 61,
+      "confirmationInDistributionFraction": 0.972768532526475
+    },
+    {
+      "regimeId": "RG-002",
+      "confirmationObservations": 2144,
+      "confirmationFraction": 0.4400656814449918,
+      "distinctConfirmationSources": 119,
+      "confirmationInDistributionFraction": 0.9874067164179104
+    },
+    {
+      "regimeId": "RG-003",
+      "confirmationObservations": 268,
+      "confirmationFraction": 0.055008210180623976,
+      "distinctConfirmationSources": 57,
+      "confirmationInDistributionFraction": 1
+    },
+    {
+      "regimeId": "RG-004",
+      "confirmationObservations": 1721,
+      "confirmationFraction": 0.3532430213464696,
+      "distinctConfirmationSources": 88,
+      "confirmationInDistributionFraction": 0.9941894247530505
+    },
+    {
+      "regimeId": "RG-005",
+      "confirmationObservations": 78,
+      "confirmationFraction": 0.01600985221674877,
+      "distinctConfirmationSources": 40,
+      "confirmationInDistributionFraction": 0.9871794871794872
+    }
+  ],
+  "refitPerformed": false,
+  "provenanceOpened": false
+}
