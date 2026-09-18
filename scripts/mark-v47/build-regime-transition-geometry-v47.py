@@ -67,7 +67,7 @@ def verify_blind_input(doc: dict[str,Any]) -> None:
     if supplied!=computed or supplied!=FULL_INPUT_SHA256:
         raise RuntimeError(f"blind input SHA drift: {computed} / {supplied}")
 
-def load_pool(doc: dict[str,Any], v46_partition: dict[str,Any]) -> tuple[list[dict[str,Any]],set[str]]:
+def load_pool(doc: dict[str,Any], v46_partition: dict[str,Any], exclusions: dict[str,Any]) -> tuple[list[dict[str,Any]],set[str]]:
     source_ids=sorted(
         v46_partition["source_partitions"]["validation"]["source_group_ids"]+
         v46_partition["source_partitions"]["confirmation"]["source_group_ids"]
