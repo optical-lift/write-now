@@ -1,6 +1,6 @@
 {
   "schema": "mark_prior_evidence_harvest_manifest_v1",
-  "status": "HARVEST_COMPLETE_PENDING_FREEZE",
+  "status": "HARVEST_COMPLETE_READY_TO_FREEZE",
   "date": "2026-09-18",
   "repository": "optical-lift/write-now",
   "branch": "mark-prior-evidence-harvest-v1",
@@ -121,5 +121,7 @@
     "candidate_equivalences_created": false,
     "new_cross_source_matching_performed": false,
     "external_semantic_labels_imported": false
-  }
+  },
+  "assessment": "research/mark/discovery-experiments/prior-mark-evidence-harvest-v1.assessment.md",
+  "validator": "scripts/validate-prior-mark-evidence-harvest-v1.py"
 }
