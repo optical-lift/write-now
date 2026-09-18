@@ -1,0 +1,70 @@
+{
+  "schema": "mark_structural_regime_validation_v46_custody_v1",
+  "experimentId": "mark:structural-regime-atlas:v46",
+  "status": "VALIDATION_SUPPORTED",
+  "validationSupported": true,
+  "modelSha256": "5a0a430f8e127f46f31b207fd0be554d8cf622d11550dcb4b0987a5bd1705a5a",
+  "discoveryFeatureSha256": "0d45b335f8b468bed999d2455b4385b32bb742d7f1c7cf542a54b147ac976caf",
+  "validationFeatureSha256": "915a156ae27b9bc1d1539246c2ef554bf5e82d1da56c905c9e3fa934f3d13562",
+  "evaluatorGitBlob": "b2c6aa4843f7d54ab49ff15f868deb8defc2dba3",
+  "evaluatorFileSha256": "3087fc4aed39465ade7f6f5fe2191e9494a4ead307a884169ac07fa841572de3",
+  "exactLocalResultSha256": "475781855f7adb1db58dc330252c151b1c8323bbb0bc1874481cd748c3cba467",
+  "exactLocalAssignmentsSha256": "b77417e78caaf53ccbdd4e10a1a6540b97802907a468e6fd1f1c24f10905b056",
+  "assignmentRule": "frozen discovery scaler -> frozen discovery PCA -> nearest frozen K=5 centroid",
+  "supportRule": "assigned-regime discovery-only 99th percentile squared centroid distance",
+  "overallValidationInDistributionFraction": 0.9910795974382434,
+  "occupancyJensenShannonBits": 0.003760220081966714,
+  "overallMedianCentroidMargin": 0.7965132670829016,
+  "regimes": [
+    {
+      "regimeId": "RG-001",
+      "validationObservations": 413,
+      "validationFraction": 0.0944647758462946,
+      "distinctValidationSources": 39,
+      "validationInDistributionFraction": 0.9927360774818402,
+      "discoveryQ99SquaredDistance": 271.7811291122001
+    },
+    {
+      "regimeId": "RG-002",
+      "validationObservations": 1380,
+      "validationFraction": 0.31564501372369624,
+      "distinctValidationSources": 96,
+      "validationInDistributionFraction": 0.9920289855072464,
+      "discoveryQ99SquaredDistance": 25.76502330091354
+    },
+    {
+      "regimeId": "RG-003",
+      "validationObservations": 191,
+      "validationFraction": 0.04368709972552608,
+      "distinctValidationSources": 39,
+      "validationInDistributionFraction": 1,
+      "discoveryQ99SquaredDistance": 378.17006577304784
+    },
+    {
+      "regimeId": "RG-004",
+      "validationObservations": 2277,
+      "validationFraction": 0.5208142726440989,
+      "distinctValidationSources": 89,
+      "validationInDistributionFraction": 0.9916556873078612,
+      "discoveryQ99SquaredDistance": 48.94042790203414
+    },
+    {
+      "regimeId": "RG-005",
+      "validationObservations": 111,
+      "validationFraction": 0.025388838060384264,
+      "distinctValidationSources": 44,
+      "validationInDistributionFraction": 0.9459459459459459,
+      "discoveryQ99SquaredDistance": 219.22603246887547
+    }
+  ],
+  "criteria": {
+    "overallInDistributionAtLeast": 0.9,
+    "eachRegimeInDistributionAtLeast": 0.8,
+    "eachRegimeDistinctSourcesAtLeast": 20,
+    "occupancyJensenShannonBitsAtMost": 0.1,
+    "everyRegimePresent": true
+  },
+  "refitPerformed": false,
+  "provenanceOpened": false,
+  "confirmationOpened": false
+}
