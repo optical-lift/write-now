@@ -3,7 +3,7 @@
   "experiment_id": "mark:song-composition-harvest:v44",
   "phase": "A",
   "implementation_sha": "ad25874a2a87c2aea1923b3f419e25987afda1ea",
-  "preexecution_freeze_sha": "PENDING",
+  "preexecution_freeze_sha": "21d75d38d67596ca80237f850ef8abdf62f91562",
   "runner_blob_sha1": "42252c2e1cbc959ad22969405fd03ceb383c86c1",
   "primary_protocol_blob_sha1": "a91e8280832ecad75679120d28ff8e64bd9081f2",
   "topology_protocol_blob_sha1": "c99cf9aced9d14b1f6b0dd388ba2fba13afe9613",
