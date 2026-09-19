@@ -33,6 +33,24 @@ fn main() -> Result<()> {
     if placement_original_lane.is_some() && !condition_placement {
         bail!("--placement-original-lane requires --placement-map");
     }
+
+    let parent_state_map_path = if args.iter().any(|a| a == "--parent-state-map") {
+        Some(PathBuf::from(parse_arg(&args, "--parent-state-map", None)?))
+    } else {
+        None
+    };
+    let condition_parent_state = parent_state_map_path.is_some();
+    let parent_state_original_lane = if args.iter().any(|a| a == "--parent-state-original-lane") {
+        Some(parse_arg(&args, "--parent-state-original-lane", None)?)
+    } else {
+        None
+    };
+    if condition_parent_state && !condition_placement {
+        bail!("--parent-state-map requires --placement-map");
+    }
+    if parent_state_original_lane.is_some() && !condition_parent_state {
+        bail!("--parent-state-original-lane requires --parent-state-map");
+    }
     if tile_size < 64 || overlap * 2 >= tile_size {
         bail!("tile must be >=64 and overlap must be less than half the tile size");
     }
@@ -88,6 +106,47 @@ fn main() -> Result<()> {
                 bail!("invalid placement token for {observation_id}: {token}");
             }
             placement_by_observation.insert(observation_id.clone(), (source, lane, token));
+        }
+    }
+
+    let mut parent_state_by_observation: HashMap<String, (String, String, String)> = HashMap::new();
+    let mut parent_state_map_sha256: Option<String> = None;
+    if let Some(path) = parent_state_map_path.as_ref() {
+        let value: Value = serde_json::from_slice(&fs::read(path)?)?;
+        if value.get("schema").and_then(Value::as_str) != Some("parent_state_map_v1") {
+            bail!("unsupported parent state map schema");
+        }
+        if value.get("provenanceOpened").and_then(Value::as_bool) != Some(false)
+            || value.get("targetStateUsed").and_then(Value::as_bool) != Some(false)
+        {
+            bail!("parent state map contamination guard failed");
+        }
+        parent_state_map_sha256 = Some(
+            value.get("parentStateMapSha256")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("parent state map missing parentStateMapSha256"))?
+                .to_string()
+        );
+        let entries = value.get("parentStates")
+            .and_then(Value::as_object)
+            .ok_or_else(|| anyhow!("parent state map missing parentStates object"))?;
+        for (observation_id, entry) in entries {
+            let source = entry.get("sourceGroupId")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("parent-state entry missing sourceGroupId for {observation_id}"))?
+                .to_string();
+            let lane = entry.get("lane")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("parent-state entry missing lane for {observation_id}"))?
+                .to_string();
+            let token = entry.get("parentStateToken")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("parent-state entry missing parentStateToken for {observation_id}"))?
+                .to_string();
+            if token != "S1" && token != "S2" && token != "S3" && token != "UNPARENTED_STATE" {
+                bail!("invalid parent state token for {observation_id}: {token}");
+            }
+            parent_state_by_observation.insert(observation_id.clone(), (source, lane, token));
         }
     }
 
@@ -164,6 +223,30 @@ fn main() -> Result<()> {
             } else {
                 ""
             };
+            let parent_state_token = if condition_parent_state {
+                match parent_state_by_observation.get(&observation.id) {
+                    Some((state_source, state_lane, token)) => {
+                        let expected_parent_state_lane = parent_state_original_lane
+                            .as_deref()
+                            .or(placement_original_lane.as_deref())
+                            .unwrap_or(observation.lane.as_str());
+                        if state_source != &observation.source_group_id || state_lane != expected_parent_state_lane {
+                            bail!(
+                                "parent-state custody mismatch for {}: source={} expected_lane={} map_source={} map_lane={}",
+                                observation.id,
+                                observation.source_group_id,
+                                expected_parent_state_lane,
+                                state_source,
+                                state_lane
+                            );
+                        }
+                        token.as_str()
+                    }
+                    None => "UNPARENTED_STATE",
+                }
+            } else {
+                ""
+            };
             compile_observation(
                 &image,
                 observation,
@@ -172,6 +255,7 @@ fn main() -> Result<()> {
                 null_iterations,
                 condition_degree,
                 if condition_placement { Some(placement_token) } else { None },
+                if condition_parent_state { Some(parent_state_token) } else { None },
                 &mut ledger,
                 &mut contribution_ledger,
                 &mut source_grammar,
@@ -238,7 +322,9 @@ fn main() -> Result<()> {
             "sourcePixelsRetainedInCustodyNotLedger":true,
             "degreeConditionedGrammar":condition_degree,
             "placementConditionedGrammar":condition_placement,
-            "placementMapSha256":placement_map_sha256.clone()
+            "placementMapSha256":placement_map_sha256.clone(),
+            "parentStateConditionedGrammar":condition_parent_state,
+            "parentStateMapSha256":parent_state_map_sha256.clone()
         }
     });
     fs::write(
@@ -271,6 +357,8 @@ fn main() -> Result<()> {
         "degreeConditionedGrammar":condition_degree,
         "placementConditionedGrammar":condition_placement,
         "placementMapSha256":placement_map_sha256,
+        "parentStateConditionedGrammar":condition_parent_state,
+        "parentStateMapSha256":parent_state_map_sha256,
         "physicalLedgerMerkleRoot":merkle_root,
         "grammarContributionMerkleRoot":contribution_root,
         "grammarStorage":"sqlite_sufficient_statistics_v1",

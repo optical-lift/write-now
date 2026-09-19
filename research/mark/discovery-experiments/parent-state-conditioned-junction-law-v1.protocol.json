@@ -1,0 +1,130 @@
+{
+  "schema": "parent_state_conditioned_junction_law_test_v1",
+  "status": "FROZEN_BEFORE_PARENT_STATE_LAW_JOIN_OUTCOMES",
+  "date": "2026-09-19",
+  "parentPlacementFreeze": {
+    "commit": "d46f79ae6bb5298028b5ca1d7120606dff5986f6",
+    "file": "research/mark/discovery-experiments/component-placement-junction-law-v1.final-freeze.json",
+    "verdict": "PARTIAL",
+    "allThreeLaneSurvivors": 127,
+    "trainMixedPlacementCells": 67
+  },
+  "sourceUniverse": {
+    "total": 714,
+    "excludedOriginalDiscoverySources": 9,
+    "remaining": 705,
+    "train": 237,
+    "holdout": 236,
+    "control": 232
+  },
+  "targetSet": {
+    "definition": "Exactly the degree+placement+arm cells classified MIXED in the frozen Component-Placement Junction Law v1 train result.",
+    "expectedCount": 67,
+    "derivation": "Read diagnostics from the exact train catalogue bound by catalogueSha256 6e1d0b4a9d093e38423108a3711cc3bd32ee2a68668b078fd332401f24bf7543; select classification == MIXED; sort deterministically; hash and freeze the target list before parent-state compilation.",
+    "noExpansionAfterJoin": true
+  },
+  "placementInstrument": {
+    "priorRunId": 33794464849,
+    "priorArtifactId": 9909697343,
+    "artifactName": "mark-masked-slot-substitutability-v1-frozen",
+    "artifactZipSha256": "67f89267716720f9587a0cdb4283f9353910568700ef62c5a73d239d1cd54684",
+    "occurrenceFile": "masked-slot-occurrences.jsonl",
+    "occurrenceRows": 22447,
+    "occurrenceRowsSha256": "86f15b922a27e01fed291ad02aacd0ea1a91c1626a5fb1a2fc622985f5d1d4e6",
+    "parentRelation": "smallest strictly larger wholly-containing observation",
+    "placementMapSha256": "0e4663fa5595df96f09800472458c86258b348fba64325bea1f102200fa0b1ba"
+  },
+  "parentStateInstrument": {
+    "priorRunId": 33767475851,
+    "priorArtifactId": 9899178820,
+    "artifactName": "mark-local-state-field-v1-frozen",
+    "artifactZipSha256": "be0694bcca9c43a23455e2e97a7eed315b5fcc4eccc63c8e6882e76390d72d27",
+    "observationStateFile": "observation-local-states.jsonl",
+    "observationStateRows": 19526,
+    "observationStateRowsSha256": "af381222aa0268a569c05b86b5952c56726318ac2ca43769afd8e097360ae695",
+    "discoverySha256": "c0a1f65816532b7af247d4d7522ba844ee28841aed17bd9f98abb1b0331e2469",
+    "stateIds": [
+      1,
+      2,
+      3
+    ],
+    "stateBasis": "frozen local relational-state clustering at primary minimum context mass 64",
+    "targetStateForbidden": true,
+    "onlyContainingParentStateUsed": true,
+    "missingParentState": "retained diagnostically as UNPARENTED_STATE but excluded from primary parent-state cells"
+  },
+  "independentDirectionalBasis": {
+    "priorRunId": 33773740050,
+    "artifactId": 9900704251,
+    "artifactName": "mark-state-transition-grammar-v1-frozen",
+    "artifactZipSha256": "2707b04a81fd244ec6ff4d85b90b7e8ccf3cd9363dd2091a998e28bc5ab5089f",
+    "discoverySha256": "979d097dcdfc8df8007f6c3b4ef7d1b16950c56cb2287a46ff77b480cd2635d8",
+    "role": "Motivates parent state as an evidence-backed directional coordinate; transition-grammar outcome statistics are not used to classify current law cells."
+  },
+  "hypothesis": {
+    "statement": "Among placement-level cells that remain mixed, the frozen local state of the smallest containing parent is an omitted relational-state coordinate. Conditioning on parent state will separate at least some strict-match and strict-reverse source populations into direction-consistent sublaws.",
+    "strongResolution": "An original MIXED placement cell is TWO_SIDED_RESOLVED only if its testable parent-state subcells contain at least one MATCH_ONLY and at least one REVERSE_ONLY subcell and contain no MIXED subcell.",
+    "oneSidedDeconfounding": "An original MIXED placement cell is ONE_SIDED_DECONFOUNDED if it has at least one MATCH_ONLY or REVERSE_ONLY testable parent-state subcell and no MIXED subcell, but the opposite original direction lacks a qualifying sublaw. This is not counted as proof that parent state explains the direction split.",
+    "falsification": "If the same degree + exact placement + parentState + arm cell supports both STRICT_MATCH and STRICT_REVERSE across independent sources, parent state is insufficient for that state collision."
+  },
+  "measurement": {
+    "physicalExtractor": "unchanged mark-sparse-compiler-v7",
+    "grammarContext": "CENTER:JUNCTION|DEGREE:<d>|PLACEMENT:<p>|PARENT_STATE:<1|2|3>|ARM:<state>",
+    "targetRestriction": "Only contexts whose degree+placement+arm parent cell belongs to the frozen 67-cell train MIXED target set enter primary analysis.",
+    "endpointCenters": "retained in compiler output but excluded from primary junction analysis",
+    "nullIterations": 64,
+    "nullContract": "unchanged source-local null: arm tokens are permuted only among centers with identical center kind and degree inside each observation. Placement and parent state are observation-level and remain fixed across observed and all 64 null worlds.",
+    "sourceCellEligibility": "observed context count >=30",
+    "strictMatch": "observed matching accuracy > every one of 64 source-local null matching accuracies",
+    "strictReverse": "observed matching accuracy < every one of 64 source-local null matching accuracies",
+    "otherwise": "UNRESOLVED"
+  },
+  "sequentialCustody": {
+    "step1": "Derive and hash the exact 67-cell target set from the frozen placement train artifact before reading any parent-state join outcome.",
+    "step2": "Join train observations only to frozen parent states; discover/freeze parent-state sublaws and target-cell resolution classifications.",
+    "step3": "Apply the frozen parent-state catalogue and frozen target-cell definitions to holdout with no refit.",
+    "step4": "Apply holdout survivors to control with no refit.",
+    "joinBlindness": "The component-placement law states and parent-state assignments were frozen independently. No parent-state assignment has previously been joined to placement-law strict direction.",
+    "provenance": "No institution, object type, culture, language, chronology, occupant token, family id, target local-state id, or target topology is permitted."
+  },
+  "trainDiscovery": {
+    "subcellEligibility": "degree+placement+parentState+arm requires >=10 eligible train sources",
+    "classification": [
+      "MATCH_ONLY if >=5 STRICT_MATCH sources and 0 STRICT_REVERSE",
+      "REVERSE_ONLY if >=5 STRICT_REVERSE sources and 0 STRICT_MATCH",
+      "MIXED if >=1 STRICT_MATCH and >=1 STRICT_REVERSE",
+      "UNRESOLVED otherwise"
+    ],
+    "candidateLaws": "Only MATCH_ONLY or REVERSE_ONLY parent-state subcells enter the frozen validation catalogue.",
+    "targetCellResolution": [
+      "TWO_SIDED_RESOLVED: >=1 MATCH_ONLY subcell, >=1 REVERSE_ONLY subcell, and 0 MIXED testable subcells.",
+      "ONE_SIDED_DECONFOUNDED: >=1 directional candidate, 0 MIXED testable subcells, but not both directions represented.",
+      "STILL_MIXED: >=1 MIXED testable parent-state subcell.",
+      "INSUFFICIENT_PARENT_STATE_SUPPORT: no parent-state subcell reaches >=10 eligible sources."
+    ]
+  },
+  "validation": {
+    "perCandidateRequiredEligibleSources": 10,
+    "passRule": "Among decided sources (STRICT_MATCH + STRICT_REVERSE), >=90% reproduce the train-frozen direction and at least 5 reproduce it.",
+    "twoSidedResolutionTransfer": "A train TWO_SIDED_RESOLVED target is confirmed only if both frozen directional sublaws independently pass the lane gate.",
+    "oppositeStrictStatesRetained": true,
+    "noRefit": true
+  },
+  "verdict": {
+    "SUPPORTED": "At least one original placement-MIXED target is TWO_SIDED_RESOLVED on train and both directional sublaws transfer through holdout and control, with no tested parent-state subcell for that target becoming MIXED.",
+    "PARTIAL": "Parent-state sublaws transfer, or one-sided deconfounding is reproducible, but no two-sided target survives both holdout and control or some tested parent-state subcells remain MIXED.",
+    "REJECTED": "No parent-state sublaw survives both independent lanes and parent-state conditioning does not reproducibly reduce the target collisions."
+  },
+  "guards": {
+    "noProvenanceFeatures": true,
+    "noOccupantToken": true,
+    "noFamilyId": true,
+    "noTargetTopology": true,
+    "noTargetLocalState": true,
+    "noGrandparentStateInV1": true,
+    "noHistoryInV1": true,
+    "noThresholdChangesAfterTrainJoin": true,
+    "noCrossParentStateMergingBeforeValidation": true,
+    "same64NullGateAsPlacementTest": true
+  }
+}

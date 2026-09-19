@@ -1,0 +1,49 @@
+{
+  "schema": "parent_state_conditioned_junction_train_freeze_v1",
+  "status": "FROZEN_BEFORE_HOLDOUT_OR_CONTROL_PARENT_STATE_JOIN",
+  "date": "2026-09-19",
+  "parentPlacementFinalFreezeCommit": "d46f79ae6bb5298028b5ca1d7120606dff5986f6",
+  "preregistrationCommit": "646c4066f89a832cb95ef84273318a84e5d121b2",
+  "trainRunId": 35458024645,
+  "trainHeadSha": "3f0a4f62fe5592f7d71dcd20bd152524e6098377",
+  "trainArtifactId": 10589171194,
+  "trainArtifactZipSha256": "50b44ad09240e8a08695c4ca9dd16b82594abc9ea7bfffdb9a75f5d3cf3cf7a4",
+  "trainCatalogueFileSha256": "c592bcc71c8f0cebb3c48052a8e17eb5dd26483bc4ba9ab7ff5bf88d8efd708c",
+  "sourceMetricsSha256": "a7707afa3b22f2e473fc61dd06809729d59c7861e25d31b774b3bf2ca1f65f81",
+  "inputManifestSha256": "c59b4b47dfa04b7eba044e4defdb9eb7fafb89eec0701f4540127bf9e8827531",
+  "targetSetFileSha256": "29413c49200b80a5bdb8dadcc7366b009b6842f45d6fd60969e221e68041ae61",
+  "parentStateCustodyFileSha256": "4eb3363fd28d02432e19152c13b7364a8f002b4a229971f73294f00176024526",
+  "catalogueSha256": "a53c6023739e3a449ba8577fea2085c1469e6a4b4c48641c1576caf6254f2576",
+  "targetSetSha256": "92efb66137f1803c0cb74784ed20d5ec840ab72b4df12e5c5168482ab5811c55",
+  "parentStateMapSha256": "15daa540f2f1219c12c001c1ed7a42936b7db6b9119156f0fda5dd0ae5109ee6",
+  "trainSourceCount": 237,
+  "targetCount": 67,
+  "testedParentStateSubcells": 75,
+  "admittedCandidates": 11,
+  "matchOnlyCandidates": 11,
+  "reverseOnlyCandidates": 0,
+  "mixedParentStateSubcells": 46,
+  "targetResolutionCounts": {
+    "TWO_SIDED_RESOLVED": 0,
+    "ONE_SIDED_DECONFOUNDED": 3,
+    "STILL_MIXED": 44,
+    "INSUFFICIENT_PARENT_STATE_SUPPORT": 20
+  },
+  "strictReverseDistributionAcrossTestableSubcells": {
+    "totalStrictReverseSourceEvents": 49,
+    "insideMixedSubcells": 47,
+    "byParentState": {
+      "S1": 3,
+      "S2": 38,
+      "S3": 8
+    }
+  },
+  "strongHypothesisStatus": "FALSIFIED_ON_TRAIN",
+  "strongHypothesisReason": "No placement-MIXED target becomes TWO_SIDED_RESOLVED. No REVERSE_ONLY parent-state sublaw is admitted. Forty-four of 67 targets remain mixed, and 47 of 49 strict-reverse source events in testable subcells remain inside MIXED parent-state cells.",
+  "weakerEffectStatus": "UNRESOLVED_PENDING_HOLDOUT",
+  "weakerEffectReason": "Eleven MATCH_ONLY parent-state sublaws and three ONE_SIDED_DECONFOUNDED targets exist on train and require held-out validation to determine whether parent state carries a transferable secondary effect even though it does not explain the match/reverse branch.",
+  "nextIfStrongFailurePersists": "short directed containment-state history already frozen in State Transition Grammar v1",
+  "holdoutJoined": false,
+  "controlJoined": false,
+  "provenanceOpened": false
+}

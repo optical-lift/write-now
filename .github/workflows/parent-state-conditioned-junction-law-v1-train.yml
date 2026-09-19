@@ -1,0 +1,188 @@
+name: Parent-State Conditioned Junction Law v1 — Train Discovery
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/parent-state-conditioned-junction-law-v1.*"
+      - "scripts/prepare-parent-state-map-v1.py"
+      - "scripts/prepare-parent-state-targets-v1.py"
+      - "scripts/measure-parent-state-conditioned-junction-v1.py"
+      - "scripts/analyze-parent-state-conditioned-junction-train-v1.py"
+      - "scripts/prepare-component-placement-map-v1.py"
+      - "scripts/prepare-whole-topology-condition-v1.py"
+      - "crates/mark-sparse-compiler/src/**"
+      - ".github/workflows/parent-state-conditioned-junction-law-v1-train.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  train-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SEALED_RUN_ID: "33755743472"
+      SEALED_ARTIFACT: "mark-source-rule-atlas-v1-sealed-evidence"
+      SEALED_INPUT: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json"
+      CAPTURES_DIR: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/captures"
+      EXCLUDED: "research/mark/discovery-experiments/independent-source-law-discovery-v1.source-selection.json"
+      PROTOCOL: "research/mark/discovery-experiments/parent-state-conditioned-junction-law-v1.protocol.json"
+      PLACEMENT_RUN_ID: "33794464849"
+      PLACEMENT_ARTIFACT: "mark-masked-slot-substitutability-v1-frozen"
+      LOCAL_STATE_RUN_ID: "33767475851"
+      LOCAL_STATE_ARTIFACT: "mark-local-state-field-v1-frozen"
+      PLACEMENT_TRAIN_RUN_ID: "35448259935"
+      PLACEMENT_TRAIN_ARTIFACT: "component-placement-junction-law-v1-train"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen experiment files
+        run: |
+          python3 -m json.tool "$PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/prepare-parent-state-map-v1.py
+          python3 -m py_compile scripts/prepare-parent-state-targets-v1.py
+          python3 -m py_compile scripts/prepare-component-placement-map-v1.py
+          python3 -m py_compile scripts/prepare-whole-topology-condition-v1.py
+          python3 -m py_compile scripts/measure-parent-state-conditioned-junction-v1.py
+          python3 -m py_compile scripts/analyze-parent-state-conditioned-junction-train-v1.py
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Download exact sealed evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/sealed-evidence
+          gh run download "$SEALED_RUN_ID" --repo "${{ github.repository }}" --name "$SEALED_ARTIFACT" --dir artifact-staging/sealed-evidence
+
+      - name: Download frozen masked placement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/masked-placement
+          gh run download "$PLACEMENT_RUN_ID" --repo "${{ github.repository }}" --name "$PLACEMENT_ARTIFACT" --dir artifact-staging/masked-placement
+          echo "86f15b922a27e01fed291ad02aacd0ea1a91c1626a5fb1a2fc622985f5d1d4e6  artifact-staging/masked-placement/masked-slot-occurrences.jsonl" | sha256sum -c -
+
+      - name: Download frozen local state field
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/local-state
+          gh run download "$LOCAL_STATE_RUN_ID" --repo "${{ github.repository }}" --name "$LOCAL_STATE_ARTIFACT" --dir artifact-staging/local-state
+          echo "af381222aa0268a569c05b86b5952c56726318ac2ca43769afd8e097360ae695  artifact-staging/local-state/observation-local-states.jsonl" | sha256sum -c -
+
+      - name: Download exact frozen placement train catalogue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/placement-train
+          gh run download "$PLACEMENT_TRAIN_RUN_ID" --repo "${{ github.repository }}" --name "$PLACEMENT_TRAIN_ARTIFACT" --dir artifact-staging/placement-train
+          echo "282137a1ff9789c86f0fb41155c29a1070cceb8877c2dd988ea986462dbfada1  artifact-staging/placement-train/train-catalogue.json" | sha256sum -c -
+
+      - name: Freeze pre-join target set and relational maps
+        run: |
+          python3 scripts/prepare-parent-state-targets-v1.py \
+            --train-catalogue artifact-staging/placement-train/train-catalogue.json \
+            --protocol "$PROTOCOL" \
+            --out artifacts/pscjl-v1/target-set.json
+          python3 scripts/prepare-component-placement-map-v1.py \
+            --occurrences artifact-staging/masked-placement/masked-slot-occurrences.jsonl \
+            --protocol "$PROTOCOL" \
+            --out artifacts/pscjl-v1/placement-map.json
+          python3 scripts/prepare-parent-state-map-v1.py \
+            --occurrences artifact-staging/masked-placement/masked-slot-occurrences.jsonl \
+            --observation-states artifact-staging/local-state/observation-local-states.jsonl \
+            --protocol "$PROTOCOL" \
+            --out artifacts/pscjl-v1/parent-state-map.json
+
+      - name: Prepare untouched train sources only
+        run: |
+          python3 scripts/prepare-whole-topology-condition-v1.py \
+            --sealed-input "$SEALED_INPUT" \
+            --captures-dir "$CAPTURES_DIR" \
+            --excluded-selection "$EXCLUDED" \
+            --lane train \
+            --out artifacts/pscjl-v1/inputs/train
+
+      - name: Build parent-state-conditioned compiler
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Compile and measure train sources independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          input_root="artifacts/pscjl-v1/inputs/train"
+          out_root="artifacts/pscjl-v1/train"
+          mkdir -p "$out_root"
+          python3 - "$input_root/manifest.json" > "$out_root/sources.tsv" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          for s in d["sources"]:
+              print(s["sourceGroupId"]+"\t"+s["localBlindInputSha256"])
+          PY
+          : > "$out_root/source-metrics.jsonl"
+          while IFS=$'\t' read -r sid local_sha; do
+            tmp="$RUNNER_TEMP/pscjl-train-$sid"
+            rm -rf "$tmp"; mkdir -p "$tmp"
+            if ! (
+              ulimit -v 524288
+              crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+                --input "$input_root/$sid/input.json" \
+                --out "$tmp/compiler" \
+                --tile 512 --overlap 32 --null-iterations 64 --min-sources 1 \
+                --condition-degree \
+                --placement-map artifacts/pscjl-v1/placement-map.json \
+                --parent-state-map artifacts/pscjl-v1/parent-state-map.json
+            ) > "$tmp/runtime.txt" 2>&1; then
+              cat "$tmp/runtime.txt"; exit 1
+            fi
+            python3 scripts/measure-parent-state-conditioned-junction-v1.py \
+              --compiler-out "$tmp/compiler" --source-id "$sid" --lane train \
+              --local-input-sha "$local_sha" --protocol "$PROTOCOL" \
+              --target-set artifacts/pscjl-v1/target-set.json \
+              >> "$out_root/source-metrics.jsonl"
+            rm -rf "$tmp"
+          done < "$out_root/sources.tsv"
+
+      - name: Freeze train parent-state catalogue
+        run: |
+          python3 scripts/analyze-parent-state-conditioned-junction-train-v1.py \
+            --metrics-glob "artifacts/pscjl-v1/train/source-metrics.jsonl" \
+            --parent-state-map artifacts/pscjl-v1/parent-state-map.json \
+            --target-set artifacts/pscjl-v1/target-set.json \
+            --protocol "$PROTOCOL" \
+            --out artifacts/pscjl-v1/train/train-catalogue.json
+          cp artifacts/pscjl-v1/inputs/train/manifest.json artifacts/pscjl-v1/train/input-manifest.json
+          cp artifacts/pscjl-v1/target-set.json artifacts/pscjl-v1/train/target-set.json
+          python3 - artifacts/pscjl-v1/parent-state-map.json > artifacts/pscjl-v1/train/parent-state-custody.json <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          keep={k:d[k] for k in ["schema","status","occurrenceRowsSha256","observationStateRowsSha256","localStateFieldDiscoverySha256","targetStateUsed","provenanceOpened","parentRelation","counts","laneCounts","parentStateMapSha256"]}
+          print(json.dumps(keep,indent=2))
+          PY
+
+      - name: Publish compact train summary
+        run: |
+          python3 - artifacts/pscjl-v1/train/train-catalogue.json >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json,sys,collections
+          d=json.load(open(sys.argv[1]))
+          c=collections.Counter(x["resolutionStatus"] for x in d["targetResolutions"])
+          print("### Parent-State Conditioned Junction Law v1 — TRAIN ONLY")
+          print(f"- Catalogue SHA-256: `{d['catalogueSha256']}`")
+          print(f"- Admitted parent-state sublaws: {len(d['catalogue'])}")
+          print(f"- Two-sided resolved targets: {c['TWO_SIDED_RESOLVED']}")
+          print(f"- One-sided deconfounded targets: {c['ONE_SIDED_DECONFOUNDED']}")
+          print(f"- Still mixed targets: {c['STILL_MIXED']}")
+          print(f"- Insufficient targets: {c['INSUFFICIENT_PARENT_STATE_SUPPORT']}")
+          print("- Holdout/control parent-state joins remain unopened.")
+          PY
+
+      - name: Upload frozen train result
+        uses: actions/upload-artifact@v4
+        with:
+          name: parent-state-conditioned-junction-law-v1-train
+          path: artifacts/pscjl-v1/train/**
+          if-no-files-found: error
+          retention-days: 30

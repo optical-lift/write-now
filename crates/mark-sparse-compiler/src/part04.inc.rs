@@ -1,13 +1,30 @@
-fn grammar_context(center: &CenterEvidence, arm: &str, condition_degree: bool, placement: Option<&str>) -> String {
-    match (condition_degree, placement) {
-        (true, Some(token)) => format!("CENTER:{}|DEGREE:{}|PLACEMENT:{}|ARM:{}", center.kind, center.arms.len(), token, arm),
-        (true, None) => format!("CENTER:{}|DEGREE:{}|ARM:{}", center.kind, center.arms.len(), arm),
-        (false, Some(token)) => format!("CENTER:{}|PLACEMENT:{}|ARM:{}", center.kind, token, arm),
-        (false, None) => format!("CENTER:{}|ARM:{}", center.kind, arm),
+fn grammar_context(
+    center: &CenterEvidence,
+    arm: &str,
+    condition_degree: bool,
+    placement: Option<&str>,
+    parent_state: Option<&str>,
+) -> String {
+    let mut parts = vec![format!("CENTER:{}", center.kind)];
+    if condition_degree {
+        parts.push(format!("DEGREE:{}", center.arms.len()));
     }
+    if let Some(token) = placement {
+        parts.push(format!("PLACEMENT:{}", token));
+    }
+    if let Some(state) = parent_state {
+        parts.push(format!("PARENT_STATE:{}", state));
+    }
+    parts.push(format!("ARM:{}", arm));
+    parts.join("|")
 }
 
-fn grammar_counts_from_centers(centers: &[CenterEvidence], condition_degree: bool, placement: Option<&str>) -> Result<(LocalGrammar, u128)> {
+fn grammar_counts_from_centers(
+    centers: &[CenterEvidence],
+    condition_degree: bool,
+    placement: Option<&str>,
+    parent_state: Option<&str>,
+) -> Result<(LocalGrammar, u128)> {
     let mut aggregated = LocalGrammar::new();
     let mut weight = 0u128;
 
@@ -32,7 +49,7 @@ fn grammar_counts_from_centers(centers: &[CenterEvidence], condition_degree: boo
                     continue;
                 }
 
-                let context_a = grammar_context(center, a, condition_degree, placement);
+                let context_a = grammar_context(center, a, condition_degree, placement, parent_state);
                 let slot_a = aggregated.entry((context_a, b.clone())).or_default();
                 *slot_a = slot_a
                     .checked_add(pair_count as u128)
@@ -41,7 +58,7 @@ fn grammar_counts_from_centers(centers: &[CenterEvidence], condition_degree: boo
                     .checked_add(pair_count as u128)
                     .ok_or_else(|| anyhow!("grammar weight overflow"))?;
 
-                let context_b = grammar_context(center, b, condition_degree, placement);
+                let context_b = grammar_context(center, b, condition_degree, placement, parent_state);
                 let slot_b = aggregated.entry((context_b, a.clone())).or_default();
                 *slot_b = slot_b
                     .checked_add(pair_count as u128)
@@ -178,6 +195,7 @@ fn compile_observation(
     null_iterations: usize,
     condition_degree: bool,
     placement: Option<&str>,
+    parent_state: Option<&str>,
     ledger: &mut ChunkedLedger,
     contribution_ledger: &mut ChunkedLedger,
     source_grammar: &mut SourceGrammar,
@@ -243,7 +261,8 @@ fn compile_observation(
         }
     }
 
-    let (observed, observed_weight) = grammar_counts_from_centers(&centers, condition_degree, placement)?;
+    let (observed, observed_weight) =
+        grammar_counts_from_centers(&centers, condition_degree, placement, parent_state)?;
     accumulate_source_grammar(source_grammar, -1, &observation.lane, &observed)?;
     emit_grammar_contribution(
         contribution_ledger,
@@ -260,7 +279,8 @@ fn compile_observation(
 
     for iteration in 0..null_iterations {
         let null = null_centers(observation, &centers, iteration);
-        let (null_counts, null_weight) = grammar_counts_from_centers(&null, condition_degree, placement)?;
+        let (null_counts, null_weight) =
+            grammar_counts_from_centers(&null, condition_degree, placement, parent_state)?;
         accumulate_source_grammar(
             source_grammar,
             iteration as i32,
