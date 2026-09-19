@@ -1,0 +1,191 @@
+{
+  "schema": "absence_state_model_calibration_results_v1",
+  "passed": 13,
+  "total": 13,
+  "results": [
+    {
+      "id": "ASC-001",
+      "title": "direct presence outranks absence logic",
+      "axes": {
+        "instantiation_evidence": "OBSERVED_PRESENT",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "PRESENT",
+      "derived": "PRESENT",
+      "pass": true
+    },
+    {
+      "id": "ASC-002",
+      "title": "opportunity exists but local rule prohibits consequence",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "PROHIBITED",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "OPPORTUNITY_PRESENT_PROHIBITED",
+      "derived": "OPPORTUNITY_PRESENT_PROHIBITED",
+      "pass": true
+    },
+    {
+      "id": "ASC-003",
+      "title": "complete opportunity present but law pattern not observed",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "OPPORTUNITY_PRESENT_NO_INSTANCE",
+      "derived": "OPPORTUNITY_PRESENT_NO_INSTANCE",
+      "pass": true
+    },
+    {
+      "id": "ASC-004",
+      "title": "evidence channel cannot preserve event",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "NOT_PRESERVED",
+        "compatibility_status": "UNKNOWN",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "NOT_PRESERVED",
+      "derived": "NOT_PRESERVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-005",
+      "title": "partial source never exposes required region",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "OUTSIDE_EXPOSED_REGION",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "UNKNOWN",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "OUTSIDE_EXPOSED_REGION",
+      "derived": "OUTSIDE_EXPOSED_REGION",
+      "pass": true
+    },
+    {
+      "id": "ASC-006",
+      "title": "possible law but sampling incomplete",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "POSSIBLE",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "PARTIAL"
+      },
+      "expected": "NOT_YET_OBSERVED",
+      "derived": "NOT_YET_OBSERVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-007",
+      "title": "required relation contradicts frozen local architecture",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "NONE",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "STRUCTURALLY_INCOMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "STRUCTURALLY_INCOMPATIBLE",
+      "derived": "STRUCTURALLY_INCOMPATIBLE",
+      "pass": true
+    },
+    {
+      "id": "ASC-008",
+      "title": "measurement has not been run",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "UNMEASURED",
+        "compatibility_status": "UNKNOWN",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "MEASUREMENT_UNRESOLVED",
+      "derived": "MEASUREMENT_UNRESOLVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-009",
+      "title": "absence has no adequate opportunity or observability evidence",
+      "axes": {
+        "instantiation_evidence": "UNKNOWN",
+        "opportunity_status": "UNKNOWN",
+        "observability_status": "UNKNOWN",
+        "compatibility_status": "UNKNOWN",
+        "coverage_status": "UNKNOWN"
+      },
+      "expected": "UNKNOWN_ABSENCE",
+      "derived": "UNKNOWN_ABSENCE",
+      "pass": true
+    },
+    {
+      "id": "ASC-010",
+      "title": "not-preserved outranks tempting incompatibility inference",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "NONE",
+        "observability_status": "NOT_PRESERVED",
+        "compatibility_status": "STRUCTURALLY_INCOMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "NOT_PRESERVED",
+      "note": "If the event cannot be preserved, the putative incompatibility is not admissible as the derived absence state.",
+      "derived": "NOT_PRESERVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-011",
+      "title": "inadequate measurement outranks possible prohibition",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "INADEQUATE",
+        "compatibility_status": "PROHIBITED",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "MEASUREMENT_UNRESOLVED",
+      "note": "A prohibition claim requires adequate observability under v1.",
+      "derived": "MEASUREMENT_UNRESOLVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-012",
+      "title": "partial coverage prevents compatible-unused",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "DEMONSTRATED",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "PARTIAL"
+      },
+      "expected": "NOT_YET_OBSERVED",
+      "derived": "NOT_YET_OBSERVED",
+      "pass": true
+    },
+    {
+      "id": "ASC-013",
+      "title": "compatible architecture but complete condition never used",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "POSSIBLE",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "COMPATIBLE_UNUSED",
+      "derived": "COMPATIBLE_UNUSED",
+      "pass": true
+    }
+  ]
+}
