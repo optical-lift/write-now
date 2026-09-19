@@ -111,7 +111,8 @@ jobs:
                 --out "$tmp/compiler" \
                 --tile 512 --overlap 32 --null-iterations 64 --min-sources 1 \
                 --condition-degree \
-                --placement-map artifacts/cpjl-v1/placement-map.json
+                --placement-map artifacts/cpjl-v1/placement-map.json \
+                --placement-original-lane holdout
             ) > "$tmp/runtime.txt" 2>&1; then
               cat "$tmp/runtime.txt"; exit 1
             fi
