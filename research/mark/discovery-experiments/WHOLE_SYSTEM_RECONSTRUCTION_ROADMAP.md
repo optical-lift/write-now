@@ -390,3 +390,29 @@ It defines ten derived states, including the critical distinction between:
 The 13-case calibration exercises all ten derived states and passes completely.
 
 Next governed checkpoint: **Frozen Local Law Catalogues**.
+
+### Step 7b — Frozen Local Law Catalogues v1
+
+**Complete on 2026-09-18, but the overlap-graph readiness gate failed.**
+
+Five local catalogues were frozen before equivalence projection:
+
+- three primary Mark experiment-local evidence surfaces;
+- two external canon validation surfaces.
+
+The local inventories contain **13 local laws**. Only the two already-adjudicated shared law identities, `EQC-001` and `EQC-002`, were opened as cross-source targets. Ten source×law projections produced:
+
+- **5 PRESENT**
+- **5 MEASUREMENT_UNRESOLVED**
+
+No false absence was manufactured for unmeasured laws.
+
+However, all three primary Mark catalogues remain:
+
+`UNKNOWN_SHARED_SUBSTRATE_POSSIBLE`
+
+They therefore cannot yet be counted as independent source recurrences.
+
+**New prerequisite before Step 8: Source-Level Disaggregation and Independence Certification v1.**
+
+Recover exact raw source boundaries and source-local law evidence from frozen artifacts where possible. Multi-source results that cannot be localized remain global-support evidence and must not create pseudo-independent graph nodes.
