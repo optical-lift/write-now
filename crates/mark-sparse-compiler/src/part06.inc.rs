@@ -22,8 +22,16 @@ fn main() -> Result<()> {
         None
     };
     let condition_placement = placement_map_path.is_some();
+    let placement_original_lane = if args.iter().any(|a| a == "--placement-original-lane") {
+        Some(parse_arg(&args, "--placement-original-lane", None)?)
+    } else {
+        None
+    };
     if condition_placement && !condition_degree {
         bail!("--placement-map requires --condition-degree for this experiment");
+    }
+    if placement_original_lane.is_some() && !condition_placement {
+        bail!("--placement-original-lane requires --placement-map");
     }
     if tile_size < 64 || overlap * 2 >= tile_size {
         bail!("tile must be >=64 and overlap must be less than half the tile size");
@@ -136,8 +144,18 @@ fn main() -> Result<()> {
             let placement_token = if condition_placement {
                 match placement_by_observation.get(&observation.id) {
                     Some((placement_source, placement_lane, token)) => {
-                        if placement_source != &observation.source_group_id || placement_lane != &observation.lane {
-                            bail!("placement custody mismatch for {}", observation.id);
+                        let expected_placement_lane = placement_original_lane
+                            .as_deref()
+                            .unwrap_or(observation.lane.as_str());
+                        if placement_source != &observation.source_group_id || placement_lane != expected_placement_lane {
+                            bail!(
+                                "placement custody mismatch for {}: source={} expected_lane={} map_source={} map_lane={}",
+                                observation.id,
+                                observation.source_group_id,
+                                expected_placement_lane,
+                                placement_source,
+                                placement_lane
+                            );
                         }
                         token.as_str()
                     }
