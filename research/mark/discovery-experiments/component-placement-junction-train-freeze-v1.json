@@ -1,0 +1,50 @@
+{
+  "schema": "component_placement_junction_train_freeze_v1",
+  "status": "FROZEN_BEFORE_HOLDOUT_OR_CONTROL_PLACEMENT_LAW_JOIN",
+  "date": "2026-09-19",
+  "preregistrationCommit": "37cafe454be1d4a65580b2fd0fb5d46783f4238d",
+  "preOutcomeDirectionalAssessmentCommit": "093c9123a471ba0ca3f1082e7b3c32e492c44648",
+  "trainRunId": 35448259935,
+  "trainHeadSha": "907aeda93d77e525191251c6c8a914001af634e9",
+  "trainArtifactId": 10585712173,
+  "trainArtifactZipSha256": "3904fff444b22f72bb3033151f7c61aa1976888754bb707d60865ac4e695f6ff",
+  "trainCatalogueFileSha256": "282137a1ff9789c86f0fb41155c29a1070cceb8877c2dd988ea986462dbfada1",
+  "sourceMetricsSha256": "13b192553d33356be5bd558ea5cc1fb8b6d0e73182ff80097f3de9c083477997",
+  "inputManifestSha256": "c59b4b47dfa04b7eba044e4defdb9eb7fafb89eec0701f4540127bf9e8827531",
+  "placementCustodyFileSha256": "54bade218d1a6cd6395a6f969c33ae370681bd5fdea2cb2cbaadee4a2152e399",
+  "catalogueSha256": "6e1d0b4a9d093e38423108a3711cc3bd32ee2a68668b078fd332401f24bf7543",
+  "placementMapSha256": "0e4663fa5595df96f09800472458c86258b348fba64325bea1f102200fa0b1ba",
+  "placementTokenCount": 917,
+  "trainSourceCount": 237,
+  "trainSummary": {
+    "testedCellsWithAtLeast10EligibleSources": 806,
+    "admittedCandidates": 306,
+    "matchOnly": 306,
+    "reverseOnly": 0,
+    "mixed": 67,
+    "unresolved": 433,
+    "insufficientSources": 23331
+  },
+  "preregisteredFalsification": {
+    "conditionMet": true,
+    "reason": "Same degree + exact frozen masked placement + arm context still supports both STRICT_MATCH and STRICT_REVERSE across independent train sources in 67 testable cells.",
+    "implication": "The exact masked placement coordinate is informative but insufficient as the complete relational state."
+  },
+  "postFreezeDegreeComparison": {
+    "priorDegreeMixedCells": 52,
+    "priorMixedWithNoMixedTestedPlacementCells": 20,
+    "priorMixedWithAtLeastOneMixedPlacementCell": 27,
+    "priorMixedWithNoTestablePlacementCell": 5,
+    "priorSourceLevelStrictReverseCases": 109,
+    "oldReverseCasesBecomingOnlyUnresolvedAfterPlacement": 63,
+    "oldReverseCasesRetainingStrictReverseSomewhere": 37,
+    "oldReverseCasesWithPlacementButNoEligiblePlacementCell": 6,
+    "oldReverseCasesWithNoPlacementRows": 3,
+    "interpretation": "Placement resolves a substantial subset of degree-level contradictions and weakens many source-level reversals, but does not finish the state representation. No stable REVERSE_ONLY placement law was admitted on train."
+  },
+  "hypothesisStatus": "PLACEMENT_COORDINATE_REAL_BUT_INSUFFICIENT_ON_TRAIN",
+  "nextStep": "Validate the 306 frozen MATCH_ONLY train candidates on untouched holdout with no refit; preserve all opposite strict states.",
+  "holdoutJoined": false,
+  "controlJoined": false,
+  "provenanceOpened": false
+}
