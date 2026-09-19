@@ -373,3 +373,20 @@ A second cluster, `EQC-002`, pairs `MCR-010` with `CIR-022`: **current state ide
 No universal-law label is assigned.
 
 Next governed checkpoint: **Absence-State Model**.
+
+### Step 7 — Absence-State Model v1
+
+**Complete on 2026-09-18.**
+
+The absence instrument separates five axes—instantiation, opportunity, observability/preservation, local compatibility and coverage—before deriving any source×law absence state.
+
+It defines ten derived states, including the critical distinction between:
+
+- `OPPORTUNITY_PRESENT_NO_INSTANCE` — the complete condition occurred under adequate observation and the law pattern failed to appear, creating a strong negative edge;
+- `COMPATIBLE_UNUSED` — the local architecture is compatible but the complete condition never occurs, so non-observation is not negative evidence;
+- `OUTSIDE_EXPOSED_REGION` — the source is a partial projection that does not expose the law condition;
+- `STRUCTURALLY_INCOMPATIBLE` — a frozen local rule contradicts a necessary law condition.
+
+The 13-case calibration exercises all ten derived states and passes completely.
+
+Next governed checkpoint: **Frozen Local Law Catalogues**.
