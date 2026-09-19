@@ -416,3 +416,42 @@ They therefore cannot yet be counted as independent source recurrences.
 **New prerequisite before Step 8: Source-Level Disaggregation and Independence Certification v1.**
 
 Recover exact raw source boundaries and source-local law evidence from frozen artifacts where possible. Multi-source results that cannot be localized remain global-support evidence and must not create pseudo-independent graph nodes.
+
+### Step 7c — Source-Level Disaggregation and Independence Certification v1
+
+**Complete on 2026-09-18. Overlap-graph readiness restored with dependence constraints.**
+
+The experiment-level Mark catalogue nodes were shown to overlap heavily in raw evidence. They have therefore been replaced, for reconstruction purposes, by **23 non-overlapping canonical book source nodes**.
+
+V36 already contained frozen book-level results:
+
+- Deuteronomy: EQC-001 source-local support
+- Judges: EQC-001 source-local support
+- Psalms / Job: too sparse, unresolved
+
+V38 was replayed source-locally under a protocol frozen before per-block outcomes were opened. The 41 frozen holdout blocks recombine to the published aggregate within rounding. The replay yields:
+
+- 24 supporting blocks
+- 17 unresolved blocks
+- 18 distinct books with EQC-002 source-local support
+
+The raw book nodes are certified:
+
+`CERTIFIED_NONOVERLAPPING_BOOK`
+
+but retain shared-model dependence:
+
+- `V36_SHARED_TRAINING_MODEL`
+- `V38_SHARED_TRAINING_MODEL`
+
+Thus the project is ready for a **descriptive cross-source overlap graph**, not for independent-replication counting from edge frequency.
+
+Current source-level presence:
+
+- EQC-001: Deuteronomy, Judges
+- EQC-002: 18 books
+- both laws: Deuteronomy, Judges
+
+Next governed checkpoint: **Cross-Source Overlap Graph v1**.
+
+The graph must use BOOK-* source nodes, carry model-dependence metadata, preserve unresolved cells as open rather than negative, exclude canon from the primary Mark graph, and infer neither composition nor universality from co-presence/edge count.
