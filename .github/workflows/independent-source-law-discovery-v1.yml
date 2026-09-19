@@ -1,0 +1,125 @@
+name: Independent Source Law Discovery v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/independent-source-law-discovery-v1.*"
+      - "scripts/prepare-independent-source-law-discovery-v1.py"
+      - "scripts/evaluate-independent-source-law-discovery-v1.py"
+      - "scripts/freeze-independent-source-law-discovery-v1.py"
+      - ".github/workflows/independent-source-law-discovery-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  isolated-local-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SEALED_RUN_ID: "33755743472"
+      SEALED_ARTIFACT: "mark-source-rule-atlas-v1-sealed-evidence"
+      SELECTION: "research/mark/discovery-experiments/independent-source-law-discovery-v1.source-selection.json"
+      PROTOCOL: "research/mark/discovery-experiments/independent-source-law-discovery-v1.protocol.json"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen protocol files
+        run: |
+          python3 -m json.tool "$SELECTION" >/dev/null
+          python3 -m json.tool "$PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/prepare-independent-source-law-discovery-v1.py
+          python3 -m py_compile scripts/evaluate-independent-source-law-discovery-v1.py
+          python3 -m py_compile scripts/freeze-independent-source-law-discovery-v1.py
+
+      - name: Download exact sealed evidence artifact only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/sealed-evidence
+          gh run download "$SEALED_RUN_ID" \
+            --repo "${{ github.repository }}" \
+            --name "$SEALED_ARTIFACT" \
+            --dir artifact-staging/sealed-evidence
+
+      - name: Prepare nine isolated blind source inputs
+        run: |
+          python3 scripts/prepare-independent-source-law-discovery-v1.py \
+            --sealed-input artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
+            --captures-dir artifact-staging/sealed-evidence/mark-conveyor-input-v1/captures \
+            --selection "$SELECTION" \
+            --out artifacts/isld-v1/inputs
+
+      - name: Build frozen physical compiler
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Discover each source independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/isld-v1/compiler artifacts/isld-v1/catalogues
+          python3 -c 'import json; [print(x["sourceGroupId"]) for x in json.load(open("'"$SELECTION"'"))["selected"]]' > artifacts/isld-v1/source-ids.txt
+          while read -r sid; do
+            echo "=== isolated local discovery: $sid ==="
+            mkdir -p "artifacts/isld-v1/compiler/$sid"
+            (
+              ulimit -v 524288
+              /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+                --input "artifacts/isld-v1/inputs/$sid/input.json" \
+                --out "artifacts/isld-v1/compiler/$sid" \
+                --tile 512 \
+                --overlap 32 \
+                --null-iterations 64 \
+                --min-sources 1
+            ) 2> >(tee "artifacts/isld-v1/compiler/$sid/runtime.txt" >&2)
+
+            python3 scripts/evaluate-independent-source-law-discovery-v1.py \
+              --compiler-out "artifacts/isld-v1/compiler/$sid" \
+              --source-id "$sid" \
+              --protocol "$PROTOCOL" \
+              --out "artifacts/isld-v1/catalogues/$sid"
+          done < artifacts/isld-v1/source-ids.txt
+
+      - name: Freeze all local catalogues before comparison
+        run: |
+          python3 scripts/freeze-independent-source-law-discovery-v1.py \
+            --selection "$SELECTION" \
+            --catalogues-root artifacts/isld-v1/catalogues \
+            --out artifacts/isld-v1/catalogue-freeze-manifest.json
+
+      - name: Stage frozen scientific outputs without provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/isld-v1/catalogues artifact-staging/isld-v1/compiler-custody artifact-staging/isld-v1/input-custody
+          cp -a artifacts/isld-v1/catalogues/. artifact-staging/isld-v1/catalogues/
+          cp artifacts/isld-v1/catalogue-freeze-manifest.json artifact-staging/isld-v1/
+          cp artifacts/isld-v1/inputs/manifest.json artifact-staging/isld-v1/input-custody/
+          while read -r sid; do
+            mkdir -p "artifact-staging/isld-v1/compiler-custody/$sid"
+            cp "artifacts/isld-v1/compiler/$sid/summary.json" "artifact-staging/isld-v1/compiler-custody/$sid/"
+            cp "artifacts/isld-v1/compiler/$sid/custody.json" "artifact-staging/isld-v1/compiler-custody/$sid/"
+            cp "artifacts/isld-v1/compiler/$sid/evaluation.json" "artifact-staging/isld-v1/compiler-custody/$sid/"
+            cp "artifacts/isld-v1/compiler/$sid/rules.jsonl" "artifact-staging/isld-v1/compiler-custody/$sid/"
+            cp "artifacts/isld-v1/compiler/$sid/grammar-stats.sqlite" "artifact-staging/isld-v1/compiler-custody/$sid/"
+            cp "artifacts/isld-v1/compiler/$sid/runtime.txt" "artifact-staging/isld-v1/compiler-custody/$sid/"
+          done < artifacts/isld-v1/source-ids.txt
+
+      - name: Publish blind freeze summary
+        run: |
+          echo '### Independent Source Law Discovery v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/isld-v1/catalogue-freeze-manifest.json >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload nine frozen local catalogues
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-source-law-discovery-v1-frozen
+          path: artifact-staging/isld-v1/**
+          if-no-files-found: error
+          retention-days: 30
