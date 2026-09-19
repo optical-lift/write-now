@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cross-Source Overlap Graph v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "source_nodes",
+    "law_nodes",
+    "positive_edges",
+    "open_cells",
+    "diagnostics",
+    "inference_guards"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cross_source_overlap_graph_v1"
+    },
+    "source_nodes": {
+      "type": "array"
+    },
+    "law_nodes": {
+      "type": "array"
+    },
+    "positive_edges": {
+      "type": "array"
+    },
+    "open_cells": {
+      "type": "array"
+    },
+    "diagnostics": {
+      "type": "object"
+    },
+    "inference_guards": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}
