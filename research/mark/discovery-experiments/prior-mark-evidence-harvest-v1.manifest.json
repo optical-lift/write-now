@@ -1,0 +1,127 @@
+{
+  "schema": "mark_prior_evidence_harvest_manifest_v1",
+  "status": "HARVEST_COMPLETE_READY_TO_FREEZE",
+  "date": "2026-09-18",
+  "repository": "optical-lift/write-now",
+  "branch": "mark-prior-evidence-harvest-v1",
+  "instrument_freeze": "be94c2c36fa6510b299f989fd6eb5252816f0718",
+  "packet_inventory": {
+    "all_packets": {
+      "range": "RLOP-001..RLOP-090",
+      "count": 90
+    },
+    "inherited_instrument_pilot": {
+      "range": "RLOP-001..RLOP-027",
+      "count": 27
+    },
+    "new_harvest": {
+      "range": "RLOP-028..RLOP-090",
+      "count": 63
+    },
+    "statuses": {
+      "supported": 50,
+      "negative": 27,
+      "diagnostic": 11,
+      "unresolved": 2
+    },
+    "provenance": {
+      "frozen_result": 81,
+      "post_result_synthesis": 9
+    }
+  },
+  "superseded_for_future_comparison": [
+    {
+      "packet": "RLOP-001",
+      "reason": "V19 synthesis pilot replaced by direct frozen V19 packet RLOP-068"
+    },
+    {
+      "packet": "RLOP-002",
+      "reason": "V20–V22 synthesis pilot replaced by direct frozen packets RLOP-069–071"
+    },
+    {
+      "packet": "RLOP-003",
+      "reason": "V23 synthesis pilot replaced by direct frozen V23 packet RLOP-089"
+    },
+    {
+      "packet": "RLOP-004",
+      "reason": "V23 synthesis pilot replaced by direct frozen V20/V23 packets RLOP-069 and RLOP-072"
+    },
+    {
+      "packet": "RLOP-005",
+      "reason": "V24 synthesis pilot replaced by direct frozen V24 packet RLOP-090"
+    },
+    {
+      "packet": "RLOP-006",
+      "reason": "V24 synthesis pilot replaced by direct frozen V24 packet RLOP-073"
+    }
+  ],
+  "canonical_active_packet_set": {
+    "rule": "Use RLOP-007..RLOP-090 for future evidence comparison. Retain RLOP-001..006 only as instrument-pilot history.",
+    "range": "RLOP-007..RLOP-090",
+    "count": 84
+  },
+  "comparison_eligibility": {
+    "default_rule": "Future law-equivalence adjudication should default to frozen_result packets. post_result_synthesis packets require explicit provenance exception.",
+    "post_result_synthesis_packets": [
+      "RLOP-040",
+      "RLOP-080",
+      "RLOP-081"
+    ],
+    "note": "RLOP-001..006 are already superseded and inactive."
+  },
+  "no_outcome_or_non_scientific_test_lines": [
+    {
+      "key": "v31-v34",
+      "status": "NO_RESULT_LINEAGE_RECOVERED",
+      "disposition": "No packet; do not invent experiment content."
+    },
+    {
+      "key": "v37",
+      "status": "PREREGISTERED_PREOUTCOME_ONLY",
+      "disposition": "No scientific-outcome packet."
+    },
+    {
+      "key": "v41",
+      "status": "PREREGISTERED_PREOUTCOME_ONLY",
+      "disposition": "No scientific-outcome packet."
+    },
+    {
+      "key": "v43",
+      "status": "EXECUTION_BLOCKED",
+      "disposition": "Custody record only; no scientific-outcome packet."
+    },
+    {
+      "key": "v44",
+      "status": "EXECUTION_FAILURE",
+      "disposition": "Custody record only; no scientific-outcome packet."
+    },
+    {
+      "key": "v7-sparse-relational-compiler",
+      "status": "ENGINEERING_EQUIVALENCE_ONLY",
+      "disposition": "Retain equivalence/scale artifacts as instrument custody, not relational-law evidence."
+    },
+    {
+      "key": "white-paint-v4-candidate-projector",
+      "status": "NO_DISTINCT_SCIENTIFIC_ADJUDICATION_RECOVERED",
+      "disposition": "Projector execution alone is not packetized as a scientific result."
+    }
+  ],
+  "coverage_notes": [
+    "Early blind-world/conveyor lineage is represented by RLOP-087 and RLOP-088, with V6 treated as replication rather than independent discovery.",
+    "V5 real-corpus challenge is represented by RLOP-082 and RLOP-083.",
+    "White-paint calibration and transfer line is represented by RLOP-084..086 and deliberately remains mixed.",
+    "Named pre-V9 experiments are harvested independently rather than assumed to be merely preliminary.",
+    "V9–V30 are represented by direct frozen workflow artifacts.",
+    "V35-P is represented only from the frozen retrospective reading in the V36 preregistration because no original V35 result artifact was recovered.",
+    "V36, V38–V40, V42 and V45–V48 remain represented by direct result packets inherited from the frozen instrument pilot.",
+    "Negative, diagnostic, unresolved, insufficient-identifiability and failed-representation findings remain first-class constraints."
+  ],
+  "contamination_guard": {
+    "universal_law_labels_assigned": false,
+    "candidate_equivalences_created": false,
+    "new_cross_source_matching_performed": false,
+    "external_semantic_labels_imported": false
+  },
+  "assessment": "research/mark/discovery-experiments/prior-mark-evidence-harvest-v1.assessment.md",
+  "validator": "scripts/validate-prior-mark-evidence-harvest-v1.py"
+}

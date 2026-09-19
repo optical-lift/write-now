@@ -1,0 +1,119 @@
+{
+  "schema": "local_source_container_registry_v1",
+  "status": "BOUNDARIES_FROZEN_BEFORE_CATALOGUE_CONTENT",
+  "date": "2026-09-18",
+  "parent_freeze": "50e92c66dff6ff394307191a887c5f233b029ff5",
+  "rule": "A container boundary is an observational quarantine boundary only. It does not imply a distinct ontology, language, grammar, machine, or statistically independent raw source.",
+  "containers": [
+    {
+      "container_id": "SRC-M001",
+      "lane": "PRIMARY_MARK_RECONSTRUCTION",
+      "name": "V36 hidden-path source-local evidence surface",
+      "container_kind": "frozen_experiment_surface",
+      "boundary": "Evidence admitted by the frozen V36 source-local hidden-path experiment only.",
+      "admissible_local_laws": [
+        "MCR-007"
+      ],
+      "evidence_refs": [
+        "RLOP-007",
+        "MCR-007",
+        "mark:glyph-hidden-operator-path:v36"
+      ],
+      "raw_source_independence": "UNKNOWN_SHARED_SUBSTRATE_POSSIBLE",
+      "overlap_group": "MARK_HEBREW_GLYPH_SEQUENCE_FAMILY",
+      "ontological_authority": false
+    },
+    {
+      "container_id": "SRC-M002",
+      "lane": "PRIMARY_MARK_RECONSTRUCTION",
+      "name": "V38 Hebrew latent-field source-local evidence surface",
+      "container_kind": "frozen_experiment_surface",
+      "boundary": "Evidence admitted by the frozen V38 Hebrew latent structural field experiment only.",
+      "admissible_local_laws": [
+        "MCR-010"
+      ],
+      "evidence_refs": [
+        "RLOP-010",
+        "MCR-010",
+        "mark:hebrew-latent-structural-field:v38"
+      ],
+      "raw_source_independence": "UNKNOWN_SHARED_SUBSTRATE_POSSIBLE",
+      "overlap_group": "MARK_HEBREW_GLYPH_SEQUENCE_FAMILY",
+      "ontological_authority": false
+    },
+    {
+      "container_id": "SRC-M003",
+      "lane": "PRIMARY_MARK_RECONSTRUCTION",
+      "name": "V40 Hebrew context-field source-local evidence surface",
+      "container_kind": "frozen_experiment_surface",
+      "boundary": "Evidence admitted by the frozen V40 center-blind context-field experiment only.",
+      "admissible_local_laws": [
+        "MCR-015",
+        "MCR-016"
+      ],
+      "evidence_refs": [
+        "RLOP-015",
+        "RLOP-016",
+        "MCR-015",
+        "MCR-016",
+        "mark:hebrew-context-field:v40"
+      ],
+      "raw_source_independence": "UNKNOWN_SHARED_SUBSTRATE_POSSIBLE",
+      "overlap_group": "MARK_HEBREW_GLYPH_SEQUENCE_FAMILY",
+      "ontological_authority": false
+    },
+    {
+      "container_id": "SRC-C001",
+      "lane": "EXTERNAL_CANON_VALIDATION",
+      "name": "Canon ordered physical arrangement evidence surface",
+      "container_kind": "frozen_canon_evidence_surface",
+      "boundary": "Leviticus 1:7-9 and Genesis 22:6-9 evidence admitted to CIR-018 only.",
+      "admissible_local_laws": [
+        "CIR-018"
+      ],
+      "evidence_refs": [
+        "CIR-018",
+        "Leviticus 1:7-9",
+        "Genesis 22:6-9"
+      ],
+      "raw_source_independence": "MULTI_PASSAGE_CANON_SURFACE",
+      "overlap_group": "CANON_PHYSICAL_ARRANGEMENT",
+      "ontological_authority": false
+    },
+    {
+      "container_id": "SRC-C002",
+      "lane": "EXTERNAL_CANON_VALIDATION",
+      "name": "Torah appointed-state architecture evidence surface",
+      "container_kind": "frozen_canon_corpus",
+      "boundary": "The frozen appointed-time evidence corpus supporting CIR-005 through CIR-010 and CIR-022 through CIR-023; source references include Leviticus 23, Numbers 9, Numbers 28-29, Deuteronomy 16, and explicitly linked appointed-state inputs.",
+      "admissible_local_laws": [
+        "CIR-005",
+        "CIR-006",
+        "CIR-007",
+        "CIR-008",
+        "CIR-009",
+        "CIR-010",
+        "CIR-022",
+        "CIR-023"
+      ],
+      "evidence_refs": [
+        "CIR-005",
+        "CIR-006",
+        "CIR-007",
+        "CIR-008",
+        "CIR-009",
+        "CIR-010",
+        "CIR-022",
+        "CIR-023"
+      ],
+      "raw_source_independence": "THEMATIC_MULTI_PASSAGE_CORPUS",
+      "overlap_group": "CANON_APPOINTED_STATE",
+      "ontological_authority": false
+    }
+  ],
+  "nonlocal_evidence_policy": {
+    "multi_source_mark_results": "May support or falsify a law signature, but may not be assigned as local presence to a source catalogue without source-level disaggregation.",
+    "cross_system_results": "May not be used to populate local presence unless a source-local component is separately frozen.",
+    "external_canon_lane": "May be frozen as validation catalogues but is excluded from the future primary Mark overlap graph."
+  }
+}

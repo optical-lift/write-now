@@ -1,0 +1,145 @@
+{
+  "status": "SEALED_UNTIL_CANON_RESULTS_FREEZE",
+  "mapping": [
+    {
+      "canon_packet_id": "CCA-001",
+      "mark_constraint_id": "MCR-059",
+      "source_packet": "RLOP-059"
+    },
+    {
+      "canon_packet_id": "CCA-002",
+      "mark_constraint_id": "MCR-016",
+      "source_packet": "RLOP-016"
+    },
+    {
+      "canon_packet_id": "CCA-003",
+      "mark_constraint_id": "MCR-010",
+      "source_packet": "RLOP-010"
+    },
+    {
+      "canon_packet_id": "CCA-004",
+      "mark_constraint_id": "MCR-089",
+      "source_packet": "RLOP-089"
+    },
+    {
+      "canon_packet_id": "CCA-005",
+      "mark_constraint_id": "MCR-052",
+      "source_packet": "RLOP-052"
+    },
+    {
+      "canon_packet_id": "CCA-006",
+      "mark_constraint_id": "MCR-034",
+      "source_packet": "RLOP-034"
+    },
+    {
+      "canon_packet_id": "CCA-007",
+      "mark_constraint_id": "MCR-036",
+      "source_packet": "RLOP-036"
+    },
+    {
+      "canon_packet_id": "CCA-008",
+      "mark_constraint_id": "MCR-051",
+      "source_packet": "RLOP-051"
+    },
+    {
+      "canon_packet_id": "CCA-009",
+      "mark_constraint_id": "MCR-020",
+      "source_packet": "RLOP-020"
+    },
+    {
+      "canon_packet_id": "CCA-010",
+      "mark_constraint_id": "MCR-022",
+      "source_packet": "RLOP-022"
+    },
+    {
+      "canon_packet_id": "CCA-011",
+      "mark_constraint_id": "MCR-042",
+      "source_packet": "RLOP-042"
+    },
+    {
+      "canon_packet_id": "CCA-012",
+      "mark_constraint_id": "MCR-083",
+      "source_packet": "RLOP-083"
+    },
+    {
+      "canon_packet_id": "CCA-013",
+      "mark_constraint_id": "MCR-069",
+      "source_packet": "RLOP-069"
+    },
+    {
+      "canon_packet_id": "CCA-014",
+      "mark_constraint_id": "MCR-072",
+      "source_packet": "RLOP-072"
+    },
+    {
+      "canon_packet_id": "CCA-015",
+      "mark_constraint_id": "MCR-060",
+      "source_packet": "RLOP-060"
+    },
+    {
+      "canon_packet_id": "CCA-016",
+      "mark_constraint_id": "MCR-038",
+      "source_packet": "RLOP-038"
+    },
+    {
+      "canon_packet_id": "CCA-017",
+      "mark_constraint_id": "MCR-015",
+      "source_packet": "RLOP-015"
+    },
+    {
+      "canon_packet_id": "CCA-018",
+      "mark_constraint_id": "MCR-087",
+      "source_packet": "RLOP-087"
+    },
+    {
+      "canon_packet_id": "CCA-019",
+      "mark_constraint_id": "MCR-078",
+      "source_packet": "RLOP-078"
+    },
+    {
+      "canon_packet_id": "CCA-020",
+      "mark_constraint_id": "MCR-056",
+      "source_packet": "RLOP-056"
+    },
+    {
+      "canon_packet_id": "CCA-021",
+      "mark_constraint_id": "MCR-028",
+      "source_packet": "RLOP-028"
+    },
+    {
+      "canon_packet_id": "CCA-022",
+      "mark_constraint_id": "MCR-057",
+      "source_packet": "RLOP-057"
+    },
+    {
+      "canon_packet_id": "CCA-023",
+      "mark_constraint_id": "MCR-037",
+      "source_packet": "RLOP-037"
+    },
+    {
+      "canon_packet_id": "CCA-024",
+      "mark_constraint_id": "MCR-050",
+      "source_packet": "RLOP-050"
+    },
+    {
+      "canon_packet_id": "CCA-025",
+      "mark_constraint_id": "MCR-031",
+      "source_packet": "RLOP-031"
+    },
+    {
+      "canon_packet_id": "CCA-026",
+      "mark_constraint_id": "MCR-029",
+      "source_packet": "RLOP-029"
+    },
+    {
+      "canon_packet_id": "CCA-027",
+      "mark_constraint_id": "MCR-007",
+      "source_packet": "RLOP-007"
+    },
+    {
+      "canon_packet_id": "CCA-028",
+      "mark_constraint_id": "MCR-021",
+      "source_packet": "RLOP-021"
+    }
+  ]
+}

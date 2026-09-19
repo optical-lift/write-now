@@ -1,0 +1,374 @@
+{
+  "schema": "source_level_disaggregation_raw_book_registry_v1",
+  "status": "CERTIFIED_NONOVERLAPPING_RAW_SOURCE_NODES",
+  "date": "2026-09-18",
+  "source_unit": "canonical biblical book",
+  "independence_definition": "Different book nodes contain non-overlapping evaluation token observations. They may share training-derived models, which is tracked separately and prevents treating them as fully independent model fits.",
+  "sources": [
+    {
+      "source_id": "BOOK-1Sa",
+      "book_code": "1Sa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-2Ch",
+      "book_code": "2Ch",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "3 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-2Ki",
+      "book_code": "2Ki",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Amo",
+      "book_code": "Amo",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Dan",
+      "book_code": "Dan",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "3 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Deu",
+      "book_code": "Deu",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V36",
+          "coverage": "whole-book holdout with strict supported-path subset"
+        },
+        {
+          "experiment": "V38",
+          "coverage": "2 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Ecc",
+      "book_code": "Ecc",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Eze",
+      "book_code": "Eze",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "3 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Ezr",
+      "book_code": "Ezr",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Gen",
+      "book_code": "Gen",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "2 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Isa",
+      "book_code": "Isa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "3 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Jdg",
+      "book_code": "Jdg",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V36",
+          "coverage": "whole-book holdout with strict supported-path subset"
+        },
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Jer",
+      "book_code": "Jer",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Job",
+      "book_code": "Job",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V36",
+          "coverage": "whole-book holdout with strict supported-path subset"
+        },
+        {
+          "experiment": "V38",
+          "coverage": "2 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Jon",
+      "book_code": "Jon",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Jos",
+      "book_code": "Jos",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Lev",
+      "book_code": "Lev",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Mal",
+      "book_code": "Mal",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Nah",
+      "book_code": "Nah",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Num",
+      "book_code": "Num",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "1 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Pro",
+      "book_code": "Pro",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "2 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Psa",
+      "book_code": "Psa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V36",
+          "coverage": "whole-book holdout with strict supported-path subset"
+        },
+        {
+          "experiment": "V38",
+          "coverage": "6 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    },
+    {
+      "source_id": "BOOK-Zec",
+      "book_code": "Zec",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "evidence_surfaces": [
+        {
+          "experiment": "V38",
+          "coverage": "2 frozen five-chapter holdout block(s)"
+        }
+      ],
+      "ontological_authority": false
+    }
+  ]
+}

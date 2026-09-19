@@ -1,0 +1,33 @@
+{
+  "schema": "whole_topology_condition_v1_strict_law_validation_census",
+  "date": "2026-09-19",
+  "source_count": 705,
+  "gate": "Reuse Independent Source Law Discovery v1 strict source-local criterion: observed matching above all 64 null accuracies = strict match; below all 64 = strict reversal; otherwise unresolved.",
+  "junction": {
+    "eligible": 703,
+    "strict_match": 610,
+    "strict_reverse": 8,
+    "unresolved": 85,
+    "ineligible": 2
+  },
+  "endpoint": {
+    "eligible": 701,
+    "strict_match": 634,
+    "strict_reverse": 3,
+    "unresolved": 64,
+    "ineligible": 4
+  },
+  "joint": {
+    "both_strict_match": 607,
+    "junction_reverse_endpoint_reverse": 1,
+    "junction_reverse_endpoint_match": 1,
+    "junction_reverse_endpoint_unresolved": 6,
+    "endpoint_reverse_junction_unresolved": 2
+  },
+  "low_density_diagnostic": {
+    "junction_strict_reversals_in_lowest_density_decile": 2,
+    "junction_strict_reversals_outside_lowest_density_decile": 6,
+    "note": "The strong sign-only reversal enrichment in the preregistered secondary diagnostic does not translate into concentration of strict contradictions. Pair density therefore should not be retained as the branch selector."
+  },
+  "interpretation": "The matching law validates source-locally across the overwhelming majority of untouched sources. Genuine contradictions exist but are rare. The next missing condition should be sought in a variable omitted from the rule representation, not in pair density."
+}

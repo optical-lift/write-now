@@ -1,0 +1,26 @@
+{
+  "schema": "frozen_local_law_catalogues_manifest_v1",
+  "status": "COMPLETE_NOT_READY_FOR_OVERLAP_GRAPH",
+  "date": "2026-09-18",
+  "parent_freeze": "50e92c66dff6ff394307191a887c5f233b029ff5",
+  "boundary_registry_commit": "c6129786fd134c05a7e82c3580f683218cc71d67",
+  "local_inventory_commit": "911f22c0c9b80f60c23c865bb30530312c1eae39",
+  "catalogue_counts": {
+    "total": 5,
+    "primary_mark": 3,
+    "external_canon": 2,
+    "local_laws": 13
+  },
+  "shared_targets": [
+    "EQC-001",
+    "EQC-002"
+  ],
+  "projection_counts": {
+    "total": 10,
+    "PRESENT": 5,
+    "MEASUREMENT_UNRESOLVED": 5
+  },
+  "primary_mark_independence_status": "UNVERIFIED_SHARED_SUBSTRATE_POSSIBLE",
+  "overlap_graph_ready": false,
+  "next_checkpoint": "source_level_disaggregation_and_independence_certification_v1"
+}

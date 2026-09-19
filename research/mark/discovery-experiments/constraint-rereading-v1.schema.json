@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mark Constraint Re-Reading v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "constraint_id",
+    "source_packet",
+    "constraint_level",
+    "constraint_kind",
+    "cannot_statement",
+    "condition_signature",
+    "consequence_signature",
+    "law_candidate_status",
+    "evidence_ceiling",
+    "no_cross_source_matching"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "mark_constraint_rereading_v1"
+    },
+    "constraint_id": {
+      "type": "string",
+      "pattern": "^MCR-[0-9]{3,}$"
+    },
+    "source_packet": {
+      "type": "string",
+      "pattern": "^RLOP-[0-9]{3,}$"
+    },
+    "constraint_level": {
+      "enum": [
+        "observed_system",
+        "representation",
+        "measurement",
+        "cross_system",
+        "instrument_calibration"
+      ]
+    },
+    "constraint_kind": {
+      "enum": [
+        "exclusion",
+        "dependency",
+        "non_equivalence",
+        "invariance",
+        "composition",
+        "boundary",
+        "underdetermination",
+        "transfer_limit",
+        "population_dependence"
+      ]
+    },
+    "cannot_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "condition_signature": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consequence_signature": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "law_candidate_status": {
+      "enum": [
+        "eligible",
+        "supporting_only",
+        "deferred",
+        "ineligible"
+      ]
+    },
+    "eligibility_reason": {
+      "type": "string"
+    },
+    "evidence_ceiling": {
+      "type": "string"
+    },
+    "no_cross_source_matching": {
+      "const": true
+    },
+    "universal_law_label": {
+      "type": "null"
+    }
+  },
+  "additionalProperties": false
+}

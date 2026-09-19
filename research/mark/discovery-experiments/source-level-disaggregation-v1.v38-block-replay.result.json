@@ -1,0 +1,499 @@
+{
+  "schema": "source_level_disaggregation_v1_v38_block_replay",
+  "protocol_commit": "0b49e2cd54ce7320c5dacbd8ab5ce12dd306d0d1",
+  "original_phase_a_freeze": "41648536d194a8e7676665a9f6a93c3822d5ca87",
+  "source_unit": "frozen five-chapter holdout block",
+  "independence_class": "NONOVERLAPPING_EVALUATION_SHARED_TRAINING",
+  "total_blocks": 41,
+  "source_local_support_blocks": 24,
+  "unresolved_blocks": 17,
+  "distinct_books_with_support": 18,
+  "by_book": {
+    "Dan": {
+      "blocks": 3,
+      "support_blocks": 1,
+      "transitions": 6032
+    },
+    "Job": {
+      "blocks": 2,
+      "support_blocks": 0,
+      "transitions": 1970
+    },
+    "Pro": {
+      "blocks": 2,
+      "support_blocks": 0,
+      "transitions": 1344
+    },
+    "Psa": {
+      "blocks": 6,
+      "support_blocks": 0,
+      "transitions": 3747
+    },
+    "Ezr": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 1730
+    },
+    "Jdg": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2160
+    },
+    "Deu": {
+      "blocks": 2,
+      "support_blocks": 2,
+      "transitions": 3500
+    },
+    "1Sa": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2277
+    },
+    "Amo": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 1168
+    },
+    "Jos": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2148
+    },
+    "Isa": {
+      "blocks": 3,
+      "support_blocks": 1,
+      "transitions": 3799
+    },
+    "Eze": {
+      "blocks": 3,
+      "support_blocks": 2,
+      "transitions": 4657
+    },
+    "2Ki": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2697
+    },
+    "Jer": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2060
+    },
+    "Nah": {
+      "blocks": 1,
+      "support_blocks": 0,
+      "transitions": 561
+    },
+    "Ecc": {
+      "blocks": 1,
+      "support_blocks": 0,
+      "transitions": 329
+    },
+    "Lev": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2877
+    },
+    "2Ch": {
+      "blocks": 3,
+      "support_blocks": 3,
+      "transitions": 5545
+    },
+    "Zec": {
+      "blocks": 2,
+      "support_blocks": 2,
+      "transitions": 1998
+    },
+    "Num": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 2658
+    },
+    "Mal": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 875
+    },
+    "Gen": {
+      "blocks": 2,
+      "support_blocks": 2,
+      "transitions": 3872
+    },
+    "Jon": {
+      "blocks": 1,
+      "support_blocks": 1,
+      "transitions": 687
+    }
+  },
+  "blocks": [
+    {
+      "book": "Dan",
+      "block_index": 0,
+      "transitions": 2982,
+      "conditional_ce": 2.89480307509775,
+      "unigram_ce": 2.88648194478958,
+      "delta": 0.00832113030816339,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Job",
+      "block_index": 2,
+      "transitions": 976,
+      "conditional_ce": 2.7998045878889,
+      "unigram_ce": 2.79417889343907,
+      "delta": 0.00562569444983252,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Pro",
+      "block_index": 6,
+      "transitions": 221,
+      "conditional_ce": 2.78125650550333,
+      "unigram_ce": 2.74041491349421,
+      "delta": 0.0408415920091207,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Psa",
+      "block_index": 29,
+      "transitions": 439,
+      "conditional_ce": 3.03961480942784,
+      "unigram_ce": 3.03095983728797,
+      "delta": 0.00865497213987076,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Ezr",
+      "block_index": 0,
+      "transitions": 1730,
+      "conditional_ce": 2.99033082341898,
+      "unigram_ce": 3.00258268130606,
+      "delta": -0.0122518578870836,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Jdg",
+      "block_index": 0,
+      "transitions": 2160,
+      "conditional_ce": 2.85520513845985,
+      "unigram_ce": 2.86436880154607,
+      "delta": -0.00916366308621441,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Deu",
+      "block_index": 1,
+      "transitions": 1847,
+      "conditional_ce": 2.89989530295436,
+      "unigram_ce": 2.92380496192976,
+      "delta": -0.0239096589754029,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "1Sa",
+      "block_index": 4,
+      "transitions": 2277,
+      "conditional_ce": 2.8400521992704,
+      "unigram_ce": 2.84402441338867,
+      "delta": -0.00397221411827609,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Amo",
+      "block_index": 0,
+      "transitions": 1168,
+      "conditional_ce": 2.75877632288523,
+      "unigram_ce": 2.76898463913974,
+      "delta": -0.0102083162545088,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Jos",
+      "block_index": 4,
+      "transitions": 2148,
+      "conditional_ce": 2.85990041453101,
+      "unigram_ce": 2.88123452423266,
+      "delta": -0.0213341097016517,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Isa",
+      "block_index": 12,
+      "transitions": 1074,
+      "conditional_ce": 2.87977884488663,
+      "unigram_ce": 2.87301769098809,
+      "delta": 0.00676115389854015,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Eze",
+      "block_index": 8,
+      "transitions": 1982,
+      "conditional_ce": 2.87752358600007,
+      "unigram_ce": 2.88021825360291,
+      "delta": -0.0026946676028401,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "2Ki",
+      "block_index": 1,
+      "transitions": 2697,
+      "conditional_ce": 2.76480472667577,
+      "unigram_ce": 2.78879881979898,
+      "delta": -0.0239940931232052,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Jer",
+      "block_index": 0,
+      "transitions": 2060,
+      "conditional_ce": 2.81627911519552,
+      "unigram_ce": 2.83117860886869,
+      "delta": -0.0148994936731675,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Nah",
+      "block_index": 0,
+      "transitions": 561,
+      "conditional_ce": 2.9603270743759,
+      "unigram_ce": 2.95524425658236,
+      "delta": 0.00508281779354292,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Job",
+      "block_index": 1,
+      "transitions": 994,
+      "conditional_ce": 2.75937136363372,
+      "unigram_ce": 2.7452309864036,
+      "delta": 0.0141403772301216,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Ecc",
+      "block_index": 2,
+      "transitions": 329,
+      "conditional_ce": 2.87243024268753,
+      "unigram_ce": 2.86240927082601,
+      "delta": 0.0100209718615192,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Lev",
+      "block_index": 2,
+      "transitions": 2877,
+      "conditional_ce": 2.66856842915767,
+      "unigram_ce": 2.68686257192963,
+      "delta": -0.0182941427719694,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "2Ch",
+      "block_index": 3,
+      "transitions": 1820,
+      "conditional_ce": 3.00569648976499,
+      "unigram_ce": 3.02605425927826,
+      "delta": -0.0203577695132733,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Pro",
+      "block_index": 3,
+      "transitions": 1123,
+      "conditional_ce": 2.59076768059909,
+      "unigram_ce": 2.58226079626317,
+      "delta": 0.00850688433591573,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Psa",
+      "block_index": 15,
+      "transitions": 1050,
+      "conditional_ce": 2.91598846630238,
+      "unigram_ce": 2.90554209923232,
+      "delta": 0.0104463670700579,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Zec",
+      "block_index": 2,
+      "transitions": 997,
+      "conditional_ce": 2.94664996748667,
+      "unigram_ce": 2.96437847330951,
+      "delta": -0.0177285058228396,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Eze",
+      "block_index": 9,
+      "transitions": 1284,
+      "conditional_ce": 2.71291193546095,
+      "unigram_ce": 2.71140958370351,
+      "delta": 0.00150235175743374,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Psa",
+      "block_index": 4,
+      "transitions": 663,
+      "conditional_ce": 2.88849789996684,
+      "unigram_ce": 2.88404569851971,
+      "delta": 0.0044522014471351,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Deu",
+      "block_index": 3,
+      "transitions": 1653,
+      "conditional_ce": 2.80142066398275,
+      "unigram_ce": 2.82576635098091,
+      "delta": -0.0243456869981613,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Psa",
+      "block_index": 11,
+      "transitions": 599,
+      "conditional_ce": 2.88796855695532,
+      "unigram_ce": 2.87545494438512,
+      "delta": 0.0125136125701952,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Eze",
+      "block_index": 1,
+      "transitions": 1391,
+      "conditional_ce": 2.8763289939152,
+      "unigram_ce": 2.88162825234997,
+      "delta": -0.00529925843477352,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "2Ch",
+      "block_index": 6,
+      "transitions": 2316,
+      "conditional_ce": 3.09583481554063,
+      "unigram_ce": 3.12506629684271,
+      "delta": -0.0292314813020829,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Num",
+      "block_index": 0,
+      "transitions": 2658,
+      "conditional_ce": 2.77568878749504,
+      "unigram_ce": 2.78709501668592,
+      "delta": -0.0114062291908854,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Dan",
+      "block_index": 1,
+      "transitions": 2257,
+      "conditional_ce": 2.85749933761185,
+      "unigram_ce": 2.85862234223489,
+      "delta": -0.00112300462304171,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Mal",
+      "block_index": 0,
+      "transitions": 875,
+      "conditional_ce": 2.7225403226753,
+      "unigram_ce": 2.73603011623541,
+      "delta": -0.0134897935601024,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Psa",
+      "block_index": 12,
+      "transitions": 468,
+      "conditional_ce": 2.89491424300696,
+      "unigram_ce": 2.88753543412994,
+      "delta": 0.00737880887702058,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Gen",
+      "block_index": 1,
+      "transitions": 1585,
+      "conditional_ce": 2.7323420540249,
+      "unigram_ce": 2.736716097664,
+      "delta": -0.00437404363910332,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Dan",
+      "block_index": 2,
+      "transitions": 793,
+      "conditional_ce": 2.97712095919602,
+      "unigram_ce": 2.96363950317774,
+      "delta": 0.0134814560182801,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Zec",
+      "block_index": 0,
+      "transitions": 1001,
+      "conditional_ce": 2.7687186383653,
+      "unigram_ce": 2.78810295095223,
+      "delta": -0.0193843125869226,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Isa",
+      "block_index": 10,
+      "transitions": 1113,
+      "conditional_ce": 2.83680862810454,
+      "unigram_ce": 2.85012517893745,
+      "delta": -0.0133165508329127,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Psa",
+      "block_index": 16,
+      "transitions": 528,
+      "conditional_ce": 2.81621948039174,
+      "unigram_ce": 2.80152328382639,
+      "delta": 0.0146961965653452,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "Gen",
+      "block_index": 6,
+      "transitions": 2287,
+      "conditional_ce": 2.64531173481966,
+      "unigram_ce": 2.65109658993961,
+      "delta": -0.00578485511994753,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Isa",
+      "block_index": 5,
+      "transitions": 1612,
+      "conditional_ce": 2.7827730440262,
+      "unigram_ce": 2.77244860536439,
+      "delta": 0.0103244386618115,
+      "local_status": "UNRESOLVED_BY_SHARED_MODEL"
+    },
+    {
+      "book": "2Ch",
+      "block_index": 0,
+      "transitions": 1409,
+      "conditional_ce": 2.90924126321406,
+      "unigram_ce": 2.92021127052206,
+      "delta": -0.0109700073079972,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Jon",
+      "block_index": 0,
+      "transitions": 687,
+      "conditional_ce": 2.78421015655873,
+      "unigram_ce": 2.78997079250911,
+      "delta": -0.00576063595037546,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    }
+  ]
+}

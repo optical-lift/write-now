@@ -1,0 +1,50 @@
+{
+  "schema": "source_level_disaggregation_v1_overlap_audit",
+  "v36_holdout_books": [
+    "Deu",
+    "Jdg",
+    "Psa",
+    "Job"
+  ],
+  "v38_holdout_blocks_count": 41,
+  "v40_holdout_blocks_count": 41,
+  "exact_v38_v40_overlapping_blocks": [
+    "Job 11–15",
+    "Zec 11–14",
+    "Psa 21–25",
+    "Deu 16–20",
+    "Dan 6–10",
+    "Gen 6–10",
+    "Dan 11–12",
+    "Isa 51–55",
+    "Isa 26–30",
+    "2Ch 1–5"
+  ],
+  "v38_blocks_inside_v36_books": [
+    "Job 11–15",
+    "Psa 146–150",
+    "Jdg 1–5",
+    "Deu 6–10",
+    "Job 6–10",
+    "Psa 76–80",
+    "Psa 21–25",
+    "Deu 16–20",
+    "Psa 56–60",
+    "Psa 61–65",
+    "Psa 81–85"
+  ],
+  "v40_blocks_inside_v36_books": [
+    "Psa 71–75",
+    "Deu 16–20",
+    "Psa 21–25",
+    "Deu 21–25",
+    "Psa 31–35",
+    "Job 1–5",
+    "Psa 86–90",
+    "Job 11–15",
+    "Job 16–20",
+    "Deu 26–30",
+    "Deu 1–5"
+  ],
+  "conclusion": "Experiment-level catalogue nodes are not independent source nodes. The same raw biblical books/blocks recur across V36, V38, and V40. Future reconstruction must unify evidence by raw source identity before counting recurrence."
+}

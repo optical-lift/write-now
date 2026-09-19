@@ -1,0 +1,84 @@
+{
+  "baseline_v1_freeze": "a4277642a302d1447735bbadc8cd3f93138e1714",
+  "new_rules_freeze_commit": "7b2ea894fb7d805025c988b4282e803f794e91e9",
+  "results": [
+    {
+      "target": "MCR-052",
+      "v1": "no_match",
+      "v2": "partial",
+      "new_rule_ids": [
+        "TCIR-001"
+      ],
+      "basis": [
+        "canon independently distinguishes connection/membership edits such as break off, graft in, graft back and removal",
+        "participant identity persists while connection state changes"
+      ],
+      "limit": [
+        "Mark result concerns transferable selective edit atoms across matched structures; canon rule establishes typed connection edits but not a statistical edit-atom grammar"
+      ]
+    },
+    {
+      "target": "MCR-051",
+      "v1": "no_match",
+      "v2": "partial",
+      "new_rule_ids": [
+        "TCIR-002"
+      ],
+      "basis": [
+        "canon independently makes member role/function depend on placement in a larger whole rather than gross member identity alone",
+        "member placement and differentiated function are linked"
+      ],
+      "limit": [
+        "Mark result concerns literal junction-edit constraints; canon rule does not establish a center-edit inventory or matched geometric correspondence"
+      ]
+    },
+    {
+      "target": "MCR-015",
+      "v1": "no_match",
+      "v2": "partial",
+      "new_rule_ids": [
+        "TCIR-002"
+      ],
+      "basis": [
+        "canon independently makes local member identity/function relationally constrained by body/placement context",
+        "the whole-member relation carries information not contained in isolated member identity"
+      ],
+      "limit": [
+        "canon does not demonstrate that a hidden local state can be quantitatively reconstructed from surrounding neighbors"
+      ]
+    },
+    {
+      "target": "MCR-050",
+      "v1": "no_match",
+      "v2": "partial",
+      "new_rule_ids": [
+        "TCIR-001"
+      ],
+      "basis": [
+        "canon independently contains typed relation edits with preserved identity and changed participation/function"
+      ],
+      "limit": [
+        "Mark result establishes recurring topology-edit atoms across independent lanes; canon rule supplies specific connection edits but not a general transferable edit grammar"
+      ]
+    },
+    {
+      "target": "MCR-021",
+      "v1": "no_match",
+      "v2": "partial",
+      "new_rule_ids": [
+        "TCIR-003"
+      ],
+      "basis": [
+        "canon independently shows that extending the same governing condition across widely different durations leaves the commanded wait operation invariant until the condition changes"
+      ],
+      "limit": [
+        "Mark result repeats the operation itself A→A; canon rule repeats/persists the governing condition rather than demonstrating arbitrary operation idempotence"
+      ]
+    }
+  ],
+  "summary": {
+    "upgraded_to_partial": 5,
+    "upgraded_to_direct": 0,
+    "remain_no_match": 0
+  }
+}

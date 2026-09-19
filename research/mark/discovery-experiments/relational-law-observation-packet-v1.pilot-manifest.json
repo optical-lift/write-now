@@ -1,0 +1,36 @@
+{
+  "schema": "mark_relational_law_observation_pilot_manifest_v1",
+  "status": "PILOT_COMPLETE_NOT_FROZEN",
+  "branch": "mark-relational-law-observation-packet-v1",
+  "parent_roadmap": "research/mark/discovery-experiments/WHOLE_SYSTEM_RECONSTRUCTION_ROADMAP.md",
+  "schema_file": "research/mark/discovery-experiments/relational-law-observation-packet-v1.schema.json",
+  "spec_file": "research/mark/discovery-experiments/relational-law-observation-packet-v1.spec.md",
+  "parts": [
+    {
+      "path": "research/mark/discovery-experiments/relational-law-observation-packet-v1.pilot.part1.jsonl",
+      "range": "RLOP-001..RLOP-009",
+      "count": 9
+    },
+    {
+      "path": "research/mark/discovery-experiments/relational-law-observation-packet-v1.pilot.part2.jsonl",
+      "range": "RLOP-010..RLOP-018",
+      "count": 9
+    },
+    {
+      "path": "research/mark/discovery-experiments/relational-law-observation-packet-v1.pilot.part3.jsonl",
+      "range": "RLOP-019..RLOP-027",
+      "count": 9
+    }
+  ],
+  "total_records": 27,
+  "new_cross_source_matching_performed": false,
+  "universal_law_labels_assigned": false,
+  "pilot_goal": "Test whether materially different prior Mark findings can be carried forward as observation plus relational structure without importing a closed universal ontology.",
+  "pilot_pressure_points": [
+    "Evidence provenance class should be made explicit: frozen result versus post-result synthesis versus diagnostic source.",
+    "Discovery quarantine should be distinguished from whether the historical experiment itself was multi-source.",
+    "Scale or granularity should become an explicit optional coordinate rather than living only in context text.",
+    "Control/null structure is recurrent enough to deserve a structured comparison block in a future schema revision.",
+    "Observation censoring/boundary status may need an explicit field if trajectory work expands."
+  ]
+}

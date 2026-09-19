@@ -1,0 +1,97 @@
+{
+  "schema": "law_equivalence_calibration_v1",
+  "cases": [
+    {
+      "id": "LEC-001",
+      "title": "same dependency different substrate",
+      "left": "P1 remains in required support relation to P2; consequence C is available only while relation R holds.",
+      "right": "Q1 remains in required support relation to Q2; consequence D is available only while relation R' holds.",
+      "facts": [
+        "R and R' are structurally isomorphic",
+        "C and D are different physical realizations of the same dependency",
+        "no extra necessary condition"
+      ],
+      "expected": "SAME_LAW"
+    },
+    {
+      "id": "LEC-002",
+      "title": "same visible transformation different necessary condition",
+      "left": "X may move only when authorization A is present.",
+      "right": "X may move only when timing window T is present.",
+      "facts": [
+        "visible movement is identical",
+        "authorization and timing are independently demonstrated necessary conditions",
+        "conditions are not isomorphic"
+      ],
+      "expected": "DISTINCT_LAW_SHARED_PATTERN"
+    },
+    {
+      "id": "LEC-003",
+      "title": "opposite view of same relation",
+      "left": "P1 contains P2; P2 cannot be outside while containment persists.",
+      "right": "P2 is contained by P1; P1 cannot be described as non-containing while that same relation persists.",
+      "facts": [
+        "role reversal yields the same relation graph",
+        "no causal reversal is asserted"
+      ],
+      "expected": "SAME_LAW_OPPOSITE_VIEW"
+    },
+    {
+      "id": "LEC-004",
+      "title": "different physical path same law",
+      "left": "State X reaches Y through physical steps a,b,c.",
+      "right": "State X reaches Y in one physical step.",
+      "facts": [
+        "a,b,c are not necessary conditions",
+        "same constraint target and invariants",
+        "same normalized input/output relation"
+      ],
+      "expected": "SAME_LAW_DIFFERENT_PATH"
+    },
+    {
+      "id": "LEC-005",
+      "title": "essential intermediate composition",
+      "left": "Law A changes X to M; Law B requires M and changes M to Y.",
+      "right": "A direct X to Y relation is proposed.",
+      "facts": [
+        "M is independently necessary",
+        "removing M invalidates B"
+      ],
+      "expected": "COMPOSED_RELATION"
+    },
+    {
+      "id": "LEC-006",
+      "title": "surface analogy only",
+      "left": "P1 is physically near P2 and outcome rises.",
+      "right": "Q1 is legally authorized by Q2 and operation becomes permitted.",
+      "facts": [
+        "both can be described informally as 'relation matters'",
+        "relation arity/predicate and constraint target are not isomorphic"
+      ],
+      "expected": "ANALOGOUS_ONLY"
+    },
+    {
+      "id": "LEC-007",
+      "title": "missing condition measurement",
+      "left": "Outcome depends on P1 plus an unknown contextual variable.",
+      "right": "Outcome depends on Q1 and known timing relation T.",
+      "facts": [
+        "unknown context may or may not normalize to T",
+        "current evidence cannot decide"
+      ],
+      "expected": "UNDERDETERMINED"
+    },
+    {
+      "id": "LEC-008",
+      "title": "contradictory constraint",
+      "left": "Under normalized condition C, operation O cannot occur.",
+      "right": "Under the same normalized condition C, operation O must occur.",
+      "facts": [
+        "conditions and roles are equivalent",
+        "modalities are both sufficiently established",
+        "claims cannot both hold as stated"
+      ],
+      "expected": "CONTRADICTORY"
+    }
+  ]
+}
