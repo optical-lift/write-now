@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source-Level Disaggregation v1 Raw Book Catalogue",
+  "type": "object",
+  "required": [
+    "catalogue_id",
+    "source_id",
+    "raw_source_independence",
+    "law_entries"
+  ],
+  "properties": {
+    "catalogue_id": {
+      "type": "string",
+      "pattern": "^BOOKCAT-[A-Za-z0-9]+$"
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^BOOK-[A-Za-z0-9]+$"
+    },
+    "raw_source_independence": {
+      "const": "CERTIFIED_NONOVERLAPPING_BOOK"
+    },
+    "law_entries": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "entry_id",
+          "law_signature_id",
+          "derived_state",
+          "instantiation_evidence",
+          "opportunity_status",
+          "observability_status",
+          "compatibility_status",
+          "coverage_status",
+          "evidence_refs",
+          "evidence_detail",
+          "evidence_ceiling"
+        ],
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "pattern": "^SRCASM-[0-9]{3}$"
+          },
+          "law_signature_id": {
+            "enum": [
+              "EQC-001",
+              "EQC-002"
+            ]
+          },
+          "derived_state": {
+            "enum": [
+              "PRESENT",
+              "MEASUREMENT_UNRESOLVED"
+            ]
+          },
+          "instantiation_evidence": {
+            "enum": [
+              "OBSERVED_PRESENT",
+              "UNKNOWN"
+            ]
+          },
+          "opportunity_status": {
+            "enum": [
+              "DEMONSTRATED",
+              "UNKNOWN"
+            ]
+          },
+          "observability_status": {
+            "enum": [
+              "ADEQUATE",
+              "INADEQUATE",
+              "UNMEASURED"
+            ]
+          },
+          "compatibility_status": {
+            "enum": [
+              "COMPATIBLE",
+              "UNKNOWN"
+            ]
+          },
+          "coverage_status": {
+            "enum": [
+              "PARTIAL",
+              "NOT_SAMPLED"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_detail": {
+            "type": "object"
+          },
+          "evidence_ceiling": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
