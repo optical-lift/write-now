@@ -27,7 +27,7 @@
     },
     {
       "id": "ASC-003",
-      "title": "compatible opportunity adequately covered but unused",
+      "title": "complete opportunity present but law pattern not observed",
       "axes": {
         "instantiation_evidence": "NOT_OBSERVED",
         "opportunity_status": "DEMONSTRATED",
@@ -35,7 +35,7 @@
         "compatibility_status": "COMPATIBLE",
         "coverage_status": "ADEQUATE"
       },
-      "expected": "COMPATIBLE_UNUSED"
+      "expected": "OPPORTUNITY_PRESENT_NO_INSTANCE"
     },
     {
       "id": "ASC-004",
@@ -146,6 +146,18 @@
         "coverage_status": "PARTIAL"
       },
       "expected": "NOT_YET_OBSERVED"
+    },
+    {
+      "id": "ASC-013",
+      "title": "compatible architecture but complete condition never used",
+      "axes": {
+        "instantiation_evidence": "NOT_OBSERVED",
+        "opportunity_status": "POSSIBLE",
+        "observability_status": "ADEQUATE",
+        "compatibility_status": "COMPATIBLE",
+        "coverage_status": "ADEQUATE"
+      },
+      "expected": "COMPATIBLE_UNUSED"
     }
   ]
 }
