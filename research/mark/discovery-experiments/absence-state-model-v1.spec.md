@@ -111,7 +111,9 @@ Requirements:
 
 Meaning:
 
-> The condition exists, but a local rule blocks the candidate consequence.
+> The candidate law's complete condition exists, but a **different evidenced local constraint** blocks the candidate law's observable realization/consequence.
+
+This state describes **preemption by another local constraint**. It does not mean the candidate law itself is a prohibition.
 
 This is genuine negative evidence about local execution, not evidence that the higher-order law is missing.
 
@@ -337,7 +339,7 @@ Especially:
 - `OUTSIDE_EXPOSED_REGION` is not a negative edge;
 - `NOT_PRESERVED` is not a negative edge;
 - `MEASUREMENT_UNRESOLVED` is not a negative edge;
-- `OPPORTUNITY_PRESENT_NO_INSTANCE` is strong negative evidence against the law applying at the tested opportunity, but not structural incompatibility;
+- `OPPORTUNITY_PRESENT_NO_INSTANCE` is a strong negative edge against the law applying at the tested opportunity, but not structural incompatibility;
 - `COMPATIBLE_UNUSED` is not negative evidence against the law because the complete condition never occurred;
 - `OPPORTUNITY_PRESENT_PROHIBITED` is evidence of an active local constraint;
 - `STRUCTURALLY_INCOMPATIBLE` is the strongest local negative edge.
