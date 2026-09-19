@@ -1,0 +1,90 @@
+{
+  "schema": "independent_source_law_discovery_blind_freeze_v1",
+  "status": "FROZEN_BEFORE_PROVENANCE_OPENING",
+  "workflow_run_id": 35414084153,
+  "workflow_artifact_id": 10575800534,
+  "workflow_artifact_digest": "sha256:8af9e4b4593166ab68eb33bdffe276815556e6bbca64001c09cec37a43620646",
+  "source_selection_blind_input_sha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+  "catalogue_freeze_manifest_sha256": "2d55e927ec31360c5e8ef1e32914f9b4c9d44296f01ec047d6d56805ac612482",
+  "catalogue_count": 9,
+  "catalogues": [
+    {
+      "sourceGroupId": "S0986BCCA11293262",
+      "selectionLane": "train",
+      "observationCount": 90,
+      "catalogueSha256": "5339b2adac0028d94e397e09eee07ca811c2ec8e8f12303cf80caf620f565cdf",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S2BA35F8F3F41FF82",
+      "selectionLane": "train",
+      "observationCount": 90,
+      "catalogueSha256": "1140301f6bee1f6451ff620a11ce9ee51a4610f0f819a781d120cecd659e9c96",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S6E5A315EA8D70272",
+      "selectionLane": "train",
+      "observationCount": 90,
+      "catalogueSha256": "6c8d6bb20ae0954a36aee913eb913ad37d7f01ed53931c790def7f0947f195c6",
+      "admittedLocalLaws": 2,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S278D089F1F3E6EF3",
+      "selectionLane": "holdout",
+      "observationCount": 94,
+      "catalogueSha256": "090b748f93350d9174caa4bf260d1290e7f4f501daedf71ea1364d272e1c2d6b",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S7FAC1CBA3237D428",
+      "selectionLane": "holdout",
+      "observationCount": 93,
+      "catalogueSha256": "4daef1741225eba8c72a8de14c7017eaebd3fddfdcc9a9f1036290ce11b17df0",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "SA6A647EB8FD65081",
+      "selectionLane": "holdout",
+      "observationCount": 93,
+      "catalogueSha256": "96f2a9ed6ae802e7f062dc264462e64b3ee003b724ebb303bfba891d627efe08",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "SD77E0E398D02620C",
+      "selectionLane": "control",
+      "observationCount": 89,
+      "catalogueSha256": "59faa494dcbbf51323bfe37adcc420775212b112e15f87fdc8a63658217182fe",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S78DF51368961153D",
+      "selectionLane": "control",
+      "observationCount": 88,
+      "catalogueSha256": "94b1d380f77d43f981922629015e4ab48b2f60fb238ab1dd848a0a9c34b04288",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    },
+    {
+      "sourceGroupId": "S325CAFC6592E173B",
+      "selectionLane": "control",
+      "observationCount": 86,
+      "catalogueSha256": "027453a0d300cf2885bbf84a4e174d2dc0e53d93aa0a5185204d7e6710194b54",
+      "admittedLocalLaws": 4,
+      "candidatePairsEvaluated": 4
+    }
+  ],
+  "guards": {
+    "crossSourceMatchingPerformedBeforeFreeze": false,
+    "provenanceOpenedBeforeFreeze": false,
+    "globalLawLabelsAssignedBeforeFreeze": false
+  },
+  "ready_for_post_freeze_equivalence": true
+}
