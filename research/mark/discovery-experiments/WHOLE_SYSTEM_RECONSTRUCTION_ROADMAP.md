@@ -419,39 +419,48 @@ Recover exact raw source boundaries and source-local law evidence from frozen ar
 
 ### Step 7c — Source-Level Disaggregation and Independence Certification v1
 
-**Complete on 2026-09-18. Overlap-graph readiness restored with dependence constraints.**
+**Complete on 2026-09-18. The descriptive provenance layer is usable; the primary independent-discovery overlap graph remains gated.**
 
-The experiment-level Mark catalogue nodes were shown to overlap heavily in raw evidence. They have therefore been replaced, for reconstruction purposes, by **23 non-overlapping canonical book source nodes**.
+The earlier experiment-level catalogue nodes were confirmed to reuse overlapping raw evidence:
 
-V36 already contained frozen book-level results:
+- V38 and V40 share **10 exact holdout blocks**;
+- V38 has **11 holdout blocks** inside V36's four heldout books;
+- V40 has **11 holdout blocks** inside those same V36 books.
 
-- Deuteronomy: EQC-001 source-local support
-- Judges: EQC-001 source-local support
-- Psalms / Job: too sparse, unresolved
+Therefore experiment names are not valid independent source nodes.
 
-V38 was replayed source-locally under a protocol frozen before per-block outcomes were opened. The 41 frozen holdout blocks recombine to the published aggregate within rounding. The replay yields:
+Three historical evidence surfaces were disaggregated:
 
-- 24 supporting blocks
-- 17 unresolved blocks
-- 18 distinct books with EQC-002 source-local support
+- **V36 / EQC-001:** Deuteronomy and Judges preserve the frozen order effect as whole-book heldout transfer; Psalms and Job remain too sparse.
+- **V38 / EQC-002:** a replay protocol was frozen before block outcomes were opened. The 41 block scores recombine to the published 58,691-transition aggregate within rounding. **24 blocks across 18 books** support the frozen state-conditioned consequence relation.
+- **V40 / EQC-001:** a source-local replay protocol was frozen before block outcomes were opened. The reconstructed model exactly reproduces the published C1 score and all 20 context-destruction null CEs. **29 blocks across 18 books** beat all 20 nulls under the frozen local-support rule.
 
-The raw book nodes are certified:
+The strict certification record contains **86 source units**:
 
-`CERTIFIED_NONOVERLAPPING_BOOK`
+- **2** `WHOLE_SOURCE_HELDOUT_TRANSFER`
+- **53** `NONOVERLAPPING_UNIT_SHARED_TRAINING`
+- **31** `UNRESOLVED_SOURCE_UNIT`
+- **0** `INDEPENDENT_LOCAL_DISCOVERY`
 
-but retain shared-model dependence:
+Six exact raw blocks support both current strict law signatures:
 
-- `V36_SHARED_TRAINING_MODEL`
-- `V38_SHARED_TRAINING_MODEL`
+- Zec:2
+- Deu:3
+- Dan:1
+- Gen:1
+- Isa:10
+- 2Ch:0
 
-Thus the project is ready for a **descriptive cross-source overlap graph**, not for independent-replication counting from edge frequency.
+That is same-source co-occurrence evidence, not independent recurrence.
 
-Current source-level presence:
+The earlier 23-book descriptive catalogue layer is preserved as historical provenance but is **superseded for scientific counting** by the stricter 86-unit certification record because it predates the V40 disaggregation.
 
-- EQC-001: Deuteronomy, Judges
-- EQC-002: 18 books
-- both laws: Deuteronomy, Judges
+A descriptive provenance graph may be drawn if it preserves dependence classes. It may not be used as the Step-8 independent-discovery graph or as a universality count.
 
-Next governed checkpoint: **Cross-Source Overlap Graph v1**.
+**New prerequisite before Step 8: Independent Source Law Discovery v1.**
 
-The graph must use BOOK-* source nodes, carry model-dependence metadata, preserve unresolved cells as open rather than negative, exclude canon from the primary Mark graph, and infer neither composition nor universality from co-presence/edge count.
+Select isolated source containers before discovery. Each must recover and freeze its own local law catalogue without importing EQC/MCR labels, another source's state inventory, another source's operator vocabulary, or a global model trained on the comparison sources.
+
+Only after several `INDEPENDENT_LOCAL_DISCOVERY` catalogues exist should the frozen Law-Equivalence Adjudication language reopen cross-source comparison.
+
+---
