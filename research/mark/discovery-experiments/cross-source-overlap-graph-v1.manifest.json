@@ -1,0 +1,35 @@
+{
+  "schema": "cross_source_overlap_graph_manifest_v1",
+  "status": "COMPLETE_LAW_DIMENSION_INSUFFICIENT_FOR_RECONSTRUCTION",
+  "date": "2026-09-18",
+  "protocol_freeze": "6e6808bfadb0f79036506fe9bab7cf82f6b373fe",
+  "parent_freeze": "1ad476d765c6091cceabac6a609d17a34fcc3a22",
+  "graph": {
+    "source_nodes": 23,
+    "law_nodes": 2,
+    "positive_edges": 20,
+    "open_cells": 26,
+    "law_degree": {
+      "EQC-001": 2,
+      "EQC-002": 18
+    },
+    "co_presence": [
+      "BOOK-Deu",
+      "BOOK-Jdg"
+    ],
+    "isolated_sources": [
+      "BOOK-Ecc",
+      "BOOK-Job",
+      "BOOK-Nah",
+      "BOOK-Pro",
+      "BOOK-Psa"
+    ]
+  },
+  "dependence": {
+    "V36_SHARED_TRAINING_MODEL": 2,
+    "V38_SHARED_TRAINING_MODEL": 18
+  },
+  "reconstruction_ready": false,
+  "failure_reason": "LAW_DIMENSION_INSUFFICIENT",
+  "next_checkpoint": "source_local_law_expansion_v1"
+}
