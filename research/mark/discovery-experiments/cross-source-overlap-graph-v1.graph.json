@@ -1,0 +1,1140 @@
+{
+  "schema": "cross_source_overlap_graph_v1",
+  "protocol_freeze_commit": "6e6808bfadb0f79036506fe9bab7cf82f6b373fe",
+  "source_registry_commit": "38a08731bfafd0bef281a75e09c51909086981a7",
+  "source_catalogues_commit": "5091a7ad219293c1c54dd9ff311189139a3ceffb",
+  "source_nodes": [
+    {
+      "id": "BOOK-1Sa",
+      "type": "SOURCE",
+      "book_code": "1Sa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-2Ch",
+      "type": "SOURCE",
+      "book_code": "2Ch",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-2Ki",
+      "type": "SOURCE",
+      "book_code": "2Ki",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Amo",
+      "type": "SOURCE",
+      "book_code": "Amo",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Dan",
+      "type": "SOURCE",
+      "book_code": "Dan",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Deu",
+      "type": "SOURCE",
+      "book_code": "Deu",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Ecc",
+      "type": "SOURCE",
+      "book_code": "Ecc",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Eze",
+      "type": "SOURCE",
+      "book_code": "Eze",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Ezr",
+      "type": "SOURCE",
+      "book_code": "Ezr",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Gen",
+      "type": "SOURCE",
+      "book_code": "Gen",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Isa",
+      "type": "SOURCE",
+      "book_code": "Isa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Jdg",
+      "type": "SOURCE",
+      "book_code": "Jdg",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Jer",
+      "type": "SOURCE",
+      "book_code": "Jer",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Job",
+      "type": "SOURCE",
+      "book_code": "Job",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Jon",
+      "type": "SOURCE",
+      "book_code": "Jon",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Jos",
+      "type": "SOURCE",
+      "book_code": "Jos",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Lev",
+      "type": "SOURCE",
+      "book_code": "Lev",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Mal",
+      "type": "SOURCE",
+      "book_code": "Mal",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Nah",
+      "type": "SOURCE",
+      "book_code": "Nah",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Num",
+      "type": "SOURCE",
+      "book_code": "Num",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Pro",
+      "type": "SOURCE",
+      "book_code": "Pro",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Psa",
+      "type": "SOURCE",
+      "book_code": "Psa",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V36_SHARED_TRAINING_MODEL",
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    },
+    {
+      "id": "BOOK-Zec",
+      "type": "SOURCE",
+      "book_code": "Zec",
+      "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+      "model_dependence_groups": [
+        "V38_SHARED_TRAINING_MODEL"
+      ],
+      "ontological_authority": false
+    }
+  ],
+  "law_nodes": [
+    {
+      "id": "EQC-001",
+      "type": "LAW",
+      "version": "1",
+      "statement": "Component inventory cannot substitute for relational placement/order."
+    },
+    {
+      "id": "EQC-002",
+      "type": "LAW",
+      "version": "1",
+      "statement": "Current state identity conditions the consequence/operation contract."
+    }
+  ],
+  "positive_edges": [
+    {
+      "edge_id": "BOOK-1Sa::EQC-002",
+      "source_id": "BOOK-1Sa",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 4,
+            "transitions": 2277,
+            "delta": -0.00397221411827609
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-2Ch::EQC-002",
+      "source_id": "BOOK-2Ch",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 3,
+        "support_blocks": [
+          {
+            "block_index": 3,
+            "transitions": 1820,
+            "delta": -0.0203577695132733
+          },
+          {
+            "block_index": 6,
+            "transitions": 2316,
+            "delta": -0.0292314813020829
+          },
+          {
+            "block_index": 0,
+            "transitions": 1409,
+            "delta": -0.0109700073079972
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-2Ki::EQC-002",
+      "source_id": "BOOK-2Ki",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 1,
+            "transitions": 2697,
+            "delta": -0.0239940931232052
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Amo::EQC-002",
+      "source_id": "BOOK-Amo",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 1168,
+            "delta": -0.0102083162545088
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Dan::EQC-002",
+      "source_id": "BOOK-Dan",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 3,
+        "support_blocks": [
+          {
+            "block_index": 1,
+            "transitions": 2257,
+            "delta": -0.00112300462304171
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Deu::EQC-001",
+      "source_id": "BOOK-Deu",
+      "law_id": "EQC-001",
+      "state": "PRESENT",
+      "model_dependence_group": "V36_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V36 frozen book-level result"
+      ],
+      "evidence_detail": {
+        "n": 94,
+        "real_median_rank": 64,
+        "reversed_median_rank": 122.5,
+        "shuffled_median_rank": 108,
+        "real_top10": 0.0638,
+        "reversed_top10": 0.0319,
+        "shuffled_top10": 0.0213
+      },
+      "evidence_ceiling": "Retrospective localization from a frozen published per-book result; non-overlapping book evaluation but shared V36 training model."
+    },
+    {
+      "edge_id": "BOOK-Deu::EQC-002",
+      "source_id": "BOOK-Deu",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 2,
+        "support_blocks": [
+          {
+            "block_index": 1,
+            "transitions": 1847,
+            "delta": -0.0239096589754029
+          },
+          {
+            "block_index": 3,
+            "transitions": 1653,
+            "delta": -0.0243456869981613
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Eze::EQC-002",
+      "source_id": "BOOK-Eze",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 3,
+        "support_blocks": [
+          {
+            "block_index": 8,
+            "transitions": 1982,
+            "delta": -0.0026946676028401
+          },
+          {
+            "block_index": 1,
+            "transitions": 1391,
+            "delta": -0.00529925843477352
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Ezr::EQC-002",
+      "source_id": "BOOK-Ezr",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 1730,
+            "delta": -0.0122518578870836
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Gen::EQC-002",
+      "source_id": "BOOK-Gen",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 2,
+        "support_blocks": [
+          {
+            "block_index": 1,
+            "transitions": 1585,
+            "delta": -0.00437404363910332
+          },
+          {
+            "block_index": 6,
+            "transitions": 2287,
+            "delta": -0.00578485511994753
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Isa::EQC-002",
+      "source_id": "BOOK-Isa",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 3,
+        "support_blocks": [
+          {
+            "block_index": 10,
+            "transitions": 1113,
+            "delta": -0.0133165508329127
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Jdg::EQC-001",
+      "source_id": "BOOK-Jdg",
+      "law_id": "EQC-001",
+      "state": "PRESENT",
+      "model_dependence_group": "V36_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V36 frozen book-level result"
+      ],
+      "evidence_detail": {
+        "n": 43,
+        "real_median_rank": 40,
+        "reversed_median_rank": 230,
+        "shuffled_median_rank": 138,
+        "real_top10": 0.0698,
+        "reversed_top10": 0,
+        "shuffled_top10": 0
+      },
+      "evidence_ceiling": "Retrospective localization from a frozen published per-book result; non-overlapping book evaluation but shared V36 training model."
+    },
+    {
+      "edge_id": "BOOK-Jdg::EQC-002",
+      "source_id": "BOOK-Jdg",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 2160,
+            "delta": -0.00916366308621441
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Jer::EQC-002",
+      "source_id": "BOOK-Jer",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 2060,
+            "delta": -0.0148994936731675
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Jon::EQC-002",
+      "source_id": "BOOK-Jon",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 687,
+            "delta": -0.00576063595037546
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Jos::EQC-002",
+      "source_id": "BOOK-Jos",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 4,
+            "transitions": 2148,
+            "delta": -0.0213341097016517
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Lev::EQC-002",
+      "source_id": "BOOK-Lev",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 2,
+            "transitions": 2877,
+            "delta": -0.0182941427719694
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Mal::EQC-002",
+      "source_id": "BOOK-Mal",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 875,
+            "delta": -0.0134897935601024
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Num::EQC-002",
+      "source_id": "BOOK-Num",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 1,
+        "support_blocks": [
+          {
+            "block_index": 0,
+            "transitions": 2658,
+            "delta": -0.0114062291908854
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    },
+    {
+      "edge_id": "BOOK-Zec::EQC-002",
+      "source_id": "BOOK-Zec",
+      "law_id": "EQC-002",
+      "state": "PRESENT",
+      "model_dependence_group": "V38_SHARED_TRAINING_MODEL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_detail": {
+        "evaluated_blocks": 2,
+        "support_blocks": [
+          {
+            "block_index": 2,
+            "transitions": 997,
+            "delta": -0.0177285058228396
+          },
+          {
+            "block_index": 0,
+            "transitions": 1001,
+            "delta": -0.0193843125869226
+          }
+        ]
+      },
+      "evidence_ceiling": "Post-hoc source-local replay of a frozen V38 endpoint; positive transfer establishes local support, while shared training prevents calling book nodes independent model fits."
+    }
+  ],
+  "open_cells": [
+    {
+      "cell_id": "BOOK-1Sa::EQC-001",
+      "source_id": "BOOK-1Sa",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-2Ch::EQC-001",
+      "source_id": "BOOK-2Ch",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-2Ki::EQC-001",
+      "source_id": "BOOK-2Ki",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Amo::EQC-001",
+      "source_id": "BOOK-Amo",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Dan::EQC-001",
+      "source_id": "BOOK-Dan",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Ecc::EQC-001",
+      "source_id": "BOOK-Ecc",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Ecc::EQC-002",
+      "source_id": "BOOK-Ecc",
+      "law_id": "EQC-002",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_ceiling": "Failure of the shared globally trained V38 model is not a clean absence test for a source-specific state law."
+    },
+    {
+      "cell_id": "BOOK-Eze::EQC-001",
+      "source_id": "BOOK-Eze",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Ezr::EQC-001",
+      "source_id": "BOOK-Ezr",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Gen::EQC-001",
+      "source_id": "BOOK-Gen",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Isa::EQC-001",
+      "source_id": "BOOK-Isa",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Jer::EQC-001",
+      "source_id": "BOOK-Jer",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Job::EQC-001",
+      "source_id": "BOOK-Job",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V36 frozen book-level result"
+      ],
+      "evidence_ceiling": "V36 explicitly reports this book as too sparse for independent interpretation."
+    },
+    {
+      "cell_id": "BOOK-Job::EQC-002",
+      "source_id": "BOOK-Job",
+      "law_id": "EQC-002",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_ceiling": "Failure of the shared globally trained V38 model is not a clean absence test for a source-specific state law."
+    },
+    {
+      "cell_id": "BOOK-Jon::EQC-001",
+      "source_id": "BOOK-Jon",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Jos::EQC-001",
+      "source_id": "BOOK-Jos",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Lev::EQC-001",
+      "source_id": "BOOK-Lev",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Mal::EQC-001",
+      "source_id": "BOOK-Mal",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Nah::EQC-001",
+      "source_id": "BOOK-Nah",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Nah::EQC-002",
+      "source_id": "BOOK-Nah",
+      "law_id": "EQC-002",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_ceiling": "Failure of the shared globally trained V38 model is not a clean absence test for a source-specific state law."
+    },
+    {
+      "cell_id": "BOOK-Num::EQC-001",
+      "source_id": "BOOK-Num",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Pro::EQC-001",
+      "source_id": "BOOK-Pro",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    },
+    {
+      "cell_id": "BOOK-Pro::EQC-002",
+      "source_id": "BOOK-Pro",
+      "law_id": "EQC-002",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_ceiling": "Failure of the shared globally trained V38 model is not a clean absence test for a source-specific state law."
+    },
+    {
+      "cell_id": "BOOK-Psa::EQC-001",
+      "source_id": "BOOK-Psa",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V36 frozen book-level result"
+      ],
+      "evidence_ceiling": "V36 explicitly reports this book as too sparse for independent interpretation."
+    },
+    {
+      "cell_id": "BOOK-Psa::EQC-002",
+      "source_id": "BOOK-Psa",
+      "law_id": "EQC-002",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "INADEQUATE",
+      "coverage_status": "PARTIAL",
+      "evidence_refs": [
+        "V38 source-local block replay"
+      ],
+      "evidence_ceiling": "Failure of the shared globally trained V38 model is not a clean absence test for a source-specific state law."
+    },
+    {
+      "cell_id": "BOOK-Zec::EQC-001",
+      "source_id": "BOOK-Zec",
+      "law_id": "EQC-001",
+      "state": "MEASUREMENT_UNRESOLVED",
+      "observability_status": "UNMEASURED",
+      "coverage_status": "NOT_SAMPLED",
+      "evidence_refs": [],
+      "evidence_ceiling": "No source-local EQC-001 measurement is frozen for this book."
+    }
+  ],
+  "diagnostics": {
+    "source_count": 23,
+    "law_count": 2,
+    "positive_edge_count": 20,
+    "open_cell_count": 26,
+    "source_degree": {
+      "BOOK-1Sa": 1,
+      "BOOK-2Ch": 1,
+      "BOOK-2Ki": 1,
+      "BOOK-Amo": 1,
+      "BOOK-Dan": 1,
+      "BOOK-Deu": 2,
+      "BOOK-Ecc": 0,
+      "BOOK-Eze": 1,
+      "BOOK-Ezr": 1,
+      "BOOK-Gen": 1,
+      "BOOK-Isa": 1,
+      "BOOK-Jdg": 2,
+      "BOOK-Jer": 1,
+      "BOOK-Job": 0,
+      "BOOK-Jon": 1,
+      "BOOK-Jos": 1,
+      "BOOK-Lev": 1,
+      "BOOK-Mal": 1,
+      "BOOK-Nah": 0,
+      "BOOK-Num": 1,
+      "BOOK-Pro": 0,
+      "BOOK-Psa": 0,
+      "BOOK-Zec": 1
+    },
+    "law_degree": {
+      "EQC-001": 2,
+      "EQC-002": 18
+    },
+    "co_presence": {
+      "laws": [
+        "EQC-001",
+        "EQC-002"
+      ],
+      "sources": [
+        "BOOK-Deu",
+        "BOOK-Jdg"
+      ],
+      "count": 2
+    },
+    "descriptive_set_inclusion": {
+      "narrower": "EQC-001",
+      "broader": "EQC-002",
+      "observed_positive_subset": true,
+      "narrower_sources": [
+        "BOOK-Deu",
+        "BOOK-Jdg"
+      ],
+      "broader_sources": [
+        "BOOK-1Sa",
+        "BOOK-2Ch",
+        "BOOK-2Ki",
+        "BOOK-Amo",
+        "BOOK-Dan",
+        "BOOK-Deu",
+        "BOOK-Eze",
+        "BOOK-Ezr",
+        "BOOK-Gen",
+        "BOOK-Isa",
+        "BOOK-Jdg",
+        "BOOK-Jer",
+        "BOOK-Jon",
+        "BOOK-Jos",
+        "BOOK-Lev",
+        "BOOK-Mal",
+        "BOOK-Num",
+        "BOOK-Zec"
+      ],
+      "inference": "DESCRIPTIVE_SET_INCLUSION_ONLY"
+    },
+    "connected_components": [
+      {
+        "component_id": "COMP-1",
+        "size": 20,
+        "nodes": [
+          "BOOK-1Sa",
+          "BOOK-2Ch",
+          "BOOK-2Ki",
+          "BOOK-Amo",
+          "BOOK-Dan",
+          "BOOK-Deu",
+          "BOOK-Eze",
+          "BOOK-Ezr",
+          "BOOK-Gen",
+          "BOOK-Isa",
+          "BOOK-Jdg",
+          "BOOK-Jer",
+          "BOOK-Jon",
+          "BOOK-Jos",
+          "BOOK-Lev",
+          "BOOK-Mal",
+          "BOOK-Num",
+          "BOOK-Zec",
+          "EQC-001",
+          "EQC-002"
+        ]
+      },
+      {
+        "component_id": "COMP-2",
+        "size": 1,
+        "nodes": [
+          "BOOK-Ecc"
+        ]
+      },
+      {
+        "component_id": "COMP-3",
+        "size": 1,
+        "nodes": [
+          "BOOK-Job"
+        ]
+      },
+      {
+        "component_id": "COMP-4",
+        "size": 1,
+        "nodes": [
+          "BOOK-Nah"
+        ]
+      },
+      {
+        "component_id": "COMP-5",
+        "size": 1,
+        "nodes": [
+          "BOOK-Pro"
+        ]
+      },
+      {
+        "component_id": "COMP-6",
+        "size": 1,
+        "nodes": [
+          "BOOK-Psa"
+        ]
+      }
+    ],
+    "isolated_sources": [
+      "BOOK-Ecc",
+      "BOOK-Job",
+      "BOOK-Nah",
+      "BOOK-Pro",
+      "BOOK-Psa"
+    ],
+    "model_dependence_edge_counts": {
+      "V38_SHARED_TRAINING_MODEL": 18,
+      "V36_SHARED_TRAINING_MODEL": 2
+    }
+  },
+  "inference_guards": [
+    "Graph degree is descriptive coverage, not an independent-replication count.",
+    "EQC-001 positive sources being a subset of EQC-002 positive sources does not imply EQC-001=>EQC-002.",
+    "Co-presence does not imply composition.",
+    "MEASUREMENT_UNRESOLVED cells are open, not negative.",
+    "Canon is excluded from this primary graph.",
+    "Book nodes are observational source boundaries, not asserted ontology boundaries."
+  ]
+}
