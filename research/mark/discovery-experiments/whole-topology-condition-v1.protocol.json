@@ -1,0 +1,89 @@
+{
+  "schema": "whole_topology_condition_test_v1",
+  "status": "FROZEN_BEFORE_UNTOUCHED_SOURCE_OUTCOMES",
+  "date": "2026-09-19",
+  "parent_branch": "independent-source-law-discovery-v1",
+  "parent_head": "c0b180bd941750f3f0685be11cd406ebc75bf3d1",
+  "sealed_universe": {
+    "source_count": 714,
+    "untouched_source_count": 705,
+    "sealed_input_sha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+    "excluded_discovery_sources": [
+      "S0986BCCA11293262",
+      "S2BA35F8F3F41FF82",
+      "S6E5A315EA8D70272",
+      "S278D089F1F3E6EF3",
+      "S7FAC1CBA3237D428",
+      "SA6A647EB8FD65081",
+      "SD77E0E398D02620C",
+      "S78DF51368961153D",
+      "S325CAFC6592E173B"
+    ],
+    "provenance_sealed_until_result_freeze": true
+  },
+  "hypothesis": {
+    "candidate_condition": "whole-source relational density conditions the local arm-destination matching law",
+    "predictor": "pair_density = observedPairWeight / detected centers",
+    "primary_outcome": "junction_match_lift",
+    "primary_context": "CENTER:JUNCTION|ARM:PATH_TO_JUNCTION",
+    "primary_match_outcome": "PATH_TO_JUNCTION",
+    "secondary_outcome": "endpoint_match_lift",
+    "secondary_context": "CENTER:JUNCTION|ARM:PATH_TO_ENDPOINT",
+    "secondary_match_outcome": "PATH_TO_ENDPOINT",
+    "prediction": "low pair-density sources will show weaker or reversed matching; matching lift should increase with pair density"
+  },
+  "compiler": {
+    "instrument": "mark-sparse-compiler-v7",
+    "source_mode": "one source per compile",
+    "tile": 512,
+    "overlap": 32,
+    "null_iterations": 64,
+    "min_sources": 1,
+    "null_contract": "within each observation, arm tokens are permuted only among centers with identical center kind and degree; source, observation, center inventory, degree sequence and arm-token inventory remain fixed"
+  },
+  "source_metric": {
+    "eligibility_per_context": "observed context count >= 30",
+    "observed_accuracy": "matching outcome count / context count",
+    "null_accuracy": "matching outcome count / context count within each of 64 null worlds",
+    "matching_lift": "observed_accuracy - mean(null_accuracy)",
+    "pair_density": "observedPairWeight / centers"
+  },
+  "primary_test": {
+    "eligible_sources": "untouched sources meeting junction context count >= 30 and centers > 0",
+    "low_density_group": "lowest ceil(N/10) eligible sources by pair_density, tie-broken by sourceGroupId",
+    "statistic": "median(junction_match_lift in low-density group) - median(junction_match_lift in remaining sources)",
+    "predicted_direction": "negative",
+    "permutation": {
+      "iterations": 20000,
+      "shuffle": "junction_match_lift shuffled within original blind lane; pair_density and lane fixed",
+      "seed": "sha256('whole-topology-condition-v1|junction-tail|2026-09-19')",
+      "p_value": "one-sided (1 + permutations with statistic <= observed)/(iterations+1)"
+    },
+    "monotonic_companion": {
+      "statistic": "Spearman rho(pair_density, junction_match_lift)",
+      "predicted_direction": "positive",
+      "permutation_iterations": 20000,
+      "shuffle": "junction_match_lift within original blind lane",
+      "p_value": "one-sided (1 + permutations with rho >= observed)/(iterations+1)"
+    },
+    "decision": {
+      "supports_density_condition": "tail statistic < 0 with p <= 0.01 AND Spearman rho > 0 with p <= 0.05",
+      "low_density_effect_nonmonotonic": "tail statistic < 0 with p <= 0.01 but monotonic companion does not pass",
+      "no_support": "neither preregistered primary contrast passes in predicted direction"
+    }
+  },
+  "secondary_tests": {
+    "endpoint_matching": "repeat tail and Spearman analysis for endpoint_match_lift; does not determine primary verdict",
+    "reversal_prevalence": "report fraction lift < 0 in low-density versus remaining sources for each context with lane-stratified permutation p",
+    "lane_stability": "report primary statistics separately in original blind train/holdout/control lanes"
+  },
+  "guards": {
+    "no_provenance_before_result_freeze": true,
+    "no_object_type_or_institution_features": true,
+    "no_threshold_changes_after_metrics_open": true,
+    "no_alternative_topology_predictors_before_primary_result_freeze": true,
+    "excluded_nine_not_used_in_confirmatory_statistics": true,
+    "canon_not_used_in_scoring": true
+  },
+  "postfreeze_opening": "Only after blinded 705-source metrics and primary verdict are frozen may provenance be rejoined to diagnose low-density/reversal sources."
+}
