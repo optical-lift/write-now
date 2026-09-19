@@ -1,0 +1,44 @@
+{
+  "schema": "source_local_law_expansion_manifest_v1",
+  "status": "COMPLETE_CROSS_FAMILY_BRIDGE_NOT_YET_LOCALIZED",
+  "date": "2026-09-18",
+  "parent_freeze": "67ff6a734b208b46a9ec175ba8dcf60ebc273700",
+  "new_laws": [
+    {
+      "id": "MLAW-COMP-001",
+      "positive_sources": 151,
+      "dependence": "V9_V45_SHARED_TRAINING_MODEL"
+    },
+    {
+      "id": "MLAW-IDEM-001",
+      "positive_sources": 2,
+      "dependence": "V9_V45_SHARED_TRAINING_MODEL"
+    },
+    {
+      "id": "MLAW-CANCEL-001",
+      "positive_sources": 2,
+      "dependence": "V9_V45_SHARED_TRAINING_MODEL"
+    }
+  ],
+  "lineage_deduplication": {
+    "MCR-020/MCR-056": "same exact frozen primary evaluator result",
+    "MCR-021/MCR-057:repetition": "atomic idempotence subfamily represented once",
+    "MCR-022/MCR-057:cancellation": "atomic cancellation subfamily represented once"
+  },
+  "projected_graph_if_applied": {
+    "source_nodes": 174,
+    "law_nodes": 5,
+    "positive_edges": 175,
+    "components": "two evidence-family positive components plus unresolved/isolated book nodes"
+  },
+  "priority_bridge_candidates": [
+    "MCR-072",
+    "MCR-089",
+    "MCR-069",
+    "MCR-078",
+    "MCR-015",
+    "MCR-016"
+  ],
+  "reconstruction_ready": false,
+  "next_checkpoint": "cross_family_bridge_localization_v1"
+}
