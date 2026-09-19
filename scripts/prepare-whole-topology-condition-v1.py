@@ -40,11 +40,14 @@ for original_source in picked:
         raise SystemExit(f"source has no frozen observations: {sid}")
 
     dest=out/sid
-    (dest/"captures").mkdir(parents=True,exist_ok=True)
-    src_capture=pathlib.Path(args.captures_dir)/f"{sid}.jpg"
+    sealed_root=pathlib.Path(args.captures_dir).parent
+    capture_rel=pathlib.Path(source["capturePath"])
+    src_capture=sealed_root/capture_rel
     if not src_capture.exists():
         raise SystemExit(f"missing sealed capture: {src_capture}")
-    shutil.copyfile(src_capture,dest/"captures"/f"{sid}.jpg")
+    dst_capture=dest/capture_rel
+    dst_capture.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copyfile(src_capture,dst_capture)
 
     source["lane"]="train"
     local_obs=[]
