@@ -1,0 +1,115 @@
+{
+  "schema": "cross_family_bridge_localization_v1_v23_source_local_result",
+  "protocol_commit": "8ba24e4c625efc2192d275c61290b2a1784f67df",
+  "aggregate_reconstruction": {
+    "verdict": "EXACT_NONPERMUTATION_METRIC_REPRODUCTION",
+    "hebrew_anonymous_units_mapped": 23213,
+    "hebrew_mapping_success_fraction": 1,
+    "note": "All train/holdout/control V21 anonymous verse-unit IDs resolve uniquely to canonical OSIS book codes by the frozen sha256(osisID) rule."
+  },
+  "hebrew_mcr089": {
+    "source_unit": "canonical book",
+    "support_rule": "Both holdout and control; all lemma/coarse/full representations >=100 covered events and isolated invariant-operator main gain log2(Pinv/Pstate) > 0.",
+    "support_count": 20,
+    "support_books": [
+      "Gen",
+      "Exod",
+      "Lev",
+      "Num",
+      "Deut",
+      "Josh",
+      "Judg",
+      "2Sam",
+      "1Kgs",
+      "2Kgs",
+      "1Chr",
+      "2Chr",
+      "Ezra",
+      "Neh",
+      "Esth",
+      "Prov",
+      "Isa",
+      "Jer",
+      "Ezek",
+      "Zech"
+    ],
+    "unresolved_books": [
+      "Ruth",
+      "1Sam",
+      "Job",
+      "Ps",
+      "Eccl",
+      "Song",
+      "Lam",
+      "Dan",
+      "Hos",
+      "Joel",
+      "Amos",
+      "Obad",
+      "Jonah",
+      "Mic",
+      "Nah",
+      "Hab",
+      "Zeph",
+      "Hag",
+      "Mal"
+    ],
+    "model_dependence_group": "V23_HEBREW_SHARED_TRAINING_MODEL",
+    "evidence_ceiling": "SOURCE_LOCAL_SUPPORT is transfer of the frozen operator-main-effect model into both sealed verse lanes of the same book; it is not an independently trained book model. Unresolved books are not negative law examples."
+  },
+  "glyph_mcr072": {
+    "source_unit": "anonymous Linear A inscription",
+    "source_provenance": "mwenge/lineara.xyz@43fe7cf1abc8e6bb1ea3228c3a1bd5938709620a; provenance fields remain blind",
+    "support_rule": ">=20 covered events, >=2 frozen operators, >=2 shared states, mean interaction gain >0, mean total gain >0.",
+    "total_evaluation_inscriptions": 495,
+    "support_count": 23,
+    "support_holdout": 17,
+    "support_control": 6,
+    "support_inscriptions": [
+      "I20c89f87e56776d443e4",
+      "I848394a90bcf0a9f121d",
+      "I84153adacfcf74689351",
+      "I2d99572bd0373df53667",
+      "Ia5932a4f7e696666f214",
+      "Ia83ea853d4e8ffb29a19",
+      "I94b34dabd43b852b198b",
+      "Ifbd5e104d871483fdf91",
+      "I60d7cf85936ca01f90c1",
+      "Ia61b2bc120d6c59b73c7",
+      "I1bd7ebe9589b62664d90",
+      "I6ecbf4c710a46b81befe",
+      "I16a97dafc7a864e6a9d1",
+      "I39aaaddafdbc3f1a1dea",
+      "I2762bd3b897107e20cc8",
+      "I5eb5cfb1f78b5f08ab39",
+      "I47547c692a92cc79f920",
+      "I151a3a10be8a5e5b7b9f",
+      "Ib72f3139c6cd4b0f6054",
+      "Ic439fc944f177e673113",
+      "Ic1744cadca1b903fbdd4",
+      "I601a242642e4768d3904",
+      "Ib6642275b5bb75c9cce0"
+    ],
+    "unresolved_count": 472,
+    "model_dependence_group": "V23_GLYPH_SHARED_TRAINING_MODEL",
+    "evidence_ceiling": "Per-inscription support is directional transfer of the frozen interaction model without a source-specific permutation p-value; unresolved inscriptions are not negative law examples."
+  },
+  "bridge_adjudication": {
+    "mark_pair": [
+      "MCR-072",
+      "MCR-089"
+    ],
+    "relation_under_frozen_law_equivalence_language": "DISTINCT_LAW_SHARED_PATTERN",
+    "reason": [
+      "MCR-089 requires current operator identity beyond incoming state.",
+      "MCR-072 additionally requires operator-by-context modulation beyond the invariant operator model.",
+      "The additional context condition is law-relevant under the strict condition rule.",
+      "V23 cross-system transition-profile alignment was zero/failed in the original frozen experiment."
+    ],
+    "creates_shared_law_node": false
+  },
+  "relation_to_v45_physical_component": {
+    "verdict": "NO_CERTIFIED_RAW_SOURCE_IDENTITY_LINK",
+    "note": "V23 glyph sources are anonymous Linear A inscriptions. V45 composition sources are physical sourceGroupId nodes from a different frozen lineage. No frozen identity map between these node sets is admitted."
+  }
+}
