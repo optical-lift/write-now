@@ -1,0 +1,100 @@
+{
+  "schema": "component_placement_junction_law_v1_final_freeze",
+  "status": "FINAL_BLIND_COMPONENT_PLACEMENT_TEST_COMPLETE",
+  "date": "2026-09-19",
+  "parentDegreeFreezeCommit": "757a8c06520ecb1d10d03425ccbcdc3123464fb9",
+  "preOutcomeDirectionalAssessmentCommit": "093c9123a471ba0ca3f1082e7b3c32e492c44648",
+  "nextCoordinateAuditCommit": "8c219c464ff9115f4e4562c645035b8910e451b2",
+  "train": {
+    "runId": 35448259935,
+    "artifactId": 10585712173,
+    "artifactZipSha256": "3904fff444b22f72bb3033151f7c61aa1976888754bb707d60865ac4e695f6ff",
+    "catalogueFileSha256": "282137a1ff9789c86f0fb41155c29a1070cceb8877c2dd988ea986462dbfada1",
+    "catalogueSha256": "6e1d0b4a9d093e38423108a3711cc3bd32ee2a68668b078fd332401f24bf7543",
+    "sourceCount": 237,
+    "admittedCandidates": 306,
+    "matchOnly": 306,
+    "reverseOnly": 0,
+    "mixedTestedCells": 67
+  },
+  "holdout": {
+    "runId": 35452433350,
+    "artifactId": 10588070110,
+    "artifactZipSha256": "8a221f528fbd3dbb8d042c8a9dcd369d0eb4ed7b2159c6d01f47371965050b8e",
+    "validationFileSha256": "8562d9888f36fa2d173697954ab74e6125758774d59a67701fa60b651ccc00fc",
+    "validationSha256": "6af299b11528260350382bc99dcb2730a140cae908ff25fda93291cc75c65250",
+    "sourceCount": 236,
+    "passed": 195,
+    "failed": 24,
+    "insufficient": 87,
+    "evaluable": 219,
+    "passRateAmongEvaluable": 0.8904109589041096,
+    "mixedTestedCells": 148
+  },
+  "control": {
+    "runId": 35455669692,
+    "headSha": "c648c60158dc04026616a7f77f1de700a85f100c",
+    "artifactId": 10587699504,
+    "artifactZipSha256": "13399baea45b1b8d68eca934d2916dce9d9195141d12c23e9a9321d9ffe5b909",
+    "confirmationFileSha256": "a8708f0997db7e57990fb2a467d999ff70e0212b82b4af3ff7aa14ed41011773",
+    "sourceMetricsSha256": "429ef4436116a67914eb1d634522641c7560e83a59040cf0e3ab99679b02bfd8",
+    "inputManifestSha256": "5e4464b264bbe945e9bf6daafe017f55fb9bf7355dd2e36ad765a258d7dd1cac",
+    "confirmationSha256": "edcc389eea7cb8701672a3ad1e8fe4fd2a3184d139145d8ce0c1ac7367a299d2",
+    "sourceCount": 232,
+    "holdoutPassedCandidates": 195,
+    "passed": 127,
+    "failed": 32,
+    "insufficient": 36,
+    "evaluable": 159,
+    "passRateAmongEvaluable": 0.7987421383647799,
+    "survivedAllThreeLanes": 127,
+    "diagnosticCellsWithAtLeast10EligibleSources": 566,
+    "diagnosticClassCounts": {
+      "matchOnly": 486,
+      "mixed": 40,
+      "unresolved": 38,
+      "reverseOnly": 2
+    },
+    "failedCandidateDiagnosis": {
+      "failedWithNoOppositeStrictSources": 25,
+      "failedWithAnyOppositeStrictSource": 7,
+      "totalOppositeStrictSourcesAcrossFailures": 7,
+      "failedWithFewerThanFiveReproducedSources": 26,
+      "failedBelowNinetyPercentAmongDecided": 7
+    },
+    "reverseOnlyDiagnosticCells": [
+      {
+        "degree": 15,
+        "placementToken": "Pdcde12a622b2eeb5",
+        "contextArm": "PATH_TO_JUNCTION",
+        "eligibleSources": 10,
+        "strictMatchSources": 0,
+        "strictReverseSources": 1,
+        "unresolvedSources": 9
+      },
+      {
+        "degree": 24,
+        "placementToken": "P74d74710b0b73463",
+        "contextArm": "PATH_TO_JUNCTION",
+        "eligibleSources": 29,
+        "strictMatchSources": 0,
+        "strictReverseSources": 1,
+        "unresolvedSources": 28
+      }
+    ]
+  },
+  "preregisteredVerdict": "PARTIAL",
+  "hypothesisStatus": "COMPONENT_PLACEMENT_IS_A_REAL_TRANSFERABLE_RELATIONAL_STATE_COORDINATE_BUT_IS_NOT_SUFFICIENT",
+  "reasons": [
+    "127 frozen degree + exact masked-placement + arm laws survive independent train, holdout, and control without refit.",
+    "The preregistered sufficiency condition is not met because mixed cells remain in train, holdout, and control.",
+    "No stable REVERSE_ONLY law was admitted on train; opposite-direction evidence in failed validation candidates is sparse.",
+    "The result is consistent with static placement resolving some projected state collisions while additional relational coordinates remain omitted."
+  ],
+  "nextEvidenceBackedCoordinate": {
+    "direction": "DIRECTED_CONTAINMENT_STATE_AND_SHORT_RELATIONAL_HISTORY",
+    "basis": "Frozen State Transition Grammar v1 independently shows parent->child containment-state persistence, suppression, and multi-step programs across train/holdout/control.",
+    "auditCommit": "8c219c464ff9115f4e4562c645035b8910e451b2"
+  },
+  "provenanceOpened": false
+}
