@@ -1,0 +1,49 @@
+{
+  "schema": "component_placement_junction_holdout_freeze_v1",
+  "status": "FROZEN_BEFORE_CONTROL_PLACEMENT_LAW_JOIN",
+  "date": "2026-09-19",
+  "trainCatalogueSha256": "6e1d0b4a9d093e38423108a3711cc3bd32ee2a68668b078fd332401f24bf7543",
+  "placementMapSha256": "0e4663fa5595df96f09800472458c86258b348fba64325bea1f102200fa0b1ba",
+  "holdoutRunId": 35452433350,
+  "holdoutHeadSha": "b22477ea263a50692d5220a9e1c8a735ca3b775f",
+  "holdoutArtifactId": 10588070110,
+  "holdoutArtifactZipSha256": "8a221f528fbd3dbb8d042c8a9dcd369d0eb4ed7b2159c6d01f47371965050b8e",
+  "holdoutValidationFileSha256": "8562d9888f36fa2d173697954ab74e6125758774d59a67701fa60b651ccc00fc",
+  "holdoutSourceMetricsSha256": "b897272d2bf5c1ab8b226bb284c3e1d1890c58423847941f821e056eb7bb4b5f",
+  "holdoutInputManifestSha256": "50140f90d00d2e48864cce707e5f5c393dd2d46c563a8a7ca86d882d8a4374d6",
+  "holdoutValidationSha256": "6af299b11528260350382bc99dcb2730a140cae908ff25fda93291cc75c65250",
+  "holdoutSourceCount": 236,
+  "candidateSummary": {
+    "trainCandidates": 306,
+    "passed": 195,
+    "failed": 24,
+    "insufficient": 87,
+    "evaluableCandidates": 219,
+    "passRateAmongEvaluable": 0.8904109589041096
+  },
+  "failedCandidateDiagnosis": {
+    "failedWithNoOppositeStrictSources": 18,
+    "failedWithAnyOppositeStrictSource": 6,
+    "totalOppositeStrictSourcesAcrossFailures": 6,
+    "failedWithFewerThanFiveReproducedSources": 21,
+    "failedBelowNinetyPercentAmongDecided": 6,
+    "interpretation": "Most candidate failures are loss of strong reproducibility at finite holdout support, not directional reversal."
+  },
+  "allHoldoutCellDiagnostics": {
+    "testedCellsWithAtLeast10EligibleSources": 1668,
+    "matchOnly": 1406,
+    "mixed": 148,
+    "unresolved": 108,
+    "reverseOnly": 6,
+    "reverseOnlyDetail": "Each of the six REVERSE_ONLY diagnostic cells contains exactly one STRICT_REVERSE source and zero STRICT_MATCH sources; none is a frozen train candidate."
+  },
+  "hypothesisStatus": "PLACEMENT_COORDINATE_REAL_BUT_INSUFFICIENT_REPLICATED_ON_HOLDOUT",
+  "interpretation": {
+    "placementTransfers": true,
+    "placementSufficient": false,
+    "reason": "195 of 219 evaluable frozen train laws reproduce under the preregistered holdout gate, while 148 independently testable holdout placement cells remain MIXED. Placement therefore captures real relational state structure but does not complete the state representation."
+  },
+  "nextStep": "Confirm the 195 holdout-passing laws on untouched 232-source control with no refit; retain all mixed/opposite control states.",
+  "controlJoined": false,
+  "provenanceOpened": false
+}

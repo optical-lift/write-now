@@ -16,6 +16,23 @@ fn main() -> Result<()> {
         parse_arg(&args, "--null-iterations", Some("16"))?.parse()?;
     let min_sources: usize = parse_arg(&args, "--min-sources", Some("3"))?.parse()?;
     let condition_degree = args.iter().any(|a| a == "--condition-degree");
+    let placement_map_path = if args.iter().any(|a| a == "--placement-map") {
+        Some(PathBuf::from(parse_arg(&args, "--placement-map", None)?))
+    } else {
+        None
+    };
+    let condition_placement = placement_map_path.is_some();
+    let placement_original_lane = if args.iter().any(|a| a == "--placement-original-lane") {
+        Some(parse_arg(&args, "--placement-original-lane", None)?)
+    } else {
+        None
+    };
+    if condition_placement && !condition_degree {
+        bail!("--placement-map requires --condition-degree for this experiment");
+    }
+    if placement_original_lane.is_some() && !condition_placement {
+        bail!("--placement-original-lane requires --placement-map");
+    }
     if tile_size < 64 || overlap * 2 >= tile_size {
         bail!("tile must be >=64 and overlap must be less than half the tile size");
     }
@@ -30,6 +47,49 @@ fn main() -> Result<()> {
         bail!("blind input is missing its sealed SHA-256");
     }
     let input_blind_sha256 = input.blind_input_sha256.clone();
+
+    let mut placement_by_observation: HashMap<String, (String, String, String)> = HashMap::new();
+    let mut placement_map_sha256: Option<String> = None;
+    if let Some(path) = placement_map_path.as_ref() {
+        let value: Value = serde_json::from_slice(&fs::read(path)?)?;
+        if value.get("schema").and_then(Value::as_str) != Some("component_placement_map_v1") {
+            bail!("unsupported placement map schema");
+        }
+        if value.get("provenanceOpened").and_then(Value::as_bool) != Some(false)
+            || value.get("occupantTokenUsed").and_then(Value::as_bool) != Some(false)
+            || value.get("familyIdUsed").and_then(Value::as_bool) != Some(false)
+            || value.get("targetTopologyExcluded").and_then(Value::as_bool) != Some(true)
+        {
+            bail!("placement map contamination guard failed");
+        }
+        placement_map_sha256 = Some(
+            value.get("placementMapSha256")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("placement map missing placementMapSha256"))?
+                .to_string()
+        );
+        let placements = value.get("placements")
+            .and_then(Value::as_object)
+            .ok_or_else(|| anyhow!("placement map missing placements object"))?;
+        for (observation_id, entry) in placements {
+            let source = entry.get("sourceGroupId")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("placement entry missing sourceGroupId for {observation_id}"))?
+                .to_string();
+            let lane = entry.get("lane")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("placement entry missing lane for {observation_id}"))?
+                .to_string();
+            let token = entry.get("placementToken")
+                .and_then(Value::as_str)
+                .ok_or_else(|| anyhow!("placement entry missing placementToken for {observation_id}"))?
+                .to_string();
+            if !token.starts_with('P') || token.len() != 17 || !token[1..].chars().all(|ch| ch.is_ascii_hexdigit()) {
+                bail!("invalid placement token for {observation_id}: {token}");
+            }
+            placement_by_observation.insert(observation_id.clone(), (source, lane, token));
+        }
+    }
 
     let source_by_id: HashMap<String, BlindSource> = input
         .sources
@@ -81,6 +141,29 @@ fn main() -> Result<()> {
                     observation.lane
                 );
             }
+            let placement_token = if condition_placement {
+                match placement_by_observation.get(&observation.id) {
+                    Some((placement_source, placement_lane, token)) => {
+                        let expected_placement_lane = placement_original_lane
+                            .as_deref()
+                            .unwrap_or(observation.lane.as_str());
+                        if placement_source != &observation.source_group_id || placement_lane != expected_placement_lane {
+                            bail!(
+                                "placement custody mismatch for {}: source={} expected_lane={} map_source={} map_lane={}",
+                                observation.id,
+                                observation.source_group_id,
+                                expected_placement_lane,
+                                placement_source,
+                                placement_lane
+                            );
+                        }
+                        token.as_str()
+                    }
+                    None => "UNPLACED",
+                }
+            } else {
+                ""
+            };
             compile_observation(
                 &image,
                 observation,
@@ -88,6 +171,7 @@ fn main() -> Result<()> {
                 overlap,
                 null_iterations,
                 condition_degree,
+                if condition_placement { Some(placement_token) } else { None },
                 &mut ledger,
                 &mut contribution_ledger,
                 &mut source_grammar,
@@ -152,7 +236,9 @@ fn main() -> Result<()> {
             "distinctSourceSupportCommittedAtSourceBoundary":true,
             "perObservationContributionHashes":true,
             "sourcePixelsRetainedInCustodyNotLedger":true,
-            "degreeConditionedGrammar":condition_degree
+            "degreeConditionedGrammar":condition_degree,
+            "placementConditionedGrammar":condition_placement,
+            "placementMapSha256":placement_map_sha256.clone()
         }
     });
     fs::write(
@@ -183,6 +269,8 @@ fn main() -> Result<()> {
         "overlap":overlap,
         "nullIterations":null_iterations,
         "degreeConditionedGrammar":condition_degree,
+        "placementConditionedGrammar":condition_placement,
+        "placementMapSha256":placement_map_sha256,
         "physicalLedgerMerkleRoot":merkle_root,
         "grammarContributionMerkleRoot":contribution_root,
         "grammarStorage":"sqlite_sufficient_statistics_v1",
