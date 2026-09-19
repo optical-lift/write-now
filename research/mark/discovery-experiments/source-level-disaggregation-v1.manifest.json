@@ -1,0 +1,48 @@
+{
+  "schema": "source_level_disaggregation_manifest_v1",
+  "status": "COMPLETE_READY_FOR_DESCRIPTIVE_OVERLAP_GRAPH",
+  "date": "2026-09-18",
+  "parent_freeze": "b5d0562212c5767f161c22aaae164b66af796f94",
+  "overlap_audit": {
+    "v38_v40_exact_block_overlap": 10,
+    "v38_blocks_inside_v36_books": 11,
+    "v40_blocks_inside_v36_books": 11,
+    "verdict": "EXPERIMENT_LEVEL_NODES_NOT_INDEPENDENT"
+  },
+  "v36_localization": {
+    "method": "retrospective extraction from frozen published per-book result",
+    "eqc001_present_books": [
+      "BOOK-Deu",
+      "BOOK-Jdg"
+    ],
+    "unresolved_books": [
+      "BOOK-Psa",
+      "BOOK-Job"
+    ]
+  },
+  "v38_replay": {
+    "protocol_commit": "0b49e2cd54ce7320c5dacbd8ab5ce12dd306d0d1",
+    "blocks": 41,
+    "support_blocks": 24,
+    "unresolved_blocks": 17,
+    "support_books": 18,
+    "verification": "REPLAY_MATCHES_PUBLISHED_AGGREGATE_WITHIN_ROUNDING"
+  },
+  "raw_book_catalogues": {
+    "count": 23,
+    "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
+    "model_dependence_groups": [
+      "V36_SHARED_TRAINING_MODEL",
+      "V38_SHARED_TRAINING_MODEL"
+    ],
+    "eqc001_present": 2,
+    "eqc002_present": 18,
+    "both_present": [
+      "BOOK-Deu",
+      "BOOK-Jdg"
+    ]
+  },
+  "overlap_graph_ready": true,
+  "readiness_class": "READY_FOR_DESCRIPTIVE_OVERLAP_GRAPH_WITH_SHARED_MODEL_DEPENDENCE",
+  "next_checkpoint": "cross_source_overlap_graph_v1"
+}
