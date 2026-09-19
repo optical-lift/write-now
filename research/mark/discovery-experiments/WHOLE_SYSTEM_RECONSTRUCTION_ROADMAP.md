@@ -352,3 +352,24 @@ Preserve the provenance distinction:
 - post-hoc targeted v2: **14 direct / 14 partial / 0 no-match**.
 
 Next governed checkpoint: **Law-Equivalence Adjudication Language** at the constraint level.
+
+### Step 6 — Law-Equivalence Adjudication Language v1
+
+**Complete on 2026-09-18.**
+
+A strict law-identity language was frozen before application. It requires isomorphism of the complete relevant relational condition, constrained possibility, consequence-order structure and preserved invariants; substrate nouns and nonessential physical path length do not define law identity, while an additional evidenced necessary condition does.
+
+Applied to all 28 Mark↔canon candidate pairs:
+
+- **6 SAME_LAW**;
+- **17 DISTINCT_LAW_SHARED_PATTERN**;
+- **3 UNDERDETERMINED**;
+- **2 ANALOGOUS_ONLY**.
+
+The strongest same-law cluster, `EQC-001`, contains five independent Mark constraints plus canon rule `CIR-018`: **component inventory cannot substitute for relational placement/order**.
+
+A second cluster, `EQC-002`, pairs `MCR-010` with `CIR-022`: **current state identity conditions the consequence/operation contract**.
+
+No universal-law label is assigned.
+
+Next governed checkpoint: **Absence-State Model**.
