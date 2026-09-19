@@ -455,3 +455,30 @@ Current source-level presence:
 Next governed checkpoint: **Cross-Source Overlap Graph v1**.
 
 The graph must use BOOK-* source nodes, carry model-dependence metadata, preserve unresolved cells as open rather than negative, exclude canon from the primary Mark graph, and infer neither composition nor universality from co-presence/edge count.
+
+### Step 8 — Cross-Source Overlap Graph v1
+
+**Complete on 2026-09-18. Graph valid; reconstruction readiness failed for insufficient law breadth.**
+
+The first primary Mark overlap graph uses **23 certified non-overlapping BOOK-* source nodes** and only the two strict shared law signatures already frozen before graph assembly.
+
+Graph:
+
+- source nodes: **23**
+- law nodes: **2**
+- positive edges: **20**
+- open `MEASUREMENT_UNRESOLVED` cells: **26**
+- EQC-001 degree: **2**
+- EQC-002 degree: **18**
+- current co-presence: Deuteronomy and Judges
+
+Dependence metadata remains explicit:
+
+- V36 shared training model: 2 positive edges
+- V38 shared training model: 18 positive edges
+
+The graph is scientifically valid but has too little law dimensionality to distinguish the final reconstruction rivals. A two-law graph would underconstrain independent-grammar vs grammar-family vs larger-partial-projection models.
+
+**New prerequisite before competing reconstruction models: Source-Local Law Expansion v1.**
+
+Localize additional already-supported Mark laws to raw sources where frozen evidence permits it. Preserve shared-model dependence and use the frozen Absence-State Model. Refuse localization when historical evidence is insufficient.
