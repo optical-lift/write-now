@@ -1,4 +1,4 @@
-fn grammar_counts_from_centers(centers: &[CenterEvidence]) -> Result<(LocalGrammar, u128)> {
+fn grammar_counts_from_centers(centers: &[CenterEvidence], condition_degree: bool) -> Result<(LocalGrammar, u128)> {
     let mut aggregated = LocalGrammar::new();
     let mut weight = 0u128;
 
@@ -23,7 +23,7 @@ fn grammar_counts_from_centers(centers: &[CenterEvidence]) -> Result<(LocalGramm
                     continue;
                 }
 
-                let context_a = format!("CENTER:{}|ARM:{}", center.kind, a);
+                let context_a = if condition_degree { format!("CENTER:{}|DEGREE:{}|ARM:{}", center.kind, center.arms.len(), a) } else { format!("CENTER:{}|ARM:{}", center.kind, a) };
                 let slot_a = aggregated.entry((context_a, b.clone())).or_default();
                 *slot_a = slot_a
                     .checked_add(pair_count as u128)
@@ -32,7 +32,7 @@ fn grammar_counts_from_centers(centers: &[CenterEvidence]) -> Result<(LocalGramm
                     .checked_add(pair_count as u128)
                     .ok_or_else(|| anyhow!("grammar weight overflow"))?;
 
-                let context_b = format!("CENTER:{}|ARM:{}", center.kind, b);
+                let context_b = if condition_degree { format!("CENTER:{}|DEGREE:{}|ARM:{}", center.kind, center.arms.len(), b) } else { format!("CENTER:{}|ARM:{}", center.kind, b) };
                 let slot_b = aggregated.entry((context_b, a.clone())).or_default();
                 *slot_b = slot_b
                     .checked_add(pair_count as u128)
@@ -167,6 +167,7 @@ fn compile_observation(
     tile_size: u32,
     overlap: u32,
     null_iterations: usize,
+    condition_degree: bool,
     ledger: &mut ChunkedLedger,
     contribution_ledger: &mut ChunkedLedger,
     source_grammar: &mut SourceGrammar,
@@ -232,7 +233,7 @@ fn compile_observation(
         }
     }
 
-    let (observed, observed_weight) = grammar_counts_from_centers(&centers)?;
+    let (observed, observed_weight) = grammar_counts_from_centers(&centers, condition_degree)?;
     accumulate_source_grammar(source_grammar, -1, &observation.lane, &observed)?;
     emit_grammar_contribution(
         contribution_ledger,
@@ -249,7 +250,7 @@ fn compile_observation(
 
     for iteration in 0..null_iterations {
         let null = null_centers(observation, &centers, iteration);
-        let (null_counts, null_weight) = grammar_counts_from_centers(&null)?;
+        let (null_counts, null_weight) = grammar_counts_from_centers(&null, condition_degree)?;
         accumulate_source_grammar(
             source_grammar,
             iteration as i32,
