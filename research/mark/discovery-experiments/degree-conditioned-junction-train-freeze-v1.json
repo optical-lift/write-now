@@ -1,0 +1,363 @@
+{
+  "schema": "degree_conditioned_junction_train_freeze_v1",
+  "status": "FROZEN_BEFORE_HOLDOUT_OR_CONTROL_DEGREE_OUTCOMES",
+  "date": "2026-09-19",
+  "parentExperiment": "degree_conditioned_junction_law_test_v1",
+  "parentFreeze": "33a960018e0648cfe6d847113541dc0d512e1b4a",
+  "pr": 64,
+  "trainRunId": 35444636022,
+  "trainHeadSha": "b1df2c416875b6a4e3955e8d2f783a9181f6a073",
+  "trainArtifactId": 10584548276,
+  "trainArtifactZipSha256": "b6d404a4e3d74daf731d0ac9a8560b4eef4daa4e310c9340934b49487724e9b7",
+  "trainCatalogueFileSha256": "03041fc523f6b6202a3d674afb2dfbe61fb5bd1d35ef2f1cc907af6afb9c5544",
+  "catalogueSha256": "eb1b7e8e825dd09b80bcc5a25135770b7e822c0244528f1f92e0ec065fd95223",
+  "trainSourceCount": 237,
+  "classificationCounts": {
+    "INSUFFICIENT_SOURCES": 564,
+    "UNRESOLVED": 96,
+    "MIXED": 52,
+    "MATCH_ONLY": 33
+  },
+  "testedCellsWithAtLeast10EligibleSources": 181,
+  "hypothesisStatus": "DEGREE_ALONE_FALSIFIED_ON_TRAIN",
+  "falsificationEvidence": {
+    "mixedCells": 52,
+    "mixedDegrees": 39,
+    "reason": "The preregistered falsification condition is met: the same degree/contextArm supports both STRICT_MATCH and STRICT_REVERSE across independent train sources."
+  },
+  "catalogue": [
+    {
+      "degree": 4,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 214,
+      "strictMatchSources": 166,
+      "strictReverseSources": 0,
+      "unresolvedSources": 48,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 4,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 233,
+      "strictMatchSources": 163,
+      "strictReverseSources": 0,
+      "unresolvedSources": 70,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 5,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 196,
+      "strictMatchSources": 153,
+      "strictReverseSources": 0,
+      "unresolvedSources": 43,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 7,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 169,
+      "strictMatchSources": 128,
+      "strictReverseSources": 0,
+      "unresolvedSources": 41,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 7,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 204,
+      "strictMatchSources": 117,
+      "strictReverseSources": 0,
+      "unresolvedSources": 87,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 8,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 167,
+      "strictMatchSources": 128,
+      "strictReverseSources": 0,
+      "unresolvedSources": 39,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 9,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 164,
+      "strictMatchSources": 112,
+      "strictReverseSources": 0,
+      "unresolvedSources": 52,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 10,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 157,
+      "strictMatchSources": 103,
+      "strictReverseSources": 0,
+      "unresolvedSources": 54,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 10,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 186,
+      "strictMatchSources": 90,
+      "strictReverseSources": 0,
+      "unresolvedSources": 96,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 11,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 157,
+      "strictMatchSources": 102,
+      "strictReverseSources": 0,
+      "unresolvedSources": 55,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 12,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 151,
+      "strictMatchSources": 85,
+      "strictReverseSources": 0,
+      "unresolvedSources": 66,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 13,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 148,
+      "strictMatchSources": 75,
+      "strictReverseSources": 0,
+      "unresolvedSources": 73,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 14,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 140,
+      "strictMatchSources": 73,
+      "strictReverseSources": 0,
+      "unresolvedSources": 67,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 16,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 140,
+      "strictMatchSources": 54,
+      "strictReverseSources": 0,
+      "unresolvedSources": 86,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 19,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 119,
+      "strictMatchSources": 40,
+      "strictReverseSources": 0,
+      "unresolvedSources": 79,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 19,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 145,
+      "strictMatchSources": 28,
+      "strictReverseSources": 0,
+      "unresolvedSources": 117,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 21,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 115,
+      "strictMatchSources": 33,
+      "strictReverseSources": 0,
+      "unresolvedSources": 82,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 21,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 135,
+      "strictMatchSources": 26,
+      "strictReverseSources": 0,
+      "unresolvedSources": 109,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 22,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 111,
+      "strictMatchSources": 25,
+      "strictReverseSources": 0,
+      "unresolvedSources": 86,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 23,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 111,
+      "strictMatchSources": 21,
+      "strictReverseSources": 0,
+      "unresolvedSources": 90,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 26,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 92,
+      "strictMatchSources": 18,
+      "strictReverseSources": 0,
+      "unresolvedSources": 74,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 27,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 96,
+      "strictMatchSources": 17,
+      "strictReverseSources": 0,
+      "unresolvedSources": 79,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 28,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 88,
+      "strictMatchSources": 13,
+      "strictReverseSources": 0,
+      "unresolvedSources": 75,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 30,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 85,
+      "strictMatchSources": 8,
+      "strictReverseSources": 0,
+      "unresolvedSources": 77,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 30,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 100,
+      "strictMatchSources": 6,
+      "strictReverseSources": 0,
+      "unresolvedSources": 94,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 32,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 79,
+      "strictMatchSources": 7,
+      "strictReverseSources": 0,
+      "unresolvedSources": 72,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 33,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 76,
+      "strictMatchSources": 6,
+      "strictReverseSources": 0,
+      "unresolvedSources": 70,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 36,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 71,
+      "strictMatchSources": 7,
+      "strictReverseSources": 0,
+      "unresolvedSources": 64,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 39,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 66,
+      "strictMatchSources": 6,
+      "strictReverseSources": 0,
+      "unresolvedSources": 60,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 39,
+      "contextArm": "PATH_TO_JUNCTION",
+      "eligibleSources": 72,
+      "strictMatchSources": 5,
+      "strictReverseSources": 0,
+      "unresolvedSources": 67,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 40,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 55,
+      "strictMatchSources": 7,
+      "strictReverseSources": 0,
+      "unresolvedSources": 48,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 42,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 56,
+      "strictMatchSources": 5,
+      "strictReverseSources": 0,
+      "unresolvedSources": 51,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    },
+    {
+      "degree": 46,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "eligibleSources": 40,
+      "strictMatchSources": 5,
+      "strictReverseSources": 0,
+      "unresolvedSources": 35,
+      "classification": "MATCH_ONLY",
+      "frozenDirection": "STRICT_MATCH"
+    }
+  ],
+  "holdoutOpened": false,
+  "controlOpened": false,
+  "provenanceOpened": false
+}

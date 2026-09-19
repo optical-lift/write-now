@@ -1,0 +1,172 @@
+name: Whole-Topology Condition Test v1
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/whole-topology-condition-v1.*"
+      - "scripts/prepare-whole-topology-condition-v1.py"
+      - "scripts/measure-whole-topology-condition-v1.py"
+      - "scripts/analyze-whole-topology-condition-v1.py"
+      - ".github/workflows/whole-topology-condition-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  lane-metrics:
+    name: Blind lane metrics (${{ matrix.lane }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [train, holdout, control]
+    env:
+      SEALED_RUN_ID: "33755743472"
+      SEALED_ARTIFACT: "mark-source-rule-atlas-v1-sealed-evidence"
+      SEALED_INPUT: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json"
+      CAPTURES_DIR: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/captures"
+      EXCLUDED: "research/mark/discovery-experiments/independent-source-law-discovery-v1.source-selection.json"
+      PROTOCOL: "research/mark/discovery-experiments/whole-topology-condition-v1.protocol.json"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen experiment files
+        run: |
+          python3 -m json.tool "$PROTOCOL" >/dev/null
+          python3 -m json.tool "$EXCLUDED" >/dev/null
+          python3 -m py_compile scripts/prepare-whole-topology-condition-v1.py
+          python3 -m py_compile scripts/measure-whole-topology-condition-v1.py
+          python3 -m py_compile scripts/analyze-whole-topology-condition-v1.py
+
+      - name: Download exact sealed evidence artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/sealed-evidence
+          gh run download "$SEALED_RUN_ID" \
+            --repo "${{ github.repository }}" \
+            --name "$SEALED_ARTIFACT" \
+            --dir artifact-staging/sealed-evidence
+
+      - name: Prepare untouched one-source packets
+        run: |
+          python3 scripts/prepare-whole-topology-condition-v1.py \
+            --sealed-input "$SEALED_INPUT" \
+            --captures-dir "$CAPTURES_DIR" \
+            --excluded-selection "$EXCLUDED" \
+            --lane "${{ matrix.lane }}" \
+            --out "artifacts/wtct-v1/inputs/${{ matrix.lane }}"
+
+      - name: Build frozen physical compiler
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Measure untouched sources independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          lane="${{ matrix.lane }}"
+          input_root="artifacts/wtct-v1/inputs/$lane"
+          out_root="artifacts/wtct-v1/metrics/$lane"
+          mkdir -p "$out_root"
+          python3 - "$input_root/manifest.json" > "$out_root/sources.tsv" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          for s in d["sources"]:
+              print(s["sourceGroupId"]+"\t"+s["localBlindInputSha256"])
+          PY
+
+          : > "$out_root/metrics-$lane.jsonl"
+          while IFS=$'\t' read -r sid local_sha; do
+            tmp="$RUNNER_TEMP/wtct-$lane-$sid"
+            rm -rf "$tmp"
+            mkdir -p "$tmp"
+            if ! (
+              ulimit -v 524288
+              /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+                --input "$input_root/$sid/input.json" \
+                --out "$tmp/compiler" \
+                --tile 512 \
+                --overlap 32 \
+                --null-iterations 64 \
+                --min-sources 1
+            ) > "$tmp/runtime.txt" 2>&1; then
+              cat "$tmp/runtime.txt"
+              exit 1
+            fi
+
+            python3 scripts/measure-whole-topology-condition-v1.py \
+              --compiler-out "$tmp/compiler" \
+              --source-id "$sid" \
+              --lane "$lane" \
+              --local-input-sha "$local_sha" \
+              --protocol "$PROTOCOL" \
+              >> "$out_root/metrics-$lane.jsonl"
+
+            rm -rf "$tmp"
+          done < "$out_root/sources.tsv"
+
+          cp "$input_root/manifest.json" "$out_root/manifest-$lane.json"
+          python3 - "$out_root/manifest-$lane.json" "$out_root/metrics-$lane.jsonl" <<'PY'
+          import json,sys
+          m=json.load(open(sys.argv[1]))
+          rows=[json.loads(x) for x in open(sys.argv[2]) if x.strip()]
+          ids=[x["sourceGroupId"] for x in rows]
+          assert len(rows)==m["sourceCount"], (len(rows),m["sourceCount"])
+          assert len(ids)==len(set(ids))
+          assert all(x["provenanceOpened"] is False for x in rows)
+          print(f"PASS lane={m['lane']} rows={len(rows)}")
+          PY
+
+      - name: Upload blinded lane metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: whole-topology-condition-v1-${{ matrix.lane }}
+          path: artifacts/wtct-v1/metrics/${{ matrix.lane }}/*
+          if-no-files-found: error
+          retention-days: 30
+
+  blind-analysis:
+    name: Blind 705-source analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: lane-metrics
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download blinded lane metrics only
+        uses: actions/download-artifact@v4
+        with:
+          pattern: whole-topology-condition-v1-*
+          path: artifact-staging/wtct-v1
+          merge-multiple: true
+
+      - name: Run frozen blinded analysis
+        run: |
+          mkdir -p artifacts/wtct-v1/blind-result
+          python3 scripts/analyze-whole-topology-condition-v1.py \
+            --metrics-glob "artifact-staging/wtct-v1/metrics-*.jsonl" \
+            --protocol research/mark/discovery-experiments/whole-topology-condition-v1.protocol.json \
+            --out artifacts/wtct-v1/blind-result/result.json
+          cp artifact-staging/wtct-v1/metrics-*.jsonl artifacts/wtct-v1/blind-result/
+          cp artifact-staging/wtct-v1/manifest-*.json artifacts/wtct-v1/blind-result/
+
+      - name: Publish blinded result summary
+        run: |
+          echo '### Whole-Topology Condition Test v1 — provenance sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/wtct-v1/blind-result/result.json >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen blinded result
+        uses: actions/upload-artifact@v4
+        with:
+          name: whole-topology-condition-v1-blind-result
+          path: artifacts/wtct-v1/blind-result/**
+          if-no-files-found: error
+          retention-days: 30

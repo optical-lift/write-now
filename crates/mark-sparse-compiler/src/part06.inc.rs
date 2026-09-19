@@ -15,6 +15,7 @@ fn main() -> Result<()> {
     let null_iterations: usize =
         parse_arg(&args, "--null-iterations", Some("16"))?.parse()?;
     let min_sources: usize = parse_arg(&args, "--min-sources", Some("3"))?.parse()?;
+    let condition_degree = args.iter().any(|a| a == "--condition-degree");
     if tile_size < 64 || overlap * 2 >= tile_size {
         bail!("tile must be >=64 and overlap must be less than half the tile size");
     }
@@ -86,6 +87,7 @@ fn main() -> Result<()> {
                 tile_size,
                 overlap,
                 null_iterations,
+                condition_degree,
                 &mut ledger,
                 &mut contribution_ledger,
                 &mut source_grammar,
@@ -149,7 +151,8 @@ fn main() -> Result<()> {
             "grammarSufficientStatisticsDiskBacked":true,
             "distinctSourceSupportCommittedAtSourceBoundary":true,
             "perObservationContributionHashes":true,
-            "sourcePixelsRetainedInCustodyNotLedger":true
+            "sourcePixelsRetainedInCustodyNotLedger":true,
+            "degreeConditionedGrammar":condition_degree
         }
     });
     fs::write(
@@ -179,6 +182,7 @@ fn main() -> Result<()> {
         "tileSize":tile_size,
         "overlap":overlap,
         "nullIterations":null_iterations,
+        "degreeConditionedGrammar":condition_degree,
         "physicalLedgerMerkleRoot":merkle_root,
         "grammarContributionMerkleRoot":contribution_root,
         "grammarStorage":"sqlite_sufficient_statistics_v1",

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Canon Constraint Adjudication Result v1",
+  "type": "object",
+  "required": [
+    "canon_packet_id",
+    "adjudication",
+    "canon_rule_ids",
+    "canon_constraint_statement",
+    "structural_basis",
+    "mismatch_or_limit",
+    "evidence_ceiling",
+    "sealed_map_opened",
+    "universal_law_label"
+  ],
+  "properties": {
+    "canon_packet_id": {
+      "type": "string",
+      "pattern": "^CCA-[0-9]{3}$"
+    },
+    "adjudication": {
+      "enum": [
+        "direct",
+        "partial",
+        "ambiguous",
+        "no_match"
+      ]
+    },
+    "canon_rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^CIR-[0-9]{3}$"
+      }
+    },
+    "canon_constraint_statement": {
+      "type": "string"
+    },
+    "structural_basis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mismatch_or_limit": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_ceiling": {
+      "type": "string"
+    },
+    "sealed_map_opened": {
+      "const": false
+    },
+    "universal_law_label": {
+      "type": "null"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "law_equivalence_calibration_results_v1",
+  "results": [
+    {
+      "id": "LEA-C001",
+      "case_id": "LEC-001",
+      "primary_relation": "SAME_LAW",
+      "note": "same dependency topology; different substrate nouns only"
+    },
+    {
+      "id": "LEA-C002",
+      "case_id": "LEC-002",
+      "primary_relation": "DISTINCT_LAW_SHARED_PATTERN",
+      "note": "same visible movement but different evidenced necessary conditions"
+    },
+    {
+      "id": "LEA-C003",
+      "case_id": "LEC-003",
+      "primary_relation": "SAME_LAW_OPPOSITE_VIEW",
+      "note": "role reversal preserves the same underlying relation"
+    },
+    {
+      "id": "LEA-C004",
+      "case_id": "LEC-004",
+      "primary_relation": "SAME_LAW_DIFFERENT_PATH",
+      "note": "intermediate steps are nonessential realization detail"
+    },
+    {
+      "id": "LEA-C005",
+      "case_id": "LEC-005",
+      "primary_relation": "COMPOSED_RELATION",
+      "note": "intermediate state is independently necessary"
+    },
+    {
+      "id": "LEA-C006",
+      "case_id": "LEC-006",
+      "primary_relation": "ANALOGOUS_ONLY",
+      "note": "surface relation language masks non-isomorphic predicates"
+    },
+    {
+      "id": "LEA-C007",
+      "case_id": "LEC-007",
+      "primary_relation": "UNDERDETERMINED",
+      "note": "unknown context prevents law-identity decision"
+    },
+    {
+      "id": "LEA-C008",
+      "case_id": "LEC-008",
+      "primary_relation": "CONTRADICTORY",
+      "note": "equivalent condition supports incompatible constraints"
+    }
+  ],
+  "passed": 8,
+  "total": 8
+}

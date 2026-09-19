@@ -1,0 +1,50 @@
+{
+  "schema": "source_level_disaggregation_v1_v36_retrospective",
+  "provenance": "retrospective_extraction_from_frozen_published_result",
+  "original_result_commit": "9ffcf53a91ba788dc107d90567d7c8b533153129",
+  "law_signature_id": "EQC-001",
+  "independence_class": "NONOVERLAPPING_BOOK_EVALUATION_SHARED_TRAINING",
+  "books": [
+    {
+      "book": "Deu",
+      "name": "Deuteronomy",
+      "n": 94,
+      "real_median_rank": 64,
+      "reversed_median_rank": 122.5,
+      "shuffled_median_rank": 108,
+      "real_top10": 0.0638,
+      "reversed_top10": 0.0319,
+      "shuffled_top10": 0.0213,
+      "local_status": "SOURCE_LOCAL_SUPPORT",
+      "derived_state": "PRESENT"
+    },
+    {
+      "book": "Jdg",
+      "name": "Judges",
+      "n": 43,
+      "real_median_rank": 40,
+      "reversed_median_rank": 230,
+      "shuffled_median_rank": 138,
+      "real_top10": 0.0698,
+      "reversed_top10": 0,
+      "shuffled_top10": 0,
+      "local_status": "SOURCE_LOCAL_SUPPORT",
+      "derived_state": "PRESENT"
+    },
+    {
+      "book": "Psa",
+      "name": "Psalms",
+      "n": 7,
+      "local_status": "UNRESOLVED_SPARSE",
+      "derived_state": "MEASUREMENT_UNRESOLVED"
+    },
+    {
+      "book": "Job",
+      "name": "Job",
+      "n": 1,
+      "local_status": "UNRESOLVED_SPARSE",
+      "derived_state": "MEASUREMENT_UNRESOLVED"
+    }
+  ],
+  "evidence_ceiling": "Book-level outcomes were already published in the frozen V36 result. This is retrospective localization, not a newly blinded book-level experiment. Books are non-overlapping evaluation sources but share the same training-derived scoring model."
+}

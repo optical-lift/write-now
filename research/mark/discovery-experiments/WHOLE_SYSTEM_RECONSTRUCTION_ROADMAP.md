@@ -285,3 +285,182 @@ Until those conditions are met, intermediate work is **instrument construction a
 That is the destination.
 
 The small experiments are the bridge to it.
+
+## Current bridge status
+
+### Step 1 — Relational-law description language
+
+**Pilot passed on 2026-09-18.**
+
+The instrument is being frozen on branch `mark-relational-law-observation-packet-v1` with a 27-finding stress test covering positive, negative, diagnostic, sequence, composition, field, representation, and population-sensitivity evidence.
+
+The packet deliberately assigns no universal laws and performs no new cross-source equivalence matching.
+
+Next governed checkpoint after the instrument freeze: **Prior-Mark Evidence and Constraint Harvest**.
+
+### Step 2 — Prior-Mark Evidence and Constraint Harvest
+
+**Complete and ready to freeze on 2026-09-18.**
+
+The harvest preserves the recovered scientific outcome history as **90 RLOP packets**, with **84 canonical active packets** after superseding the first six synthesis-based instrument-pilot records with direct frozen-result replacements.
+
+The harvest includes supported findings, negative constraints, diagnostics, unresolved/underidentified results, representation failures, boundary censoring, population sensitivity, and explicit no-outcome custody. It performs no new cross-source equivalence matching and assigns no universal-law labels.
+
+Next governed checkpoint: **Law-Equivalence Adjudication Language** — define substrate-neutral rules for deciding when independently discovered observations may count as the same law, specialization, inverse, composition, contextual variant, or unrelated before opening candidate matches.
+
+### Step 3 — Constraint Re-Reading
+
+**Complete and ready to freeze on 2026-09-18.**
+
+All **84 canonical active Mark evidence packets** were re-read as constraint statements without opening canon matches or creating cross-source equivalences.
+
+The re-reading produced **84 MCR projections**, of which **28** are eligible observed-system law candidates. The remaining projections are representation, cross-system, measurement, or calibration constraints and are retained as supporting/falsifying structure rather than promoted into ontological laws.
+
+The key methodological result is that Mark's strongest law-shaped evidence is usually not a literal absent event. It is a demonstrated constraint of the form: **remove/reorder/replace part of the relevant relation while holding important controls fixed, and the previous consequence structure cannot remain unchanged**; or, in supported invariance cases, a changed physical path is constrained to preserve or return the consequence.
+
+Next governed checkpoint: **Canon Constraint Adjudication** — present anonymized eligible Mark constraint signatures to the canon lane without Mark nouns or proposed biblical labels, recover the canon's own condition/consequence rule, freeze it, and only then compare.
+
+### Step 4 — Canon Constraint Adjudication v1
+
+**Complete on 2026-09-18.**
+
+Twenty-eight eligible Mark constraints were anonymized, the Mark↔CCA mapping was sealed, and a **24-rule canon-only inventory** was built from Noel's existing promoted conclusions, surviving hypotheses, condition-first rules, appointed-state registry, organic observations and neutral function observations.
+
+Blind adjudication was frozen before opening the map:
+
+- **14 direct** structural matches;
+- **9 partial** matches;
+- **5 no-matches**.
+
+After unsealing, the 14 direct matches collapsed onto only **7 canon rules**, concentrated around condition-governed consequence, actor/jurisdiction beyond state, order/arrangement beyond component inventory, ordered history/composition, history-sensitive continuation, generated state through prior sequence, and relative timing.
+
+No universal-law identity has been assigned.
+
+Next governed checkpoint: **Targeted Canon Constraint Search v2** for the five preserved no-matches only.
+
+### Step 5 — Targeted Canon Constraint Search v2
+
+**Complete on 2026-09-18.**
+
+The five preserved v1 no-matches were searched individually against Noel/canon evidence. Three new canon rules were frozen before re-adjudication: connection/membership edits with identity persistence, member placement/function within a larger whole, and duration-invariance under a persistent governing condition.
+
+All five gaps upgrade to **partial**; none upgrades to direct.
+
+Preserve the provenance distinction:
+
+- blind v1: **14 direct / 9 partial / 5 no-match**;
+- post-hoc targeted v2: **14 direct / 14 partial / 0 no-match**.
+
+Next governed checkpoint: **Law-Equivalence Adjudication Language** at the constraint level.
+
+### Step 6 — Law-Equivalence Adjudication Language v1
+
+**Complete on 2026-09-18.**
+
+A strict law-identity language was frozen before application. It requires isomorphism of the complete relevant relational condition, constrained possibility, consequence-order structure and preserved invariants; substrate nouns and nonessential physical path length do not define law identity, while an additional evidenced necessary condition does.
+
+Applied to all 28 Mark↔canon candidate pairs:
+
+- **6 SAME_LAW**;
+- **17 DISTINCT_LAW_SHARED_PATTERN**;
+- **3 UNDERDETERMINED**;
+- **2 ANALOGOUS_ONLY**.
+
+The strongest same-law cluster, `EQC-001`, contains five independent Mark constraints plus canon rule `CIR-018`: **component inventory cannot substitute for relational placement/order**.
+
+A second cluster, `EQC-002`, pairs `MCR-010` with `CIR-022`: **current state identity conditions the consequence/operation contract**.
+
+No universal-law label is assigned.
+
+Next governed checkpoint: **Absence-State Model**.
+
+### Step 7 — Absence-State Model v1
+
+**Complete on 2026-09-18.**
+
+The absence instrument separates five axes—instantiation, opportunity, observability/preservation, local compatibility and coverage—before deriving any source×law absence state.
+
+It defines ten derived states, including the critical distinction between:
+
+- `OPPORTUNITY_PRESENT_NO_INSTANCE` — the complete condition occurred under adequate observation and the law pattern failed to appear, creating a strong negative edge;
+- `COMPATIBLE_UNUSED` — the local architecture is compatible but the complete condition never occurs, so non-observation is not negative evidence;
+- `OUTSIDE_EXPOSED_REGION` — the source is a partial projection that does not expose the law condition;
+- `STRUCTURALLY_INCOMPATIBLE` — a frozen local rule contradicts a necessary law condition.
+
+The 13-case calibration exercises all ten derived states and passes completely.
+
+Next governed checkpoint: **Frozen Local Law Catalogues**.
+
+### Step 7b — Frozen Local Law Catalogues v1
+
+**Complete on 2026-09-18, but the overlap-graph readiness gate failed.**
+
+Five local catalogues were frozen before equivalence projection:
+
+- three primary Mark experiment-local evidence surfaces;
+- two external canon validation surfaces.
+
+The local inventories contain **13 local laws**. Only the two already-adjudicated shared law identities, `EQC-001` and `EQC-002`, were opened as cross-source targets. Ten source×law projections produced:
+
+- **5 PRESENT**
+- **5 MEASUREMENT_UNRESOLVED**
+
+No false absence was manufactured for unmeasured laws.
+
+However, all three primary Mark catalogues remain:
+
+`UNKNOWN_SHARED_SUBSTRATE_POSSIBLE`
+
+They therefore cannot yet be counted as independent source recurrences.
+
+**New prerequisite before Step 8: Source-Level Disaggregation and Independence Certification v1.**
+
+Recover exact raw source boundaries and source-local law evidence from frozen artifacts where possible. Multi-source results that cannot be localized remain global-support evidence and must not create pseudo-independent graph nodes.
+
+### Step 7c — Source-Level Disaggregation and Independence Certification v1
+
+**Complete on 2026-09-18. The descriptive provenance layer is usable; the primary independent-discovery overlap graph remains gated.**
+
+The earlier experiment-level catalogue nodes were confirmed to reuse overlapping raw evidence:
+
+- V38 and V40 share **10 exact holdout blocks**;
+- V38 has **11 holdout blocks** inside V36's four heldout books;
+- V40 has **11 holdout blocks** inside those same V36 books.
+
+Therefore experiment names are not valid independent source nodes.
+
+Three historical evidence surfaces were disaggregated:
+
+- **V36 / EQC-001:** Deuteronomy and Judges preserve the frozen order effect as whole-book heldout transfer; Psalms and Job remain too sparse.
+- **V38 / EQC-002:** a replay protocol was frozen before block outcomes were opened. The 41 block scores recombine to the published 58,691-transition aggregate within rounding. **24 blocks across 18 books** support the frozen state-conditioned consequence relation.
+- **V40 / EQC-001:** a source-local replay protocol was frozen before block outcomes were opened. The reconstructed model exactly reproduces the published C1 score and all 20 context-destruction null CEs. **29 blocks across 18 books** beat all 20 nulls under the frozen local-support rule.
+
+The strict certification record contains **86 source units**:
+
+- **2** `WHOLE_SOURCE_HELDOUT_TRANSFER`
+- **53** `NONOVERLAPPING_UNIT_SHARED_TRAINING`
+- **31** `UNRESOLVED_SOURCE_UNIT`
+- **0** `INDEPENDENT_LOCAL_DISCOVERY`
+
+Six exact raw blocks support both current strict law signatures:
+
+- Zec:2
+- Deu:3
+- Dan:1
+- Gen:1
+- Isa:10
+- 2Ch:0
+
+That is same-source co-occurrence evidence, not independent recurrence.
+
+The earlier 23-book descriptive catalogue layer is preserved as historical provenance but is **superseded for scientific counting** by the stricter 86-unit certification record because it predates the V40 disaggregation.
+
+A descriptive provenance graph may be drawn if it preserves dependence classes. It may not be used as the Step-8 independent-discovery graph or as a universality count.
+
+**New prerequisite before Step 8: Independent Source Law Discovery v1.**
+
+Select isolated source containers before discovery. Each must recover and freeze its own local law catalogue without importing EQC/MCR labels, another source's state inventory, another source's operator vocabulary, or a global model trained on the comparison sources.
+
+Only after several `INDEPENDENT_LOCAL_DISCOVERY` catalogues exist should the frozen Law-Equivalence Adjudication language reopen cross-source comparison.
+
+---

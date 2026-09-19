@@ -1,0 +1,56 @@
+{
+  "schema": "mark_constraint_rereading_manifest_v1",
+  "status": "COMPLETE_READY_TO_FREEZE",
+  "date": "2026-09-18",
+  "parent_harvest_freeze": "48a952fa39f686aefcc6a41f2b8d2f144aa759e8",
+  "source_packets": {
+    "range": "RLOP-007..RLOP-090",
+    "count": 84
+  },
+  "constraint_projections": {
+    "range": "MCR-007..MCR-090",
+    "count": 84
+  },
+  "counts": {
+    "level": {
+      "observed_system": 32,
+      "representation": 34,
+      "cross_system": 12,
+      "measurement": 5,
+      "instrument_calibration": 1
+    },
+    "law_candidate_status": {
+      "eligible": 28,
+      "supporting_only": 51,
+      "deferred": 3,
+      "ineligible": 2
+    },
+    "kind": {
+      "dependency": 32,
+      "non_equivalence": 29,
+      "transfer_limit": 7,
+      "composition": 3,
+      "invariance": 4,
+      "population_dependence": 2,
+      "exclusion": 2,
+      "underdetermination": 4,
+      "boundary": 1
+    }
+  },
+  "direct_high_leverage": [
+    "MCR-007",
+    "MCR-016",
+    "MCR-021",
+    "MCR-022",
+    "MCR-029",
+    "MCR-034",
+    "MCR-059",
+    "MCR-083"
+  ],
+  "next_checkpoint": "canon_constraint_adjudication",
+  "contamination_guard": {
+    "cross_source_matching": false,
+    "universal_law_labels": false,
+    "canon_matching_performed": false
+  }
+}

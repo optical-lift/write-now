@@ -1,0 +1,77 @@
+{
+  "schema": "absence_state_model_manifest_v1",
+  "status": "COMPLETE_READY_TO_FREEZE",
+  "date": "2026-09-18",
+  "parent_freeze": "5ac0fc9f0abac5d49ac849e0c181e1a8ed55a3c2",
+  "axes": {
+    "instantiation_evidence": [
+      "OBSERVED_PRESENT",
+      "NOT_OBSERVED",
+      "UNKNOWN"
+    ],
+    "opportunity_status": [
+      "DEMONSTRATED",
+      "POSSIBLE",
+      "NONE",
+      "OUTSIDE_EXPOSED_REGION",
+      "UNKNOWN"
+    ],
+    "observability_status": [
+      "ADEQUATE",
+      "UNMEASURED",
+      "NOT_PRESERVED",
+      "INADEQUATE",
+      "UNKNOWN"
+    ],
+    "compatibility_status": [
+      "COMPATIBLE",
+      "PROHIBITED",
+      "STRUCTURALLY_INCOMPATIBLE",
+      "UNKNOWN"
+    ],
+    "coverage_status": [
+      "ADEQUATE",
+      "PARTIAL",
+      "NOT_SAMPLED",
+      "UNKNOWN"
+    ]
+  },
+  "derived_states": [
+    "PRESENT",
+    "OPPORTUNITY_PRESENT_PROHIBITED",
+    "OPPORTUNITY_PRESENT_NO_INSTANCE",
+    "COMPATIBLE_UNUSED",
+    "NOT_PRESERVED",
+    "OUTSIDE_EXPOSED_REGION",
+    "NOT_YET_OBSERVED",
+    "STRUCTURALLY_INCOMPATIBLE",
+    "MEASUREMENT_UNRESOLVED",
+    "UNKNOWN_ABSENCE"
+  ],
+  "calibration": {
+    "cases": 13,
+    "passed": 13,
+    "derived_states_exercised": 10
+  },
+  "graph_semantics": {
+    "positive": [
+      "PRESENT"
+    ],
+    "strong_negative": [
+      "OPPORTUNITY_PRESENT_NO_INSTANCE",
+      "STRUCTURALLY_INCOMPATIBLE"
+    ],
+    "blocking_relation": [
+      "OPPORTUNITY_PRESENT_PROHIBITED"
+    ],
+    "open_nonnegative": [
+      "COMPATIBLE_UNUSED",
+      "NOT_PRESERVED",
+      "OUTSIDE_EXPOSED_REGION",
+      "NOT_YET_OBSERVED",
+      "MEASUREMENT_UNRESOLVED",
+      "UNKNOWN_ABSENCE"
+    ]
+  },
+  "next_checkpoint": "frozen_local_law_catalogues"
+}

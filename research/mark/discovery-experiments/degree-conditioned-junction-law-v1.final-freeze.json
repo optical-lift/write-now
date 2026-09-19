@@ -1,0 +1,150 @@
+{
+  "schema": "degree_conditioned_junction_law_final_freeze_v1",
+  "status": "FINAL_BLIND_DEGREE_TEST_COMPLETE",
+  "date": "2026-09-19",
+  "parentFreeze": "33a960018e0648cfe6d847113541dc0d512e1b4a",
+  "train": {
+    "runId": 35444636022,
+    "artifactId": 10584548276,
+    "catalogueSha256": "eb1b7e8e825dd09b80bcc5a25135770b7e822c0244528f1f92e0ec065fd95223",
+    "sourceCount": 237,
+    "candidates": 33,
+    "mixedCells": 52
+  },
+  "holdout": {
+    "runId": 35445326148,
+    "artifactId": 10584569480,
+    "artifactZipSha256": "ce118b72102fbeefc94fdf2dba03287063658c7339d12e8bfa2739996a8bd8ef",
+    "resultFileSha256": "da19ca5f81757254383b9ed4b2cfefc19760ccb212711b53ef5cc637a710ab79",
+    "validationSha256": "140e982e7b060076f1fed5036a4ba8bc46749a2cf93a658c312416d1421876e7",
+    "sourceCount": 236,
+    "passed": 20,
+    "failed": 7,
+    "insufficient": 6,
+    "mixedCells": 30
+  },
+  "control": {
+    "runId": 35446600333,
+    "artifactId": 10584709990,
+    "artifactZipSha256": "11d0edaddd742b5024d6f9f7cb973120d73426d29bdbc23a046ad18601a9ed82",
+    "resultFileSha256": "429bdcb50032976fc3d9332cada0847973b178dea39e69d9e5abf6d314331320",
+    "confirmationSha256": "730d266c87b865dcd357c3307a2e953fe1d40d0c2cfe6ad4eb60b63e972926d5",
+    "sourceCount": 232,
+    "passed": 18,
+    "failed": 2,
+    "insufficient": 0,
+    "mixedCells": 43
+  },
+  "verdict": {
+    "degreeAlone": "FALSIFIED",
+    "degreeIsRealCondition": true,
+    "reason": "Identical degree/context-arm cells contain both STRICT_MATCH and STRICT_REVERSE across independent sources in train, holdout, and control. Degree therefore conditions real substructure but is not sufficient to select the law branch.",
+    "survivedAllThreeLanes": 18,
+    "nextCheckpoint": "component_placement_junction_law_test_v1"
+  },
+  "survivors": [
+    {
+      "degree": 4,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 4,
+      "contextArm": "PATH_TO_JUNCTION",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 5,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 7,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 7,
+      "contextArm": "PATH_TO_JUNCTION",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 8,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 9,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 10,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 10,
+      "contextArm": "PATH_TO_JUNCTION",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 11,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 12,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 13,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 14,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 16,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 19,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 19,
+      "contextArm": "PATH_TO_JUNCTION",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 21,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    },
+    {
+      "degree": 23,
+      "contextArm": "PATH_TO_ENDPOINT",
+      "direction": "STRICT_MATCH"
+    }
+  ],
+  "nextConditionCustody": {
+    "source": "frozen masked-slot structural placement instrument",
+    "priorRunId": 33794464849,
+    "priorArtifactId": 9909697343,
+    "artifactName": "mark-masked-slot-substitutability-v1-frozen",
+    "artifactZipSha256": "67f89267716720f9587a0cdb4283f9353910568700ef62c5a73d239d1cd54684",
+    "occurrenceRows": 22447,
+    "occurrenceRowsSha256": "86f15b922a27e01fed291ad02aacd0ea1a91c1626a5fb1a2fc622985f5d1d4e6",
+    "allowedPlacementField": "maskedContextKey",
+    "targetTopologyExcluded": true,
+    "provenanceOpened": false
+  },
+  "provenanceOpened": false
+}

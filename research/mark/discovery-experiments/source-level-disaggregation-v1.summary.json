@@ -1,0 +1,28 @@
+{
+  "schema": "source_level_disaggregation_v1_certification_summary",
+  "total_source_units": 86,
+  "certification_counts": {
+    "WHOLE_SOURCE_HELDOUT_TRANSFER": 2,
+    "UNRESOLVED_SOURCE_UNIT": 31,
+    "NONOVERLAPPING_UNIT_SHARED_TRAINING": 53
+  },
+  "law_counts": {
+    "EQC-001": {
+      "independent_discovery_count": 0,
+      "whole_source_transfer_count": 2,
+      "shared_training_local_support_count": 29,
+      "unresolved_source_units": 14,
+      "distinct_support_books": 19
+    },
+    "EQC-002": {
+      "independent_discovery_count": 0,
+      "whole_source_transfer_count": 0,
+      "shared_training_local_support_count": 24,
+      "unresolved_source_units": 17,
+      "distinct_support_books": 18
+    }
+  },
+  "overlap_graph_ready": false,
+  "gate_reason": "No strict law cluster yet has an INDEPENDENT_LOCAL_DISCOVERY occurrence in the historical Mark corpus.",
+  "next_checkpoint": "independent_source_law_discovery_v1"
+}

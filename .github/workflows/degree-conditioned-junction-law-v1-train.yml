@@ -1,0 +1,128 @@
+name: Degree-Conditioned Junction Law v1 — Train Discovery
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/degree-conditioned-junction-law-v1.*"
+      - "scripts/measure-degree-conditioned-junction-v1.py"
+      - "scripts/analyze-degree-conditioned-junction-train-v1.py"
+      - "crates/mark-sparse-compiler/src/**"
+      - ".github/workflows/degree-conditioned-junction-law-v1-train.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  train-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SEALED_RUN_ID: "33755743472"
+      SEALED_ARTIFACT: "mark-source-rule-atlas-v1-sealed-evidence"
+      SEALED_INPUT: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json"
+      CAPTURES_DIR: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/captures"
+      EXCLUDED: "research/mark/discovery-experiments/independent-source-law-discovery-v1.source-selection.json"
+      PROTOCOL: "research/mark/discovery-experiments/degree-conditioned-junction-law-v1.protocol.json"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen files
+        run: |
+          python3 -m json.tool "$PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/prepare-whole-topology-condition-v1.py
+          python3 -m py_compile scripts/measure-degree-conditioned-junction-v1.py
+          python3 -m py_compile scripts/analyze-degree-conditioned-junction-train-v1.py
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Download exact sealed evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/sealed-evidence
+          gh run download "$SEALED_RUN_ID" \
+            --repo "${{ github.repository }}" \
+            --name "$SEALED_ARTIFACT" \
+            --dir artifact-staging/sealed-evidence
+
+      - name: Prepare untouched train sources only
+        run: |
+          python3 scripts/prepare-whole-topology-condition-v1.py \
+            --sealed-input "$SEALED_INPUT" \
+            --captures-dir "$CAPTURES_DIR" \
+            --excluded-selection "$EXCLUDED" \
+            --lane train \
+            --out artifacts/dcjl-v1/inputs/train
+
+      - name: Build degree-conditioned compiler
+        run: |
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Compile and measure train sources independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          input_root="artifacts/dcjl-v1/inputs/train"
+          out_root="artifacts/dcjl-v1/train"
+          mkdir -p "$out_root"
+          python3 - "$input_root/manifest.json" > "$out_root/sources.tsv" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          for s in d["sources"]:
+              print(s["sourceGroupId"]+"\t"+s["localBlindInputSha256"])
+          PY
+
+          : > "$out_root/source-metrics.jsonl"
+          while IFS=$'\t' read -r sid local_sha; do
+            tmp="$RUNNER_TEMP/dcjl-train-$sid"
+            rm -rf "$tmp"; mkdir -p "$tmp"
+            if ! (
+              ulimit -v 524288
+              crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+                --input "$input_root/$sid/input.json" \
+                --out "$tmp/compiler" \
+                --tile 512 \
+                --overlap 32 \
+                --null-iterations 64 \
+                --min-sources 1 \
+                --condition-degree
+            ) > "$tmp/runtime.txt" 2>&1; then
+              cat "$tmp/runtime.txt"
+              exit 1
+            fi
+
+            python3 scripts/measure-degree-conditioned-junction-v1.py \
+              --compiler-out "$tmp/compiler" \
+              --source-id "$sid" \
+              --lane train \
+              --local-input-sha "$local_sha" \
+              --protocol "$PROTOCOL" \
+              >> "$out_root/source-metrics.jsonl"
+            rm -rf "$tmp"
+          done < "$out_root/sources.tsv"
+
+      - name: Freeze train degree catalogue
+        run: |
+          python3 scripts/analyze-degree-conditioned-junction-train-v1.py \
+            --metrics-glob "artifacts/dcjl-v1/train/source-metrics.jsonl" \
+            --protocol "$PROTOCOL" \
+            --out artifacts/dcjl-v1/train/train-catalogue.json
+          cp artifacts/dcjl-v1/inputs/train/manifest.json artifacts/dcjl-v1/train/input-manifest.json
+
+      - name: Publish train-only summary
+        run: |
+          echo '### Degree-Conditioned Junction Law v1 — TRAIN ONLY' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Holdout and control degree outcomes have not been opened.' >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/dcjl-v1/train/train-catalogue.json >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frozen train catalogue
+        uses: actions/upload-artifact@v4
+        with:
+          name: degree-conditioned-junction-law-v1-train
+          path: artifacts/dcjl-v1/train/**
+          if-no-files-found: error
+          retention-days: 30

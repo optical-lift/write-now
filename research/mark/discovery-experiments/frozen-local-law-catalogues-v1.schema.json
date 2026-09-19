@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Frozen Local Law Catalogue v1",
+  "type": "object",
+  "required": [
+    "catalogue_id",
+    "container_id",
+    "lane",
+    "boundary_registry_commit",
+    "local_laws",
+    "equivalence_projection_status",
+    "ontological_authority"
+  ],
+  "properties": {
+    "catalogue_id": {
+      "type": "string",
+      "pattern": "^FLLC-[A-Z][0-9]{3}$"
+    },
+    "container_id": {
+      "type": "string",
+      "pattern": "^SRC-[MC][0-9]{3}$"
+    },
+    "lane": {
+      "enum": [
+        "PRIMARY_MARK_RECONSTRUCTION",
+        "EXTERNAL_CANON_VALIDATION"
+      ]
+    },
+    "boundary_registry_commit": {
+      "type": "string"
+    },
+    "local_laws": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "local_law_id",
+          "presence",
+          "evidence_refs",
+          "local_statement"
+        ],
+        "properties": {
+          "local_law_id": {
+            "type": "string"
+          },
+          "presence": {
+            "const": "PRESENT"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "local_statement": {
+            "type": "string"
+          },
+          "equivalence_cluster": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "equivalence_projection_status": {
+      "enum": [
+        "NOT_OPENED",
+        "OPENED_AFTER_LOCAL_FREEZE"
+      ]
+    },
+    "ontological_authority": {
+      "const": false
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

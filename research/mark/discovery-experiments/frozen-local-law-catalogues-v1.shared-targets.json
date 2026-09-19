@@ -1,0 +1,45 @@
+{
+  "schema": "shared_law_target_registry_v1",
+  "status": "FROZEN_EQUIVALENCE_TARGETS",
+  "parent_equivalence_freeze": "5ac0fc9f0abac5d49ac849e0c181e1a8ed55a3c2",
+  "targets": [
+    {
+      "law_signature_id": "EQC-001",
+      "version": "1",
+      "neutral_statement": "Component inventory cannot substitute for relational placement/order.",
+      "normalized_condition": [
+        "constituent identities/inventory are held",
+        "a specific relational placement/order among them is present"
+      ],
+      "normalized_constraint": "If the relevant relation/order is changed or destroyed while constituent inventory is preserved, the prior organized consequence/function cannot remain intact.",
+      "preserved_invariants": [
+        "constituent identities or inventory"
+      ],
+      "admissible_local_anchors": [
+        "MCR-007",
+        "MCR-016",
+        "MCR-034",
+        "MCR-083",
+        "MCR-087",
+        "CIR-018"
+      ]
+    },
+    {
+      "law_signature_id": "EQC-002",
+      "version": "1",
+      "neutral_statement": "Current state identity conditions the consequence/operation contract.",
+      "normalized_condition": [
+        "a larger container/background is shared",
+        "the current source-defined state differs"
+      ],
+      "normalized_constraint": "The consequence/operation contract cannot be reduced to the shared larger container when current state identity differs.",
+      "preserved_invariants": [
+        "shared larger container/background"
+      ],
+      "admissible_local_anchors": [
+        "MCR-010",
+        "CIR-022"
+      ]
+    }
+  ]
+}

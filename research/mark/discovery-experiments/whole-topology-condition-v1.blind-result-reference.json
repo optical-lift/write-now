@@ -1,0 +1,54 @@
+{
+  "schema": "whole_topology_condition_test_v1_blind_result_reference",
+  "status": "FROZEN_BEFORE_PROVENANCE_REJOIN",
+  "date": "2026-09-19",
+  "workflow_run_id": 35442637903,
+  "artifact_id": 10585285454,
+  "artifact_name": "whole-topology-condition-v1-blind-result",
+  "source_count": 705,
+  "lane_counts": {
+    "control": 232,
+    "holdout": 236,
+    "train": 237
+  },
+  "excluded_hypothesis_generating_sources": 9,
+  "result_sha256": "e6dec3618a6904499de5c0f764dc3ae6643c5062441160ed3f243b27c7911356",
+  "primary_verdict": "NO_DENSITY_SUPPORT",
+  "primary_junction": {
+    "eligible_sources": 703,
+    "low_density_n": 71,
+    "pair_density_boundary_max": 1.9610705596107056,
+    "tail_median_difference": 0.014067107991419248,
+    "tail_permutation_p": 1,
+    "spearman_rho": -0.21485960795171322,
+    "spearman_permutation_p": 1,
+    "negative_lift_rate_low": 0.22535211267605634,
+    "negative_lift_rate_rest": 0.04588607594936709,
+    "negative_lift_rate_difference": 0.17946603672668926,
+    "reversal_permutation_p": 0.00004999750012499375,
+    "median_lift_low": 0.031641064116071704,
+    "median_lift_rest": 0.017573956124652457
+  },
+  "secondary_endpoint": {
+    "eligible_sources": 701,
+    "low_density_n": 71,
+    "pair_density_boundary_max": 1.9610705596107056,
+    "tail_median_difference": -0.008103843497848817,
+    "tail_permutation_p": 0.05724713764311785,
+    "spearman_rho": 0.04449586235606207,
+    "spearman_permutation_p": 0.00974951252437378,
+    "negative_lift_rate_low": 0.09859154929577464,
+    "negative_lift_rate_rest": 0.025396825396825397,
+    "negative_lift_rate_difference": 0.07319472389894924,
+    "reversal_permutation_p": 0.0022498875056247186,
+    "median_lift_low": 0.07365385030923999,
+    "median_lift_rest": 0.0817576938070888
+  },
+  "guards": {
+    "provenance_opened": false,
+    "object_types_used": false,
+    "institutions_used": false,
+    "alternative_topology_predictors_opened": false
+  },
+  "interpretation_guard": "Primary preregistered density hypothesis is failed. Reversal-prevalence signals are secondary diagnostics and may motivate a new hypothesis but may not rescue the failed primary verdict."
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "whole_topology_condition_v1_blind_result_summary",
+  "status": "FROZEN_BEFORE_PROVENANCE_REJOIN",
+  "date": "2026-09-19",
+  "successful_workflow_run_id": 35442637903,
+  "blind_result_artifact_id": 10585285454,
+  "source_count": 705,
+  "lane_counts": {
+    "train": 237,
+    "holdout": 236,
+    "control": 232
+  },
+  "excluded_hypothesis_generating_sources": 9,
+  "primary_verdict": "NO_DENSITY_SUPPORT",
+  "primary_junction": {
+    "eligible_sources": 703,
+    "low_density_n": 71,
+    "low_density_pair_density_max": 1.9610705596107056,
+    "median_lift_low": 0.031641064116071704,
+    "median_lift_rest": 0.017573956124652457,
+    "tail_median_difference": 0.014067107991419248,
+    "tail_permutation_p": 1,
+    "spearman_rho": -0.21485960795171322,
+    "spearman_permutation_p": 1,
+    "negative_lift_rate_low": 0.22535211267605634,
+    "negative_lift_rate_rest": 0.04588607594936709,
+    "negative_lift_rate_difference": 0.17946603672668926,
+    "reversal_permutation_p": 0.00004999750012499375,
+    "lane_diagnostics": {
+      "train": {
+        "n": 236,
+        "tail_median_difference": -0.01735991074493637,
+        "spearman_rho": -0.1464775616592184,
+        "negative_lift_rate_low": 0.5416666666666666,
+        "negative_lift_rate_rest": 0.05660377358490566
+      },
+      "holdout": {
+        "n": 236,
+        "tail_median_difference": 0.025978910906266584,
+        "spearman_rho": -0.05947039033720277,
+        "negative_lift_rate_low": 0.08333333333333333,
+        "negative_lift_rate_rest": 0.02830188679245283
+      },
+      "control": {
+        "n": 231,
+        "tail_median_difference": 0.017473801900898478,
+        "spearman_rho": -0.4845655094530657,
+        "negative_lift_rate_low": 0.20833333333333334,
+        "negative_lift_rate_rest": 0.033816425120772944
+      }
+    }
+  },
+  "secondary_endpoint": {
+    "eligible_sources": 701,
+    "low_density_n": 71,
+    "median_lift_low": 0.07365385030923999,
+    "median_lift_rest": 0.0817576938070888,
+    "tail_median_difference": -0.008103843497848817,
+    "tail_permutation_p": 0.05724713764311785,
+    "spearman_rho": 0.04449586235606207,
+    "spearman_permutation_p": 0.00974951252437378,
+    "negative_lift_rate_low": 0.09859154929577464,
+    "negative_lift_rate_rest": 0.025396825396825397,
+    "reversal_permutation_p": 0.0022498875056247186
+  },
+  "blinded_interpretation": {
+    "preregistered_density_condition": "REJECTED",
+    "reason": "The primary low-density median contrast and monotonic association both ran opposite the predicted direction.",
+    "preregistered_secondary_signal": "Low pair density strongly increases the prevalence of negative/reversed junction lift even though the low-density median junction lift is higher, implying heterogeneity/branching rather than a simple density-controlled weakening.",
+    "provenance_opened": false
+  },
+  "artifact_custody": {
+    "result_file_sha256": "6e646b8e9b4784239e27611e34e3bcb7e81fb6bf7b71125fb0d8fecc47132660",
+    "metrics_train_sha256": "6596f28016f1df3257e6be5968aa27cb2d1a51c73c58b63da6520dbf3d309095",
+    "metrics_holdout_sha256": "3a2468895eac99da7fede5ed89e8f4e8707814a810c3f6a2f651290d3775344c",
+    "metrics_control_sha256": "6c5ae46ea89d63051c0568041b254ad7638bbbdf35c1924baa3662232c7db788",
+    "manifest_train_sha256": "c59b4b47dfa04b7eba044e4defdb9eb7fafb89eec0701f4540127bf9e8827531",
+    "manifest_holdout_sha256": "50140f90d00d2e48864cce707e5f5c393dd2d46c563a8a7ca86d882d8a4374d6",
+    "manifest_control_sha256": "5e4464b264bbe945e9bf6daafe017f55fb9bf7355dd2e36ad765a258d7dd1cac",
+    "internal_result_sha256": "e6dec3618a6904499de5c0f764dc3ae6643c5062441160ed3f243b27c7911356"
+  },
+  "execution_note": "The first workflow attempt failed before measurement because one source used a frozen compiler-captures PNG rather than a raw JPG. The preparer was corrected to honor each frozen capturePath exactly; no scientific protocol, source set, null, threshold, or statistic changed."
+}
