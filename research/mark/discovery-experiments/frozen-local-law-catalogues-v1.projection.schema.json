@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Frozen Local Law Catalogue Shared Projection v1",
+  "type": "object",
+  "required": [
+    "entry_id",
+    "catalogue_id",
+    "source_id",
+    "law_signature_id",
+    "law_signature_version",
+    "instantiation_evidence",
+    "opportunity_status",
+    "observability_status",
+    "compatibility_status",
+    "coverage_status",
+    "derived_state",
+    "local_anchor_ids",
+    "evidence_refs",
+    "rationale",
+    "evidence_ceiling",
+    "universal_absence_claim"
+  ],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "pattern": "^ASM-[0-9]{3}$"
+    },
+    "catalogue_id": {
+      "type": "string",
+      "pattern": "^FLLC-[MC][0-9]{3}$"
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^SRC-[MC][0-9]{3}$"
+    },
+    "law_signature_id": {
+      "enum": [
+        "EQC-001",
+        "EQC-002"
+      ]
+    },
+    "law_signature_version": {
+      "const": "1"
+    },
+    "instantiation_evidence": {
+      "enum": [
+        "OBSERVED_PRESENT",
+        "NOT_OBSERVED",
+        "UNKNOWN"
+      ]
+    },
+    "opportunity_status": {
+      "enum": [
+        "DEMONSTRATED",
+        "POSSIBLE",
+        "NONE",
+        "OUTSIDE_EXPOSED_REGION",
+        "UNKNOWN"
+      ]
+    },
+    "observability_status": {
+      "enum": [
+        "ADEQUATE",
+        "UNMEASURED",
+        "NOT_PRESERVED",
+        "INADEQUATE",
+        "UNKNOWN"
+      ]
+    },
+    "compatibility_status": {
+      "enum": [
+        "COMPATIBLE",
+        "PROHIBITED",
+        "STRUCTURALLY_INCOMPATIBLE",
+        "UNKNOWN"
+      ]
+    },
+    "coverage_status": {
+      "enum": [
+        "ADEQUATE",
+        "PARTIAL",
+        "NOT_SAMPLED",
+        "UNKNOWN"
+      ]
+    },
+    "derived_state": {
+      "enum": [
+        "PRESENT",
+        "OPPORTUNITY_PRESENT_PROHIBITED",
+        "OPPORTUNITY_PRESENT_NO_INSTANCE",
+        "COMPATIBLE_UNUSED",
+        "NOT_PRESERVED",
+        "OUTSIDE_EXPOSED_REGION",
+        "NOT_YET_OBSERVED",
+        "STRUCTURALLY_INCOMPATIBLE",
+        "MEASUREMENT_UNRESOLVED",
+        "UNKNOWN_ABSENCE"
+      ]
+    },
+    "local_anchor_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_ceiling": {
+      "type": "string"
+    },
+    "universal_absence_claim": {
+      "const": false
+    }
+  },
+  "additionalProperties": false
+}
