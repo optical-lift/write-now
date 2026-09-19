@@ -482,3 +482,21 @@ The graph is scientifically valid but has too little law dimensionality to disti
 **New prerequisite before competing reconstruction models: Source-Local Law Expansion v1.**
 
 Localize additional already-supported Mark laws to raw sources where frozen evidence permits it. Preserve shared-model dependence and use the frozen Absence-State Model. Refuse localization when historical evidence is insufficient.
+
+### Step 8b — Source-Local Law Expansion v1
+
+**Complete on 2026-09-18. Law breadth expanded; cross-family bridge not yet localized.**
+
+The frozen V9/V45 evaluator result was recovered byte-identically and yields a new physical source-group law tranche:
+
+- `MLAW-COMP-001` — factorized sequential composition: 151/151 covered holdout source groups show composition beating input-only;
+- `MLAW-IDEM-001` — repetition stability: conservative positive witness edges in two source groups;
+- `MLAW-CANCEL-001` — ordered cancellation: conservative positive witness edges in two source groups.
+
+V9 and V45 are treated as one evidence lineage because their primary evaluator result SHA-256 is identical.
+
+Several older per-source artifacts were deliberately **not** localized because they preserve source rows but not source-level law contrasts/nulls.
+
+If applied to the current graph, the source layer would expand to 174 nodes and the law layer to five dimensions, but the positive graph would still split into separate book and physical-source components.
+
+Next governed checkpoint: **Cross-Family Bridge Localization v1**, prioritizing V23, V20, V29, then V40.
