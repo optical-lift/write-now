@@ -170,3 +170,4 @@ jobs:
           path: artifacts/cpjl-v1/control/**
           if-no-files-found: error
           retention-days: 30
+# Trigger note: workflow introduced after holdout freeze; no scientific contract change.
