@@ -1,0 +1,136 @@
+{
+  "schema": "independent_source_law_discovery_provenance_canon_diagnosis_v1",
+  "date": "2026-09-19",
+  "blind_equivalence_commit": "c08eeac0633bb6e01c38e72fac06f10741a78aaf",
+  "provenance_opened_after_blind_freeze": true,
+  "selected_sources": [
+    {
+      "sourceGroupId": "S0986BCCA11293262",
+      "institution": "Cleveland Museum of Art",
+      "object": "The Brahman’s wife who killed a peacock and ate its gallbladder on the physician’s advice, from a Tuti-nama",
+      "type": "Painting",
+      "context": "Mughal India, c. 1560",
+      "centers": 85697,
+      "pair_weight": 291728,
+      "pair_weight_per_center": 3.404188
+    },
+    {
+      "sourceGroupId": "S2BA35F8F3F41FF82",
+      "institution": "Cleveland Museum of Art",
+      "object": "Fragment from Book of Textiles",
+      "type": "Textile",
+      "context": "China, Qing dynasty, 1700s",
+      "centers": 99080,
+      "pair_weight": 128530,
+      "pair_weight_per_center": 1.297033
+    },
+    {
+      "sourceGroupId": "S6E5A315EA8D70272",
+      "institution": "Cleveland Museum of Art",
+      "object": "Lace Edging",
+      "type": "Lace",
+      "context": "Italy, Genoa, 1600s; bobbin lace / needle-lace design edging with loops",
+      "centers": 7180,
+      "pair_weight": 2038,
+      "pair_weight_per_center": 0.283844,
+      "blind_relation": "contradictory to ISLD-LAW-001 on junction-context condition"
+    },
+    {
+      "sourceGroupId": "S278D089F1F3E6EF3",
+      "institution": "Bavarian State Library / Munich Digitization Centre",
+      "object": "Atlas oratorius ...",
+      "type": "digitized book page",
+      "centers": 15328,
+      "pair_weight": 35890,
+      "pair_weight_per_center": 2.341467
+    },
+    {
+      "sourceGroupId": "S7FAC1CBA3237D428",
+      "institution": "Bavarian State Library / Munich Digitization Centre",
+      "object": "Ehrensäule Oder Catholische LobPredig",
+      "type": "digitized book page",
+      "centers": 30241,
+      "pair_weight": 69808,
+      "pair_weight_per_center": 2.308125
+    },
+    {
+      "sourceGroupId": "SA6A647EB8FD65081",
+      "institution": "Bavarian State Library / Munich Digitization Centre",
+      "object": "Das abgekvertzte Wort Gottes ... Feyertäglichen Predigen",
+      "type": "digitized book page",
+      "centers": 19909,
+      "pair_weight": 38492,
+      "pair_weight_per_center": 1.933899
+    },
+    {
+      "sourceGroupId": "SD77E0E398D02620C",
+      "institution": "Library of Congress",
+      "object": "Untitled photo, possibly related to Shelby County Horse Show and Fair",
+      "type": "photograph",
+      "centers": 26569,
+      "pair_weight": 91348,
+      "pair_weight_per_center": 3.438142
+    },
+    {
+      "sourceGroupId": "S78DF51368961153D",
+      "institution": "Library of Congress",
+      "object": "Portrait of Obama and Mayor Ras Baraka on the walls of Lucky Fox Liquors",
+      "type": "photograph",
+      "centers": 30071,
+      "pair_weight": 73898,
+      "pair_weight_per_center": 2.457916
+    },
+    {
+      "sourceGroupId": "S325CAFC6592E173B",
+      "institution": "Library of Congress",
+      "object": "Post chaise with outrider",
+      "type": "stereograph/photographic print",
+      "centers": 37539,
+      "pair_weight": 213844,
+      "pair_weight_per_center": 5.696689
+    }
+  ],
+  "canon_findings": [
+    {
+      "canon_rule": "TCIR-002",
+      "rule": "Member role/function is constrained by placement in a larger relational whole",
+      "status": "admitted_direct",
+      "relevance": "The canon independently establishes that local member identity is insufficient; whole/member placement carries function information."
+    },
+    {
+      "canon_rule": "Genesis 1 / H4327 min",
+      "rule": "productive plant/animal states repeatedly proceed according to kind before Source evaluation as good",
+      "status": "raw-canon observation for this bridge; not newly promoted",
+      "relevance": "Supports differentiated productive identity, but does not by itself license a universal same-with-same coupling rule."
+    },
+    {
+      "canon_rule": "Lev 19:19 + Deu 22:9-11 / H3610 kilayim",
+      "rule": "specific mixed coupling is prohibited across breeding, productive field/vineyard, yoking/work, and clothing relations",
+      "status": "raw-canon observation for this bridge; not newly promoted",
+      "relevance": "The prohibition attaches to defined coupled operations, not mere coexistence of unlike things."
+    },
+    {
+      "canon_rule": "Gen 1:4 / H914 distinction",
+      "rule": "lawful order preserves differentiated conditions rather than collapsing them into undifferentiated mixture",
+      "status": "strong_provisional / existing Noel result",
+      "relevance": "Distinct members may coexist in one ordered whole while retaining differentiated identity."
+    }
+  ],
+  "current_interpretation": {
+    "majority_surface_rule": "ISLD-LAW-001: local destination-state matching at a junction",
+    "deeper_candidate": "Local identity does not alone determine consequence; whole-level relational placement/topology conditions which local coupling is lawful/likely.",
+    "relation_to_existing_EQC001": "DISTINCT_LAW_SHARED_PATTERN at present. ISLD-LAW-001 is a specific local coupling rule; EQC-001 is the broader frozen rule that component inventory cannot substitute for relational placement/order.",
+    "contradiction_status": "The blind CONTRADICTORY classification remains historically correct at the reduced condition. Provenance plus whole-source metrics identify a candidate omitted condition, but do not yet prove it causally."
+  },
+  "next_test": {
+    "name": "Whole-Topology Condition Test v1",
+    "untouched_universe": "the 705 source objects not used in the nine-source discovery set",
+    "primary_predictor": "source-level observed pair weight / detected center count",
+    "primary_outcomes": [
+      "endpoint-state matching lift versus source-local null",
+      "junction-state matching lift versus source-local null"
+    ],
+    "primary_prediction": "matching lift changes systematically with whole-source pair-density; the lace-like low-pair-density regime will show weakened or reversed matching relative to the high-pair-density regime",
+    "analysis_guard": "source provenance and categories remain sealed for the 705 sources until the topology/outcome relationship is frozen"
+  }
+}
