@@ -5,134 +5,180 @@ Date: **2026-09-18**
 Branch: `source-level-disaggregation-v1`
 Parent local-catalogue freeze: `b5d0562212c5767f161c22aaae164b66af796f94`
 
-## Core correction
+## Final correction
 
-Experiment surfaces are not source nodes.
+Experiment names are not independent source nodes.
 
-V36, V38 and V40 reuse overlapping biblical evidence, including exact shared five-chapter holdout blocks.
+The historical Mark evidence can be localized into heldout books and non-overlapping heldout blocks, but those local outcomes inherit shared models and law tests.
 
-For reconstruction purposes, the current primary raw source unit is therefore:
+Therefore:
 
-> **canonical biblical book**
+> **non-overlapping evaluation is not independent discovery.**
 
-## Certified raw source layer
+This checkpoint preserves both facts.
 
-- raw book nodes: **23**
-- raw observation independence: `CERTIFIED_NONOVERLAPPING_BOOK`
-- shared model dependence retained separately:
-  - `V36_SHARED_TRAINING_MODEL`
-  - `V38_SHARED_TRAINING_MODEL`
+## Historical source-local evidence
 
-This means book observations are non-overlapping, but source edges are not independent model fits.
+### EQC-001
 
-## EQC-001
+V36 whole-book heldout transfer:
 
-Source-local `PRESENT`:
+- Deuteronomy — supported
+- Judges — supported
+- Psalms — unresolved for sparsity
+- Job — unresolved for sparsity
 
-- BOOK-Deu
-- BOOK-Jdg
+V40 block replay:
 
-Evidence comes from V36's already-published frozen book-level order-control results.
+- 41 heldout blocks
+- 29 source-local-support blocks
+- 12 unresolved blocks
+- 18 support books
 
-BOOK-Psa and BOOK-Job remain unresolved because V36 explicitly reported their strict-support samples as too sparse.
+### EQC-002
 
-## EQC-002
+V38 block replay:
 
-A source-local replay of the frozen V38 A1 endpoint was preregistered before opening block outcomes.
-
-Result:
-
-- 41 holdout blocks
+- 41 heldout blocks
 - 24 source-local-support blocks
 - 17 unresolved blocks
-- 18 distinct books with at least one source-local-support block
+- 18 support books
 
-The replay recombines to the original V38 aggregate within rounding:
+## Replay verification
 
-- transitions: 58,691 exactly
-- conditional CE difference from published: < 5e-7
-- unigram CE difference from published: < 4e-6
+### V38
 
-EQC-002 `PRESENT` books:
+The block decomposition recombines to the published aggregate:
 
-- BOOK-1Sa
-- BOOK-2Ch
-- BOOK-2Ki
-- BOOK-Amo
-- BOOK-Dan
-- BOOK-Deu
-- BOOK-Eze
-- BOOK-Ezr
-- BOOK-Gen
-- BOOK-Isa
-- BOOK-Jdg
-- BOOK-Jer
-- BOOK-Jon
-- BOOK-Jos
-- BOOK-Lev
-- BOOK-Mal
-- BOOK-Num
-- BOOK-Zec
+- transitions: **58,691**, exact
+- conditional CE: **2.8360684584**
+- published: **2.836068**
+- unigram CE: **2.8437660829**
+- published: **2.843770**
 
-## Co-presence
+### V40
 
-Only:
+The reconstructed replay reproduces the frozen experiment:
 
-- BOOK-Deu
-- BOOK-Jdg
+- total tokens: **306,785**
+- training windows: **237,215**
+- heldout windows: **67,962**
+- model targets: **65**
+- training OTHER targets: **6,022**
 
-currently carry `PRESENT` entries for both EQC-001 and EQC-002.
+Real C1:
 
-This is descriptive co-presence only.
+- replay: **2.85942910519731**
+- published: **2.859429105**
 
-It is not evidence of composition.
+All 20 context-destruction null aggregate CEs reproduce the published series to numerical precision.
 
-## Negative-evidence custody
+## Strict certification census
 
-No failed shared-model transfer was promoted to a negative law edge.
+Authoritative source-level record:
 
-Cells without positive local support remain `MEASUREMENT_UNRESOLVED`.
+`source-level-disaggregation-v1.source-units.jsonl`
 
-A global model may fail in a book even when the book has a source-specific realization of the law.
+Total units: **86**
 
-## Overlap-graph readiness
+- `WHOLE_SOURCE_HELDOUT_TRANSFER`: **2**
+- `NONOVERLAPPING_UNIT_SHARED_TRAINING`: **53**
+- `UNRESOLVED_SOURCE_UNIT`: **31**
+- `INDEPENDENT_LOCAL_DISCOVERY`: **0**
 
-Verdict:
+### EQC-001
 
-`READY_FOR_DESCRIPTIVE_OVERLAP_GRAPH_WITH_SHARED_MODEL_DEPENDENCE`
+- independent discovery count: **0**
+- whole-source heldout transfer: **2**
+- shared-training local support: **29**
+- unresolved units: **14**
+- distinct support books: **19**
 
-The first graph may describe where frozen laws are locally supported across non-overlapping raw source books.
+### EQC-002
 
-It may not:
+- independent discovery count: **0**
+- whole-source heldout transfer: **0**
+- shared-training local support: **24**
+- unresolved units: **17**
+- distinct support books: **18**
 
-- count book edges as independent model replications;
-- infer universality from edge frequency;
-- infer composition from co-presence;
-- use experiment-name nodes as independent sources;
-- include canon in the primary Mark graph;
-- turn unresolved cells into negative edges.
+## Same-source co-occurrence
+
+V38 and V40 share ten exact holdout blocks.
+
+Six exact blocks support both current strict law signatures:
+
+- `Zec:2`
+- `Deu:3`
+- `Dan:1`
+- `Gen:1`
+- `Isa:10`
+- `2Ch:0`
+
+This is same-source co-occurrence evidence.
+
+It is not independent recurrence and does not establish composition.
+
+## Superseded descriptive layer
+
+The earlier 23-book raw-book registry/catalogues are preserved as historical provenance.
+
+They predate the completed V40 disaggregation and are therefore **superseded for scientific counting** by the strict 86-unit certification record.
+
+They may not be used to claim independent discovery.
+
+## Graph readiness
+
+A descriptive provenance graph is allowed if it preserves dependence classes.
+
+The primary Step-8 cross-source overlap graph required for whole-system reconstruction remains gated because:
+
+`independent_discovery_count = 0`
+
+for both current strict law clusters.
+
+## Governing next step
+
+**Independent Source Law Discovery v1**
+
+Each source container must be selected and sealed before discovery and must recover its own local law catalogue without importing:
+
+- EQC labels;
+- MCR labels;
+- another source's state inventory;
+- another source's operator vocabulary;
+- a global model trained on comparison sources.
+
+Only after several `INDEPENDENT_LOCAL_DISCOVERY` catalogues are frozen may strict cross-source equivalence reopen.
+
+## Scratch-state cleanup
+
+All temporary V40 replay tables and scoring functions created in Noel/Supabase for this checkpoint were dropped after the frozen results were committed.
+
+No scratch research tables remain.
 
 ## Frozen artifact blobs
 
-- overlap audit: `84dc54f390dfe8edf396c0aba3525765c0e278db`
-- V36 retrospective localization: `c73798778bc2d5faaa61a7957ab9d12bd810d9c6`
-- V38 block replay protocol: `6bb50aabcc3728c5a4fb32d2e799ec770951e679`
-- V38 block replay result: `5a3b43b86e640e2b49c536fd6f7f2d66097e1c93`
-- V38 replay verification: `14835d9d93701a945cfbb1c633b17df80e036777`
-- raw book registry: `389fa30e3ba3194a2f5458152918e1f4154ec857`
-- raw book catalogues: `304f638db88d23f29b447fc64171bac48848690e`
-- raw book catalogue schema: `a538c680de5af6c39bb1919afe8cfc1d92061fa6`
-- assessment: `ebabf6e069c0bb939a6ff2f94e68c6f54ee9d62a`
-- manifest: `f38a962eb7562d404cd81e04c9895cd0fe024a61`
-- validator: `4d0ff9ff20312b461b03b2ba108fe3497db0336a`
-- roadmap: `6ab918d84ccfd3cb629d6e3263873db63318d459`
+- certification spec: `5b256db903e30348f674cbc6604066edaa3d4c9a`
+- V36 book localization: `f5d223377b5049cca1e59eb488426994360ba342`
+- V38 replay protocol: `6bb50aabcc3728c5a4fb32d2e799ec770951e679`
+- V38 replay result: `5a3b43b86e640e2b49c536fd6f7f2d66097e1c93`
+- V40 replay protocol: `f645d64a4ded72dba0df9bad1cc5210039874527`
+- V40 replay result: `4961f13ec28b74b413833604971936f5bcb63178`
+- certified source units: `719ab643c350df91fd5819896e4d496ebc2d642d`
+- co-occurrence record: `f88ab4b733b1cd70bf71b500194ae8938b27521e`
+- strict summary: `365aa78e9c1c0a8a3dae51da8271c645736e987a`
+- assessment: `b033ddc288b0d14030b1c68de68738e70d5af40b`
+- manifest: `b701621f65039aa480f5f0b23ecb80f08e083197`
+- validator: `cc3f1c73e528dd764e679539659f4135fd2ed801`
+- roadmap: `f90b0a30aeb28679ecc304da0077058591ea141b`
 
 ## Pre-freeze head
 
-`589a288a216c92b057aa1433ffa7d097cccc999a`
+`3a31a2ca0779734790763aed8ba34216ce8f74e4`
 
 ## Next checkpoint
 
-**Cross-Source Overlap Graph v1**
+**Independent Source Law Discovery v1**
 
-Use BOOK-* nodes and frozen source-law entries only.
+Do not promote heldout transfer counts into independent discovery counts.
