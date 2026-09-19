@@ -1,0 +1,172 @@
+name: Component-Placement Junction Law v1 — Control Confirmation
+
+on:
+  pull_request:
+    paths:
+      - "research/mark/discovery-experiments/component-placement-junction-holdout-freeze-v1.json"
+      - "scripts/confirm-component-placement-junction-control-v1.py"
+      - "scripts/measure-component-placement-junction-v1.py"
+      - "scripts/prepare-component-placement-map-v1.py"
+      - "scripts/prepare-whole-topology-condition-v1.py"
+      - "crates/mark-sparse-compiler/src/**"
+      - ".github/workflows/component-placement-junction-law-v1-control.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  control-confirmation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SEALED_RUN_ID: "33755743472"
+      SEALED_ARTIFACT: "mark-source-rule-atlas-v1-sealed-evidence"
+      SEALED_INPUT: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json"
+      CAPTURES_DIR: "artifact-staging/sealed-evidence/mark-conveyor-input-v1/captures"
+      EXCLUDED: "research/mark/discovery-experiments/independent-source-law-discovery-v1.source-selection.json"
+      PROTOCOL: "research/mark/discovery-experiments/component-placement-junction-law-v1.protocol.json"
+      TRAIN_FREEZE: "research/mark/discovery-experiments/component-placement-junction-train-freeze-v1.json"
+      HOLDOUT_FREEZE: "research/mark/discovery-experiments/component-placement-junction-holdout-freeze-v1.json"
+      TRAIN_RUN_ID: "35448259935"
+      TRAIN_ARTIFACT: "component-placement-junction-law-v1-train"
+      HOLDOUT_RUN_ID: "35452433350"
+      HOLDOUT_ARTIFACT: "component-placement-junction-law-v1-holdout"
+      PLACEMENT_RUN_ID: "33794464849"
+      PLACEMENT_ARTIFACT: "mark-masked-slot-substitutability-v1-frozen"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen contracts
+        run: |
+          python3 -m json.tool "$PROTOCOL" >/dev/null
+          python3 -m json.tool "$TRAIN_FREEZE" >/dev/null
+          python3 -m json.tool "$HOLDOUT_FREEZE" >/dev/null
+          python3 -m py_compile scripts/prepare-component-placement-map-v1.py
+          python3 -m py_compile scripts/prepare-whole-topology-condition-v1.py
+          python3 -m py_compile scripts/measure-component-placement-junction-v1.py
+          python3 -m py_compile scripts/confirm-component-placement-junction-control-v1.py
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Download exact sealed evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/sealed-evidence
+          gh run download "$SEALED_RUN_ID" --repo "${{ github.repository }}" --name "$SEALED_ARTIFACT" --dir artifact-staging/sealed-evidence
+
+      - name: Download frozen placement artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/masked-placement
+          gh run download "$PLACEMENT_RUN_ID" --repo "${{ github.repository }}" --name "$PLACEMENT_ARTIFACT" --dir artifact-staging/masked-placement
+
+      - name: Download exact frozen train catalogue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/train-freeze
+          gh run download "$TRAIN_RUN_ID" --repo "${{ github.repository }}" --name "$TRAIN_ARTIFACT" --dir artifact-staging/train-freeze
+          echo "282137a1ff9789c86f0fb41155c29a1070cceb8877c2dd988ea986462dbfada1  artifact-staging/train-freeze/train-catalogue.json" | sha256sum -c -
+
+      - name: Download exact frozen holdout validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifact-staging/holdout-freeze
+          gh run download "$HOLDOUT_RUN_ID" --repo "${{ github.repository }}" --name "$HOLDOUT_ARTIFACT" --dir artifact-staging/holdout-freeze
+          echo "8562d9888f36fa2d173697954ab74e6125758774d59a67701fa60b651ccc00fc  artifact-staging/holdout-freeze/holdout-validation.json" | sha256sum -c -
+
+      - name: Rebuild exact frozen placement map
+        run: |
+          python3 scripts/prepare-component-placement-map-v1.py \
+            --occurrences artifact-staging/masked-placement/masked-slot-occurrences.jsonl \
+            --protocol "$PROTOCOL" \
+            --out artifacts/cpjl-v1/placement-map.json
+
+      - name: Prepare untouched control sources only
+        run: |
+          python3 scripts/prepare-whole-topology-condition-v1.py \
+            --sealed-input "$SEALED_INPUT" \
+            --captures-dir "$CAPTURES_DIR" \
+            --excluded-selection "$EXCLUDED" \
+            --lane control \
+            --out artifacts/cpjl-v1/inputs/control
+
+      - name: Build placement-conditioned compiler
+        run: cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-sparse-compiler
+
+      - name: Compile and measure control sources independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          input_root="artifacts/cpjl-v1/inputs/control"
+          out_root="artifacts/cpjl-v1/control"
+          mkdir -p "$out_root"
+          python3 - "$input_root/manifest.json" > "$out_root/sources.tsv" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          for s in d["sources"]:
+              print(s["sourceGroupId"]+"\t"+s["localBlindInputSha256"])
+          PY
+          : > "$out_root/source-metrics.jsonl"
+          while IFS=$'\t' read -r sid local_sha; do
+            tmp="$RUNNER_TEMP/cpjl-control-$sid"
+            rm -rf "$tmp"; mkdir -p "$tmp"
+            if ! (
+              ulimit -v 524288
+              crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+                --input "$input_root/$sid/input.json" \
+                --out "$tmp/compiler" \
+                --tile 512 --overlap 32 --null-iterations 64 --min-sources 1 \
+                --condition-degree \
+                --placement-map artifacts/cpjl-v1/placement-map.json \
+                --placement-original-lane control
+            ) > "$tmp/runtime.txt" 2>&1; then
+              cat "$tmp/runtime.txt"; exit 1
+            fi
+            python3 scripts/measure-component-placement-junction-v1.py \
+              --compiler-out "$tmp/compiler" --source-id "$sid" --lane control \
+              --local-input-sha "$local_sha" --protocol "$PROTOCOL" \
+              >> "$out_root/source-metrics.jsonl"
+            rm -rf "$tmp"
+          done < "$out_root/sources.tsv"
+
+      - name: Freeze final control confirmation
+        run: |
+          python3 scripts/confirm-component-placement-junction-control-v1.py \
+            --metrics-glob "artifacts/cpjl-v1/control/source-metrics.jsonl" \
+            --train-catalogue artifact-staging/train-freeze/train-catalogue.json \
+            --train-freeze "$TRAIN_FREEZE" \
+            --holdout-validation artifact-staging/holdout-freeze/holdout-validation.json \
+            --holdout-freeze "$HOLDOUT_FREEZE" \
+            --placement-map artifacts/cpjl-v1/placement-map.json \
+            --protocol "$PROTOCOL" \
+            --out artifacts/cpjl-v1/control/control-confirmation.json
+          cp artifacts/cpjl-v1/inputs/control/manifest.json artifacts/cpjl-v1/control/input-manifest.json
+
+      - name: Publish compact control summary
+        run: |
+          python3 - artifacts/cpjl-v1/control/control-confirmation.json >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          s=d["summary"]
+          print("### Component-Placement Junction Law v1 — CONTROL")
+          print(f"- Confirmation SHA-256: `{d['controlConfirmationSha256']}`")
+          print(f"- Holdout passed: {s['holdoutPassed']}")
+          print(f"- Control pass / fail / insufficient: {s['controlPassed']} / {s['controlFailed']} / {s['controlInsufficient']}")
+          print(f"- Survived all three lanes: {s['survivedAllThreeLanes']}")
+          print(f"- Mixed tested control placement cells: {s['mixedControlCells']}")
+          print("- Provenance remains unopened.")
+          PY
+
+      - name: Upload frozen control confirmation
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-placement-junction-law-v1-control
+          path: artifacts/cpjl-v1/control/**
+          if-no-files-found: error
+          retention-days: 30
