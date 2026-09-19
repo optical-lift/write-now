@@ -52,8 +52,8 @@ Every source × law entry must record four independent axes before a final absen
 An opportunity exists only when the currently known **required law condition** could be instantiated in the source.
 
 - `DEMONSTRATED` — the required roles/relations/condition occur in inspected evidence.
-- `POSSIBLE` — the source contains the required role/relation types, but an actual opportunity is not demonstrated.
-- `NONE` — the required condition is demonstrably unavailable in the local source.
+- `POSSIBLE` — the source contains the required role/relation types, but an actual full-condition opportunity is not demonstrated.
+- `NONE` — adequate source coverage shows that the complete required condition does not occur, without by itself proving structural incompatibility.
 - `OUTSIDE_EXPOSED_REGION` — the source is a partial projection whose observable region does not include the condition needed to instantiate the law.
 - `UNKNOWN` — opportunity cannot be adjudicated.
 
@@ -115,7 +115,7 @@ Meaning:
 
 This is genuine negative evidence about local execution, not evidence that the higher-order law is missing.
 
-### COMPATIBLE_UNUSED
+### OPPORTUNITY_PRESENT_NO_INSTANCE
 
 Requirements:
 
@@ -127,11 +127,29 @@ Requirements:
 
 Meaning:
 
-> The source had a detectable opportunity and no known local prohibition, but no instance occurred in the adequately covered evidence.
+> The complete currently known law condition occurred, the evidence could detect the law pattern, no local blocker is known, and the law pattern was not observed.
 
-This is the strongest non-incompatibility absence state.
+This is strong negative evidence against the candidate law applying in this source under the current signature.
 
-It still does not prove the law is impossible or absent from the source in principle.
+It is **not** structural incompatibility: the local architecture can instantiate the condition. It is an empirical failure of the candidate law at an observed opportunity.
+
+### COMPATIBLE_UNUSED
+
+Requirements:
+
+- instantiation = `NOT_OBSERVED`
+- opportunity = `POSSIBLE` or `NONE`
+- compatibility = `COMPATIBLE`
+- observability is not `NOT_PRESERVED` or `INADEQUATE`
+- coverage = `ADEQUATE`
+
+Meaning:
+
+> The local architecture is compatible with the law, but the complete condition needed to instantiate/test it does not occur in the adequately covered source evidence.
+
+This corresponds to **possible but unused**.
+
+It is not negative evidence against the law because the complete condition was never presented.
 
 ### NOT_PRESERVED
 
@@ -213,9 +231,10 @@ Derive the state in this order:
 4. `OUTSIDE_EXPOSED_REGION`
 5. `OPPORTUNITY_PRESENT_PROHIBITED`
 6. `STRUCTURALLY_INCOMPATIBLE`
-7. `COMPATIBLE_UNUSED`
-8. `NOT_YET_OBSERVED`
-9. `UNKNOWN_ABSENCE`
+7. `OPPORTUNITY_PRESENT_NO_INSTANCE`
+8. `COMPATIBLE_UNUSED`
+9. `NOT_YET_OBSERVED`
+10. `UNKNOWN_ABSENCE`
 
 The precedence prevents, for example, a measurement failure from being mislabeled as structural incompatibility.
 
@@ -241,15 +260,27 @@ Require:
 - a demonstrated contradiction between them;
 - evidence that the contradiction is not merely a missing measurement or missing source region.
 
+### To claim OPPORTUNITY_PRESENT_NO_INSTANCE
+
+Require:
+
+- the complete frozen law condition occurs;
+- adequate coverage;
+- adequate observability;
+- no known prohibition;
+- no structural incompatibility;
+- no admissible law instance/pattern is observed.
+
+This state is the strongest empirical non-occurrence evidence short of a demonstrated contradiction.
+
 ### To claim COMPATIBLE_UNUSED
 
 Require:
 
-- actual opportunities;
-- adequate coverage;
-- adequate observability;
-- no known prohibition;
-- no structural incompatibility.
+- the local relation/role architecture is compatible;
+- the complete law condition is not observed in adequately covered evidence;
+- no known prohibition or structural incompatibility;
+- the evidence channel is not known to erase the relevant relation.
 
 Do not use this state merely because a law “could sound possible.”
 
@@ -306,7 +337,8 @@ Especially:
 - `OUTSIDE_EXPOSED_REGION` is not a negative edge;
 - `NOT_PRESERVED` is not a negative edge;
 - `MEASUREMENT_UNRESOLVED` is not a negative edge;
-- `COMPATIBLE_UNUSED` is weak non-occurrence evidence, not incompatibility;
+- `OPPORTUNITY_PRESENT_NO_INSTANCE` is strong negative evidence against the law applying at the tested opportunity, but not structural incompatibility;
+- `COMPATIBLE_UNUSED` is not negative evidence against the law because the complete condition never occurred;
 - `OPPORTUNITY_PRESENT_PROHIBITED` is evidence of an active local constraint;
 - `STRUCTURALLY_INCOMPATIBLE` is the strongest local negative edge.
 
