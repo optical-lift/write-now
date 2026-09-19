@@ -1,0 +1,91 @@
+{
+  "schema": "component_placement_junction_law_test_v1",
+  "status": "FROZEN_BEFORE_PLACEMENT_LAW_JOIN_OUTCOMES",
+  "date": "2026-09-19",
+  "parentDegreeFreeze": {
+    "commit": "757a8c06520ecb1d10d03425ccbcdc3123464fb9",
+    "file": "research/mark/discovery-experiments/degree-conditioned-junction-law-v1.final-freeze.json",
+    "degreeVerdict": "FALSIFIED",
+    "degreeSurvivors": 18
+  },
+  "sourceUniverse": {
+    "total": 714,
+    "excludedOriginalDiscoverySources": 9,
+    "remaining": 705,
+    "train": 237,
+    "holdout": 236,
+    "control": 232
+  },
+  "placementInstrument": {
+    "priorRunId": 33794464849,
+    "priorArtifactId": 9909697343,
+    "artifactName": "mark-masked-slot-substitutability-v1-frozen",
+    "artifactZipSha256": "67f89267716720f9587a0cdb4283f9353910568700ef62c5a73d239d1cd54684",
+    "occurrenceFile": "masked-slot-occurrences.jsonl",
+    "occurrenceRows": 22447,
+    "occurrenceRowsSha256": "86f15b922a27e01fed291ad02aacd0ea1a91c1626a5fb1a2fc622985f5d1d4e6",
+    "placementField": "maskedContextKey",
+    "placementDefinition": "smallest strictly larger wholly-containing observation; exact key is parent proposal scale + train-frozen target geometry bins (relative dx, dy, area contraction, aspect relation) + capped immediate-sibling count",
+    "targetRemovedFromContext": true,
+    "targetTopologyExcluded": true,
+    "occupantTokenForbidden": true,
+    "familyIdForbidden": true,
+    "provenanceForbidden": true,
+    "unplacedObservations": "retained diagnostically but excluded from primary placement-law cells"
+  },
+  "hypothesis": {
+    "statement": "The degree-conditioned junction law is further conditioned by a component's structural placement within a larger observed whole. Exact masked structural slot, already frozen independently of this law test, can separate strict matching from strict reversal within the same degree.",
+    "rationale": "The degree test leaves stable sublaws but also same-degree contradictions. The preceding frozen checkpoint explicitly routes failure upward to component placement. The prior masked-slot instrument provides a target-topology-free placement coordinate without introducing provenance.",
+    "falsification": "If the same degree + exact masked placement + arm context supports both STRICT_MATCH and STRICT_REVERSE across independent sources, this placement coordinate is insufficient."
+  },
+  "measurement": {
+    "physicalExtractor": "unchanged mark-sparse-compiler-v7",
+    "grammarContext": "CENTER:JUNCTION|DEGREE:<d>|PLACEMENT:<p>|ARM:<state>",
+    "placementToken": "P + first 16 hex characters of sha256(maskedContextKey); token map frozen with experiment inputs",
+    "endpointCenters": "retained in compiler output but excluded from primary junction analysis",
+    "nullIterations": 64,
+    "nullContract": "unchanged source-local null: within each observation, arm tokens are deterministically permuted only among centers with identical center kind and degree. Placement is observation-level and therefore constant through observed and all 64 null worlds.",
+    "sourceCellEligibility": "observed context count >= 30",
+    "strictMatch": "observed matching accuracy > every one of 64 source-local null matching accuracies",
+    "strictReverse": "observed matching accuracy < every one of 64 source-local null matching accuracies",
+    "otherwise": "UNRESOLVED"
+  },
+  "sequentialCustody": {
+    "step1": "Join train law measurements to frozen train placement tokens only; discover and freeze degree+placement+arm catalogue.",
+    "step2": "Apply frozen catalogue to holdout with no refit.",
+    "step3": "Apply surviving holdout catalogue to control with no refit.",
+    "joinBlindness": "Placement data and degree-law data were each previously frozen independently. Before this protocol freeze, no degree-law state was joined to maskedContextKey in any lane. The protected object is the cross-dataset relationship, not the already-existing marginals.",
+    "provenance": "No provenance, institution, object type, culture, language, chronology, occupant token, family id, or target topology enters discovery, validation, or confirmation."
+  },
+  "trainDiscovery": {
+    "cellEligibility": "degree+placement+arm must have >=10 eligible train sources",
+    "classification": [
+      "MATCH_ONLY if >=5 STRICT_MATCH sources and 0 STRICT_REVERSE",
+      "REVERSE_ONLY if >=5 STRICT_REVERSE sources and 0 STRICT_MATCH",
+      "MIXED if >=1 STRICT_MATCH and >=1 STRICT_REVERSE",
+      "UNRESOLVED otherwise"
+    ],
+    "candidateLaws": "Only MATCH_ONLY or REVERSE_ONLY cells enter the frozen catalogue."
+  },
+  "validation": {
+    "perCandidateRequiredEligibleSources": 10,
+    "passRule": "Among decided cells (STRICT_MATCH + STRICT_REVERSE), >=90% reproduce the train-frozen direction and at least 5 reproduce it.",
+    "contradictionRule": "Every opposite strict state is retained and counted.",
+    "noRefit": true
+  },
+  "verdict": {
+    "SUPPORTED": "Every train-admitted placement law passes holdout and control, and no tested degree+placement+arm cell with >=10 eligible sources is MIXED in holdout or control.",
+    "PARTIAL": "At least one train-admitted placement law validates and confirms, but another tested placement cell is MIXED, fails, or lacks transfer.",
+    "REJECTED": "No train-admitted placement law survives both holdout and control, or the dominant train placement cells remain MIXED in independent lanes."
+  },
+  "guards": {
+    "noProvenanceFeatures": true,
+    "noOccupantToken": true,
+    "noFamilyId": true,
+    "noTargetTopology": true,
+    "noThresholdChangesAfterTrainJoin": true,
+    "noCrossPlacementMergingBeforeValidation": true,
+    "same64NullGateAsDegreeTest": true,
+    "priorMaskedSlotGeometryBinsRemainFrozen": true
+  }
+}
