@@ -1,0 +1,84 @@
+{
+  "schema": "independent_source_law_discovery_blind_equivalence_v1",
+  "status": "FROZEN_BEFORE_PROVENANCE_OR_PRIOR_LAW_OPENING",
+  "blind_freeze_commit": "5f195b7e4aa1c187c0af071a9d8ef4a8efde68d4",
+  "source_catalogue_count": 9,
+  "raw_admitted_constraints": 34,
+  "normalized_binary_constraint_units": 17,
+  "normalization_rule": "Within one source/context only, complementary binary enrichment/exclusion statements are one probability constraint when the two outcomes exhaust the measured outcome space and signed lifts are equal and opposite. Raw catalogue rows remain unchanged.",
+  "clusters": [
+    {
+      "cluster_id": "ISLD-BC001",
+      "adjudication": "SAME_LAW",
+      "measured_condition": "CENTER:JUNCTION with context arm PATH_TO_ENDPOINT",
+      "constraint": "paired outcome is enriched toward PATH_TO_ENDPOINT and excluded away from PATH_TO_JUNCTION relative to source-local structure-preserving rearrangement",
+      "independent_sources": 8,
+      "sourceGroupIds": [
+        "S0986BCCA11293262",
+        "S278D089F1F3E6EF3",
+        "S2BA35F8F3F41FF82",
+        "S325CAFC6592E173B",
+        "S78DF51368961153D",
+        "S7FAC1CBA3237D428",
+        "SA6A647EB8FD65081",
+        "SD77E0E398D02620C"
+      ],
+      "relation_to_other_clusters": null
+    },
+    {
+      "cluster_id": "ISLD-BC002",
+      "adjudication": "SAME_LAW",
+      "measured_condition": "CENTER:JUNCTION with context arm PATH_TO_JUNCTION",
+      "constraint": "paired outcome is enriched toward PATH_TO_JUNCTION and excluded away from PATH_TO_ENDPOINT relative to source-local structure-preserving rearrangement",
+      "independent_sources": 8,
+      "sourceGroupIds": [
+        "S0986BCCA11293262",
+        "S278D089F1F3E6EF3",
+        "S2BA35F8F3F41FF82",
+        "S325CAFC6592E173B",
+        "S78DF51368961153D",
+        "S7FAC1CBA3237D428",
+        "SA6A647EB8FD65081",
+        "SD77E0E398D02620C"
+      ],
+      "relation_to_other_clusters": "CONTRADICTORY with ISLD-BC003 under the currently measured condition"
+    },
+    {
+      "cluster_id": "ISLD-BC003",
+      "adjudication": "SAME_LAW",
+      "measured_condition": "CENTER:JUNCTION with context arm PATH_TO_JUNCTION",
+      "constraint": "paired outcome is enriched toward PATH_TO_ENDPOINT and excluded away from PATH_TO_JUNCTION relative to source-local structure-preserving rearrangement",
+      "independent_sources": 1,
+      "sourceGroupIds": [
+        "S6E5A315EA8D70272"
+      ],
+      "relation_to_other_clusters": "CONTRADICTORY with ISLD-BC002 under the currently measured condition"
+    }
+  ],
+  "pairwise_adjudications": [
+    {
+      "left": "ISLD-BC001",
+      "right": "ISLD-BC002",
+      "relation": "DISTINCT_LAW_SHARED_PATTERN",
+      "reason": "Both favor a same-type paired arm, but context arm type is a measured relevant condition and is not erased under the strict condition rule."
+    },
+    {
+      "left": "ISLD-BC002",
+      "right": "ISLD-BC003",
+      "relation": "CONTRADICTORY",
+      "reason": "The measured condition is the same but the favored/disfavored outcomes are reversed. This implies either a genuine source-local exception or an unmeasured condition missing from the current signature."
+    }
+  ],
+  "unresolved_diagnostic": {
+    "sourceGroupId": "S6E5A315EA8D70272",
+    "condition": "CENTER:JUNCTION with context arm PATH_TO_ENDPOINT",
+    "observed_direction": "trend toward PATH_TO_JUNCTION / away from PATH_TO_ENDPOINT",
+    "admission_status": "NOT_ADMITTED",
+    "reason": "Each complementary candidate missed the all-64-null extremity gate by exactly one null iteration.",
+    "inference_ceiling": "Preserve as pressure evidence only; it is not a frozen local law."
+  },
+  "global_law_mapping_performed": false,
+  "provenance_opened": false,
+  "canon_opened": false,
+  "prior_source_rule_incidence_opened": false
+}
