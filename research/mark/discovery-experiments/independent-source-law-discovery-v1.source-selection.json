@@ -1,0 +1,106 @@
+{
+  "schema": "independent_source_law_discovery_source_selection_v1",
+  "sealed_input_sha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+  "source_harvest_sha256": "48ac304acf40c8b4f211c491d784e5ebca213a49c6eaed81c68b309e04d02e97",
+  "selection_rule": "For each original blind lane train/holdout/control, rank source objects by frozen observation count descending then sourceGroupId ascending; select top 3.",
+  "source_count_universe": 714,
+  "observation_count_universe": 23161,
+  "selected": [
+    {
+      "selection_lane": "train",
+      "support_rank": 1,
+      "sourceGroupId": "S0986BCCA11293262",
+      "observation_count": 90,
+      "captureToken": "f3a52bc9a5bb4b9d417bdaf35d5228943827d0c52e39b61db0b81f84538f364d",
+      "continuityToken": "0e55b8d2f59aabc704828cff02b20bd269f813cddf3e6a505b6890e548919b0b",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "train",
+      "support_rank": 2,
+      "sourceGroupId": "S2BA35F8F3F41FF82",
+      "observation_count": 90,
+      "captureToken": "741549509551de76571fd48cb7be05115aecdd50f93594783fa23a25537f3b69",
+      "continuityToken": "7159a639c0b06ec447d92c0aa3c889d4b100ab16d9d8e1655780f2e9fe4ceb88",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "train",
+      "support_rank": 3,
+      "sourceGroupId": "S6E5A315EA8D70272",
+      "observation_count": 90,
+      "captureToken": "fdd8ecb0bd0ba66dd8835700ca76279cbe6ece80045668bff906ff4ffa052604",
+      "continuityToken": "c4fce9ffaf5b20fa7fab37dde064ad777a5e804d7bd4729ecbf78c81f3e47401",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "holdout",
+      "support_rank": 1,
+      "sourceGroupId": "S278D089F1F3E6EF3",
+      "observation_count": 94,
+      "captureToken": "a968c903ef26899f2a0518ac3eefefca7aa62a6a522ade69d6d43404eec24248",
+      "continuityToken": "1ae116b5ef6adbf5fd95c00b76dc94934c49915ec05ef21cfd3425993369f9d3",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "holdout",
+      "support_rank": 2,
+      "sourceGroupId": "S7FAC1CBA3237D428",
+      "observation_count": 93,
+      "captureToken": "0ed930ab872539ff3defb8ccce3b30c4e31691eeeb827643ba8a56ca4808e1e5",
+      "continuityToken": "5c584a2d06be6f784f0bfef6ea582f72365710cb788f39de2c3be1529fa9b78f",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "holdout",
+      "support_rank": 3,
+      "sourceGroupId": "SA6A647EB8FD65081",
+      "observation_count": 93,
+      "captureToken": "1660f6978db0ed49115e47302f0a657015ac5edefb6da8d3d84bb909cbf5468f",
+      "continuityToken": "74f2500e4952d0f64371abc0e024fd90b5ee3977c993888f8b353e4cc5b7d3d0",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "control",
+      "support_rank": 1,
+      "sourceGroupId": "SD77E0E398D02620C",
+      "observation_count": 89,
+      "captureToken": "ee223d30e7e332fdf66a127a6dd87cf86e66d36876f6f36a8183f819f9320fca",
+      "continuityToken": "70d8fbff7fa3281de42c50de2bd5e62408d92085031c5ec362b663ee107d61c6",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "control",
+      "support_rank": 2,
+      "sourceGroupId": "S78DF51368961153D",
+      "observation_count": 88,
+      "captureToken": "91b3158f45b42ea4205a1da2cc1f816f7945b70eee0d47efd239da3edbfd020c",
+      "continuityToken": "c12c415520cd23267dbd80b1bcfe4d201dc385b9e0f147a294d57ddcf4ba4541",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    },
+    {
+      "selection_lane": "control",
+      "support_rank": 3,
+      "sourceGroupId": "S325CAFC6592E173B",
+      "observation_count": 86,
+      "captureToken": "39b9091b91e6b67d5dbc5c20a665be20c43a6ef33abd22a00c94861ef76805f7",
+      "continuityToken": "e61978669e73fdca2294d021a892ce3ed3b6ff7a3d267e6cd5ab70bd328d4c8f",
+      "captureMime": "image/jpeg",
+      "adapter": "image_2d"
+    }
+  ],
+  "contamination_guards": {
+    "provenance_opened": false,
+    "prior_rule_incidence_opened": false,
+    "eqc_labels_used_for_selection": false,
+    "canon_used_for_selection": false
+  }
+}
