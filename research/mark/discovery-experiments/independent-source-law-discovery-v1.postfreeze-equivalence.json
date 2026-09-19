@@ -1,0 +1,92 @@
+{
+  "schema": "independent_source_law_discovery_postfreeze_equivalence_v1",
+  "status": "FROZEN_BEFORE_PROVENANCE_REJOIN",
+  "date": "2026-09-19",
+  "source_catalogue_freeze_manifest_sha256": "2d55e927ec31360c5e8ef1e32914f9b4c9d44296f01ec047d6d56805ac612482",
+  "catalogue_count": 9,
+  "raw_admitted_pairwise_constraints": 34,
+  "representation_deduplication": {
+    "finding": "With exactly two resolved arm outcomes, enrichment of one outcome and exclusion of the other are complementary views of one binary source-local contrast and must not be counted as separate laws.",
+    "eight_regular_sources_raw_constraints_each": 4,
+    "eight_regular_sources_binary_contrasts_each": 2,
+    "exceptional_source_raw_constraints": 2,
+    "exceptional_source_binary_contrasts": 1
+  },
+  "frozen_equivalence_language": "law-equivalence-adjudication-v1",
+  "source_local_clusters": [
+    {
+      "cluster_id": "ISLD-C1",
+      "condition_template": "CENTER:JUNCTION with one PATH_TO_ENDPOINT context arm",
+      "constraint": "co-arm destination is biased toward PATH_TO_ENDPOINT and away from PATH_TO_JUNCTION relative to source-local rearrangement",
+      "support_sources": [
+        "S0986BCCA11293262",
+        "S278D089F1F3E6EF3",
+        "S2BA35F8F3F41FF82",
+        "S325CAFC6592E173B",
+        "S78DF51368961153D",
+        "S7FAC1CBA3237D428",
+        "SA6A647EB8FD65081",
+        "SD77E0E398D02620C"
+      ],
+      "support_count": 8,
+      "unresolved_or_nonadmitted_sources": [
+        "S6E5A315EA8D70272"
+      ]
+    },
+    {
+      "cluster_id": "ISLD-C2",
+      "condition_template": "CENTER:JUNCTION with one PATH_TO_JUNCTION context arm",
+      "constraint": "co-arm destination is biased toward PATH_TO_JUNCTION and away from PATH_TO_ENDPOINT relative to source-local rearrangement",
+      "support_sources": [
+        "S0986BCCA11293262",
+        "S278D089F1F3E6EF3",
+        "S2BA35F8F3F41FF82",
+        "S325CAFC6592E173B",
+        "S78DF51368961153D",
+        "S7FAC1CBA3237D428",
+        "SA6A647EB8FD65081",
+        "SD77E0E398D02620C"
+      ],
+      "support_count": 8,
+      "contradictory_sources": [
+        "S6E5A315EA8D70272"
+      ]
+    },
+    {
+      "cluster_id": "ISLD-C3",
+      "condition_template": "CENTER:JUNCTION with one PATH_TO_JUNCTION context arm",
+      "constraint": "co-arm destination is biased toward PATH_TO_ENDPOINT and away from PATH_TO_JUNCTION relative to source-local rearrangement",
+      "support_sources": [
+        "S6E5A315EA8D70272"
+      ],
+      "support_count": 1,
+      "relation_to_ISLD_C2": "CONTRADICTORY under the currently measured normalized condition"
+    }
+  ],
+  "higher_order_adjudication": {
+    "relation_between_C1_and_C2": "SAME_LAW",
+    "mapping": "swap the endpoint/junction destination-state labels; the required relation, constrained possibility, consequence direction and invariant map bijectively",
+    "normalized_law_id": "ISLD-LAW-001",
+    "normalized_law_statement": "At a junction, when one arm carries destination-state X, the co-arm destination is constrained toward matching X rather than behaving as a free reassignment under the same local component inventory.",
+    "independent_source_discovery_count": 8,
+    "independent_sources": [
+      "S0986BCCA11293262",
+      "S278D089F1F3E6EF3",
+      "S2BA35F8F3F41FF82",
+      "S325CAFC6592E173B",
+      "S78DF51368961153D",
+      "S7FAC1CBA3237D428",
+      "SA6A647EB8FD65081",
+      "SD77E0E398D02620C"
+    ],
+    "contradiction_count": 1,
+    "contradictory_source": "S6E5A315EA8D70272",
+    "contradiction_interpretation": "The exceptional source reverses the C2 relation. Under the frozen equivalence language this is CONTRADICTORY at the currently measured condition, not evidence that the majority law is universal. It creates pressure to search for an omitted relevant condition."
+  },
+  "existing_global_law_mapping": {
+    "opened": false,
+    "note": "No EQC/MCR identity is assigned in this blind cross-source freeze."
+  },
+  "provenance_opened": false,
+  "canon_opened": false
+}

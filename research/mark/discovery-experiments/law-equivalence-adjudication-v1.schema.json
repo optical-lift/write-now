@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Law Equivalence Adjudication v1",
+  "type": "object",
+  "required": [
+    "adjudication_id",
+    "left_id",
+    "right_id",
+    "role_mapping",
+    "condition_isomorphism",
+    "constraint_target_isomorphism",
+    "consequence_order_isomorphism",
+    "invariant_isomorphism",
+    "necessary_extra_left",
+    "necessary_extra_right",
+    "path_relation",
+    "view_relation",
+    "evidence_modality_relation",
+    "primary_relation",
+    "rationale",
+    "evidence_ceiling"
+  ],
+  "properties": {
+    "adjudication_id": {
+      "type": "string",
+      "pattern": "^LEA-[0-9]{3}$"
+    },
+    "left_id": {
+      "type": "string"
+    },
+    "right_id": {
+      "type": "string"
+    },
+    "role_mapping": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "left",
+          "right"
+        ],
+        "properties": {
+          "left": {
+            "type": "string"
+          },
+          "right": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "condition_isomorphism": {
+      "enum": [
+        "yes",
+        "partial",
+        "no",
+        "unknown"
+      ]
+    },
+    "constraint_target_isomorphism": {
+      "enum": [
+        "yes",
+        "partial",
+        "no",
+        "unknown"
+      ]
+    },
+    "consequence_order_isomorphism": {
+      "enum": [
+        "yes",
+        "partial",
+        "no",
+        "unknown"
+      ]
+    },
+    "invariant_isomorphism": {
+      "enum": [
+        "yes",
+        "partial",
+        "no",
+        "unknown"
+      ]
+    },
+    "necessary_extra_left": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "necessary_extra_right": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "path_relation": {
+      "enum": [
+        "same",
+        "different_nonessential",
+        "different_essential",
+        "unknown"
+      ]
+    },
+    "view_relation": {
+      "enum": [
+        "same_view",
+        "opposite_view_same_relation",
+        "different_relation",
+        "unknown"
+      ]
+    },
+    "evidence_modality_relation": {
+      "enum": [
+        "compatible",
+        "different_but_normalizable",
+        "different_not_normalized",
+        "unknown"
+      ]
+    },
+    "primary_relation": {
+      "enum": [
+        "SAME_LAW",
+        "SAME_LAW_OPPOSITE_VIEW",
+        "SAME_LAW_DIFFERENT_PATH",
+        "DISTINCT_LAW_SHARED_PATTERN",
+        "COMPOSED_RELATION",
+        "ANALOGOUS_ONLY",
+        "UNDERDETERMINED",
+        "CONTRADICTORY"
+      ]
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_ceiling": {
+      "type": "string"
+    },
+    "universal_law_label": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

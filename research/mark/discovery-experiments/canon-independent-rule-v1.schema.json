@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Canon Independent Constraint Rule v1",
+  "type": "object",
+  "required": [
+    "canon_rule_id",
+    "rule_name",
+    "rule_statement",
+    "condition_signature",
+    "consequence_signature",
+    "constraint_kind",
+    "source_refs",
+    "evidence_status",
+    "interpretation_ceiling"
+  ],
+  "properties": {
+    "canon_rule_id": {
+      "type": "string",
+      "pattern": "^CIR-[0-9]{3}$"
+    },
+    "rule_name": {
+      "type": "string"
+    },
+    "rule_statement": {
+      "type": "string"
+    },
+    "condition_signature": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consequence_signature": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraint_kind": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_status": {
+      "enum": [
+        "strong_provisional",
+        "survives",
+        "working_very_high",
+        "admitted_direct",
+        "observed_function"
+      ]
+    },
+    "interpretation_ceiling": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "source_level_disaggregation_v1_v36_book_localization",
+  "source_experiment": "mark:glyph-hidden-operator-path:v36",
+  "original_result_commit": "9ffcf53a91ba788dc107d90567d7c8b533153129",
+  "source_unit": "heldout book",
+  "independence_class": "NONOVERLAPPING_BOOK_EVALUATION_SHARED_TRAINING",
+  "law_anchor": "MCR-007",
+  "shared_law_target": "EQC-001",
+  "books": [
+    {
+      "book": "Deu",
+      "supported_n": 94,
+      "real_median_rank": 64,
+      "reverse_median_rank": 122.5,
+      "shuffle_median_rank": 108,
+      "real_top10": 0.0638,
+      "reverse_top10": 0.0319,
+      "shuffle_top10": 0.0213,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Jdg",
+      "supported_n": 43,
+      "real_median_rank": 40,
+      "reverse_median_rank": 230,
+      "shuffle_median_rank": 138,
+      "real_top10": 0.0698,
+      "reverse_top10": 0,
+      "shuffle_top10": 0,
+      "local_status": "SOURCE_LOCAL_SUPPORT"
+    },
+    {
+      "book": "Psa",
+      "supported_n": 7,
+      "local_status": "UNRESOLVED_TOO_SPARSE"
+    },
+    {
+      "book": "Job",
+      "supported_n": 1,
+      "local_status": "UNRESOLVED_TOO_SPARSE"
+    }
+  ],
+  "interpretation_ceiling": "Book-level support localizes the V36 order effect. Books share the same V36 training model and are independent evaluation groups, not independent model fits."
+}
