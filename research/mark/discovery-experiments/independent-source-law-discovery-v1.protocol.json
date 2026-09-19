@@ -1,0 +1,44 @@
+{
+  "schema": "independent_source_law_discovery_protocol_v1",
+  "status": "FROZEN_BEFORE_LOCAL_RULE_OUTCOMES",
+  "date": "2026-09-18",
+  "parent_freeze": "f366c4c9628020a6d638595a84727ea0bc1acc1c",
+  "source_selection_commit": "1c4e417d0aac4d30388cbaba458aec0416a1e14c",
+  "narrative_protocol_commit": "19077f5c818af9942fb950305a9c83145129894a",
+  "sealed_evidence_run_id": 33755743472,
+  "sealed_evidence_artifact": "mark-source-rule-atlas-v1-sealed-evidence",
+  "compiler": {
+    "tile": 512,
+    "overlap": 32,
+    "null_iterations": 64,
+    "min_sources": 1,
+    "instrument": "mark-sparse-compiler-v7"
+  },
+  "candidate_universe": "For each observed context, union all outcomes appearing in observed iteration -1 or any null iteration 0..63.",
+  "gates": {
+    "minimum_observed_context_count": 30,
+    "enrichment_minimum_observed_outcome_count": 10,
+    "exclusion_minimum_mean_null_outcome_count": 10,
+    "enrichment_requires": "observed_accuracy > every null_accuracy",
+    "exclusion_requires": "observed_accuracy < every null_accuracy"
+  },
+  "ranking": [
+    "absolute_signed_lift_desc",
+    "observed_context_count_desc",
+    "comparison_mass_desc",
+    "context_asc",
+    "outcome_asc"
+  ],
+  "admitted_kinds": [
+    "RELATIONAL_ENRICHMENT",
+    "RELATIONAL_EXCLUSION"
+  ],
+  "source_catalogue_identity": "Source-local only; no cross-source law name is assigned before all nine catalogues are frozen.",
+  "contamination_guards": {
+    "provenance_opened_before_catalogue_freeze": false,
+    "prior_source_rule_incidence_opened": false,
+    "eqc_or_mcr_labels_available_to_local_evaluator": false,
+    "canon_available_to_local_evaluator": false,
+    "cross_source_matching_before_all_catalogue_hashes": false
+  }
+}
