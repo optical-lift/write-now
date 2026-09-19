@@ -1,0 +1,63 @@
+{
+  "schema": "degree_conditioned_junction_law_test_v1",
+  "status": "FROZEN_BEFORE_DEGREE_OUTCOMES",
+  "date": "2026-09-19",
+  "parent_freeze": "33a960018e0648cfe6d847113541dc0d512e1b4a",
+  "source_universe": {
+    "total": 714,
+    "excluded_original_discovery_sources": 9,
+    "remaining": 705,
+    "train_discovery": 237,
+    "holdout_validation": 236,
+    "control_confirmation": 232
+  },
+  "hypothesis": {
+    "statement": "The apparent source-level junction matching law is a mixture of degree-conditioned laws. Junction degree is an omitted condition in the current grammar representation.",
+    "reason": "The frozen null generator preserves (center kind, degree) while the grammar context omits degree.",
+    "falsification": "If the same junction degree supports both strict matching and strict reversal across independent sources, degree alone is insufficient."
+  },
+  "measurement": {
+    "physical_extractor": "unchanged mark-sparse-compiler-v7",
+    "grammar_context_change_only": "CENTER:JUNCTION|DEGREE:<d>|ARM:<state>",
+    "endpoint_centers": "retained in raw compiler output but excluded from primary degree-law analysis",
+    "null_iterations": 64,
+    "null_contract": "unchanged; arm tokens shuffle only among centers of identical kind and degree within each observation",
+    "source_degree_context_eligibility": "observed context count >= 30",
+    "strict_match": "observed matching accuracy > every one of 64 source-local null matching accuracies",
+    "strict_reverse": "observed matching accuracy < every one of 64 source-local null matching accuracies",
+    "otherwise": "UNRESOLVED"
+  },
+  "sequential_custody": {
+    "step1": "Run train lane only and freeze the degree-specific discovery catalogue before opening holdout or control degree outcomes.",
+    "step2": "Validate the frozen train degree catalogue on holdout.",
+    "step3": "Confirm on control.",
+    "provenance": "No provenance/object-type fields enter degree discovery, validation, or confirmation."
+  },
+  "train_discovery": {
+    "degree_eligibility": "degree must have >= 10 eligible train sources for at least one arm-state context",
+    "classification": [
+      "MATCH_ONLY if >=5 strict-match source-degree cells and 0 strict reversals",
+      "REVERSE_ONLY if >=5 strict-reverse source-degree cells and 0 strict matches",
+      "MIXED if >=1 strict match and >=1 strict reversal",
+      "UNRESOLVED otherwise"
+    ],
+    "candidate_laws": "Only MATCH_ONLY or REVERSE_ONLY degree/context pairs enter the frozen train catalogue."
+  },
+  "validation": {
+    "per_candidate_required_eligible_sources": 10,
+    "pass_rule": "Among decided cells (strict match + strict reverse), >=90% reproduce the train-discovered direction and at least 5 reproduce it.",
+    "contradiction_rule": "Any opposite strict state is retained and counted; no candidate is silently dropped."
+  },
+  "degree_sufficiency_verdict": {
+    "SUPPORTED": "Every train-admitted degree law passes both holdout validation and control confirmation, and no tested degree with >=10 eligible sources is MIXED in either holdout or control.",
+    "PARTIAL": "At least one train-admitted degree law validates/confirms, but another degree is MIXED or fails.",
+    "REJECTED": "No train-admitted degree law survives both holdout and control, or the dominant train degree is MIXED in holdout/control."
+  },
+  "guards": {
+    "no_provenance_features": true,
+    "no_pair_density_in_degree_law": true,
+    "no_threshold_changes_after_train_degree_outcomes": true,
+    "no_cross_degree_merging_before_validation": true,
+    "same_64_null_gate_as_independent_source_law_discovery": true
+  }
+}
