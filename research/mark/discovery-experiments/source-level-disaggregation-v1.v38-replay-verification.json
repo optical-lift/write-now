@@ -1,0 +1,22 @@
+{
+  "schema": "source_level_disaggregation_v1_v38_replay_verification",
+  "reconstructed_from_block_rows": {
+    "transitions": 58691,
+    "conditional_ce": 2.8360684584054106,
+    "unigram_ce": 2.843766082917836,
+    "delta": -0.007697624512425377
+  },
+  "published_phase_a": {
+    "transitions": 58691,
+    "conditional_ce": 2.836068,
+    "unigram_ce": 2.84377,
+    "delta": -0.007701
+  },
+  "absolute_differences": {
+    "transitions": 0,
+    "conditional_ce": 4.5840541051944683e-7,
+    "unigram_ce": 0.000003917082163962249,
+    "delta": 0.0000033754875746238103
+  },
+  "verdict": "REPLAY_MATCHES_PUBLISHED_AGGREGATE_WITHIN_ROUNDING"
+}
