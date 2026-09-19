@@ -1,0 +1,211 @@
+{
+  "schema": "source_local_law_expansion_v1_triage",
+  "date": "2026-09-18",
+  "rule": "A law may be localized only when frozen evidence contains a source-level adjudication of the law contrast, a direct positive local witness, or a replay-capable frozen protocol that can produce one without changing the scientific rule.",
+  "rows": [
+    {
+      "mcr": "MCR-007",
+      "status": "ALREADY_LOCALIZED",
+      "source_unit": "canonical book",
+      "evidence": "V36 published per-book outcome",
+      "action": "retain"
+    },
+    {
+      "mcr": "MCR-010",
+      "status": "ALREADY_LOCALIZED",
+      "source_unit": "canonical book",
+      "evidence": "V38 frozen block replay",
+      "action": "retain"
+    },
+    {
+      "mcr": "MCR-015",
+      "status": "REPLAY_LOCALIZABLE_NOT_YET_RUN",
+      "source_unit": "canonical book/block",
+      "evidence": "V40 protocol+implementation survive but no frozen per-block score table",
+      "action": "future bridge/local replay"
+    },
+    {
+      "mcr": "MCR-016",
+      "status": "REPLAY_LOCALIZABLE_NOT_YET_RUN",
+      "source_unit": "canonical book/block",
+      "evidence": "V40 protocol+implementation survive but no frozen per-block destruction scores",
+      "action": "future bridge/local replay"
+    },
+    {
+      "mcr": "MCR-020",
+      "status": "LOCALIZED_V45_EXACT_RESULT",
+      "source_unit": "sourceGroupId",
+      "evidence": "byte-identical V9/V45 evaluator sourceScores; 151/151 composition beats input-only",
+      "action": "add MLAW-COMP-001"
+    },
+    {
+      "mcr": "MCR-021",
+      "status": "LOCALIZED_POSITIVE_WITNESSES_ONLY",
+      "source_unit": "sourceGroupId",
+      "evidence": "committed V45 candidate closure contains two direct positive holdout witnesses",
+      "action": "add MLAW-IDEM-001 conservatively"
+    },
+    {
+      "mcr": "MCR-022",
+      "status": "LOCALIZED_POSITIVE_WITNESSES_ONLY",
+      "source_unit": "sourceGroupId",
+      "evidence": "committed V45 candidate closure contains two direct positive holdout witnesses",
+      "action": "add MLAW-CANCEL-001 conservatively"
+    },
+    {
+      "mcr": "MCR-028",
+      "status": "SOURCE_ROWS_EXIST_BUT_LOCAL_CONTRAST_ABSENT",
+      "source_unit": "sourceGroupId",
+      "evidence": "source-rule atlas has per-source accuracies but not per-source matched null expectation",
+      "action": "do not localize"
+    },
+    {
+      "mcr": "MCR-029",
+      "status": "SOURCE_ROWS_EXIST_BUT_LOCAL_CONTRAST_ABSENT",
+      "source_unit": "sourceGroupId",
+      "evidence": "source-rule atlas has per-source exclusion-rule accuracies but not per-source matched null expectation",
+      "action": "do not localize"
+    },
+    {
+      "mcr": "MCR-031",
+      "status": "META_LAW_NOT_ATOMIC_FOR_LOCALIZATION",
+      "source_unit": "sourceGroupId",
+      "evidence": "signed attraction/exclusion is an experiment-level architecture claim",
+      "action": "do not create source edge"
+    },
+    {
+      "mcr": "MCR-034",
+      "status": "SOURCE_ROWS_EXIST_BUT_LOCAL_NULL_ABSENT",
+      "source_unit": "sourceGroupId",
+      "evidence": "source state mixtures exist, but the spatial destruction contrast is aggregate rather than source-adjudicated",
+      "action": "do not localize"
+    },
+    {
+      "mcr": "MCR-036",
+      "status": "SOURCE_ROWS_EXIST_BUT_LOCAL_NULL_ABSENT",
+      "source_unit": "sourceGroupId",
+      "evidence": "transition profiles preserve source counts, but transition/program deviation null is not source-adjudicated",
+      "action": "do not localize"
+    },
+    {
+      "mcr": "MCR-037",
+      "status": "SOURCE_ROWS_EXIST_BUT_LOCAL_NULL_ABSENT",
+      "source_unit": "sourceGroupId",
+      "evidence": "commitment/return counts exist per source, but frozen asymmetry null is aggregate",
+      "action": "do not localize"
+    },
+    {
+      "mcr": "MCR-038",
+      "status": "CROSS_SOURCE_ORGANIZATION_LAW",
+      "source_unit": "sourceGroupId",
+      "evidence": "law concerns source discrimination from transition profiles and is not a single-source occurrence law",
+      "action": "retain as global-support evidence"
+    },
+    {
+      "mcr": "MCR-042",
+      "status": "AGGREGATE_ONLY_CURRENT_ARTIFACT",
+      "source_unit": "unknown",
+      "evidence": "state-memory frozen result lacks source-local rows",
+      "action": "requires explicit replay if pursued"
+    },
+    {
+      "mcr": "MCR-050",
+      "status": "SOURCE_CORRESPONDENCE_LAW_NOT_YET_LOCALIZED",
+      "source_unit": "physical source/pair",
+      "evidence": "topology edit frozen artifact survives but source-level law adjudication not yet derived",
+      "action": "possible later extraction"
+    },
+    {
+      "mcr": "MCR-051",
+      "status": "SOURCE_CORRESPONDENCE_LAW_NOT_YET_LOCALIZED",
+      "source_unit": "physical source/pair",
+      "evidence": "critical-center artifact survives; source-local edit constraint extraction not yet frozen",
+      "action": "possible later extraction"
+    },
+    {
+      "mcr": "MCR-052",
+      "status": "SOURCE_CORRESPONDENCE_LAW_NOT_YET_LOCALIZED",
+      "source_unit": "physical source/pair",
+      "evidence": "critical-edge artifact survives; source-local edit constraint extraction not yet frozen",
+      "action": "possible later extraction"
+    },
+    {
+      "mcr": "MCR-056",
+      "status": "LINEAGE_DUPLICATE_OF_MCR020_FOR_GRAPH",
+      "source_unit": "sourceGroupId",
+      "evidence": "V9 result SHA equals V45 certified primary evaluator result SHA",
+      "action": "do not create duplicate law node"
+    },
+    {
+      "mcr": "MCR-057",
+      "status": "BUNDLED_DUPLICATE_SUBFAMILIES",
+      "source_unit": "sourceGroupId",
+      "evidence": "bundles idempotence and cancellation already represented atomically by MCR-021/MCR-022",
+      "action": "do not create duplicate bundled node"
+    },
+    {
+      "mcr": "MCR-059",
+      "status": "REPLAY_CAPABLE_BUT_EVALUATION_LANES_REUSED",
+      "source_unit": "glyph source/segment",
+      "evidence": "V11 protocol+evaluator survive; frozen result lacks source IDs and freshIndependentHoldout=false",
+      "action": "defer unless bridge value justifies replay"
+    },
+    {
+      "mcr": "MCR-060",
+      "status": "REPLAY_CAPABLE_BUT_EVALUATION_LANES_REUSED",
+      "source_unit": "glyph source/segment",
+      "evidence": "V12 core/inducer/evaluator survive; frozen result lacks source IDs and evaluation lanes are reused",
+      "action": "defer unless bridge value justifies replay"
+    },
+    {
+      "mcr": "MCR-069",
+      "status": "REPLAY_CAPABLE_CROSS_SYSTEM",
+      "source_unit": "Hebrew book/verse + glyph source",
+      "evidence": "V20 frozen protocol/core/evaluator/workflow survive; source IDs absent from result",
+      "action": "priority bridge replay"
+    },
+    {
+      "mcr": "MCR-072",
+      "status": "REPLAY_CAPABLE_CROSS_SYSTEM",
+      "source_unit": "Hebrew book/verse + glyph source",
+      "evidence": "V23 frozen protocol/core/evaluator/workflow survive; source IDs absent from result",
+      "action": "priority bridge replay"
+    },
+    {
+      "mcr": "MCR-078",
+      "status": "REPLAY_CAPABLE_BOOK_SPLIT",
+      "source_unit": "canonical book",
+      "evidence": "V29 frozen book split, protocol/core/evaluator/workflow survive; source IDs absent from result",
+      "action": "priority book replay"
+    },
+    {
+      "mcr": "MCR-083",
+      "status": "CROSS_SOURCE_RECURRENCE_LAW",
+      "source_unit": "physical source",
+      "evidence": "law is defined by recurrence collapse across sources under topology null, not a single-source occurrence",
+      "action": "retain as global-support evidence"
+    },
+    {
+      "mcr": "MCR-087",
+      "status": "CROSS_SOURCE_RECURRENCE_LAW",
+      "source_unit": "physical source",
+      "evidence": "early recurrence-vs-null law is cross-source by construction",
+      "action": "retain as global-support evidence"
+    },
+    {
+      "mcr": "MCR-089",
+      "status": "REPLAY_CAPABLE_CROSS_SYSTEM",
+      "source_unit": "canonical book/verse",
+      "evidence": "V23 frozen protocol/core/evaluator survive; Hebrew operator main-effect can potentially be localized",
+      "action": "priority bridge replay"
+    }
+  ],
+  "priority_next": [
+    "MCR-069",
+    "MCR-072",
+    "MCR-089",
+    "MCR-078",
+    "MCR-015",
+    "MCR-016"
+  ]
+}
