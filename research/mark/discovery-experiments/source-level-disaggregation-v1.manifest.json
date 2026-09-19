@@ -1,6 +1,6 @@
 {
   "schema": "source_level_disaggregation_manifest_v1",
-  "status": "COMPLETE_READY_FOR_DESCRIPTIVE_OVERLAP_GRAPH",
+  "status": "COMPLETE_PRIMARY_OVERLAP_GRAPH_GATED",
   "date": "2026-09-18",
   "parent_freeze": "b5d0562212c5767f161c22aaae164b66af796f94",
   "overlap_audit": {
@@ -9,40 +9,51 @@
     "v40_blocks_inside_v36_books": 11,
     "verdict": "EXPERIMENT_LEVEL_NODES_NOT_INDEPENDENT"
   },
-  "v36_localization": {
-    "method": "retrospective extraction from frozen published per-book result",
-    "eqc001_present_books": [
-      "BOOK-Deu",
-      "BOOK-Jdg"
-    ],
-    "unresolved_books": [
-      "BOOK-Psa",
-      "BOOK-Job"
-    ]
+  "replay_protocols": {
+    "v38": "0b49e2cd54ce7320c5dacbd8ab5ce12dd306d0d1",
+    "v40": "1e0a1e8756eb98a50cee2e1f0a24e921076c0c2f"
   },
-  "v38_replay": {
-    "protocol_commit": "0b49e2cd54ce7320c5dacbd8ab5ce12dd306d0d1",
-    "blocks": 41,
-    "support_blocks": 24,
-    "unresolved_blocks": 17,
-    "support_books": 18,
-    "verification": "REPLAY_MATCHES_PUBLISHED_AGGREGATE_WITHIN_ROUNDING"
+  "replay_results": {
+    "v36": "570a1fa2bf326f70271b875227c123a2f4e9a8f8",
+    "v38": "5a616b2f8f1a8b30a4f006162e9179dbacdf54c3",
+    "v40": "239e10ad81937404b522fd33191ff45dac4ab173"
   },
-  "raw_book_catalogues": {
-    "count": 23,
-    "raw_observation_independence": "CERTIFIED_NONOVERLAPPING_BOOK",
-    "model_dependence_groups": [
-      "V36_SHARED_TRAINING_MODEL",
-      "V38_SHARED_TRAINING_MODEL"
-    ],
-    "eqc001_present": 2,
-    "eqc002_present": 18,
-    "both_present": [
-      "BOOK-Deu",
-      "BOOK-Jdg"
-    ]
+  "certification_spec_commit": "be772b47c4f8a0bbe9ff81ba1883d138d08970df",
+  "source_units_commit": "c8e46ae15d402f21f688efb8105a23a28da86cb6",
+  "cooccurrence_commit": "7240ea1f1e995d6c9e9c3842f2dd760e2aa18add",
+  "summary_commit": "9613e6e5aa4fa8465e044b39d4276bb02091a74f",
+  "certification_counts": {
+    "source_units": 86,
+    "whole_source_heldout_transfer": 2,
+    "nonoverlapping_unit_shared_training": 53,
+    "unresolved_source_unit": 31,
+    "independent_local_discovery": 0
   },
-  "overlap_graph_ready": true,
-  "readiness_class": "READY_FOR_DESCRIPTIVE_OVERLAP_GRAPH_WITH_SHARED_MODEL_DEPENDENCE",
-  "next_checkpoint": "cross_source_overlap_graph_v1"
+  "law_counts": {
+    "EQC-001": {
+      "independent_discovery": 0,
+      "whole_source_transfer": 2,
+      "shared_training_support": 29,
+      "unresolved": 14,
+      "distinct_support_books": 19
+    },
+    "EQC-002": {
+      "independent_discovery": 0,
+      "whole_source_transfer": 0,
+      "shared_training_support": 24,
+      "unresolved": 17,
+      "distinct_support_books": 18
+    }
+  },
+  "same_source_dual_support_blocks": [
+    "Zec:2",
+    "Deu:3",
+    "Dan:1",
+    "Gen:1",
+    "Isa:10",
+    "2Ch:0"
+  ],
+  "descriptive_provenance_graph_ready": true,
+  "primary_independent_discovery_graph_ready": false,
+  "next_checkpoint": "independent_source_law_discovery_v1"
 }
