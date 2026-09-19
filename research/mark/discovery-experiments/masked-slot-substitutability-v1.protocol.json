@@ -1,0 +1,107 @@
+{
+  "schema": "mark_masked_slot_substitutability_protocol_v1",
+  "experimentId": "mark:masked-slot-substitutability:v1",
+  "phase": "blind_functional_interchangeability_discovery_before_local_state_semantics",
+  "question": "Which physically distinct anonymous occupants repeatedly fit the same masked structural slots, and do those train-discovered substitution families preserve surrounding and downstream structural behavior in independent lanes?",
+  "parentEvidence": {
+    "sourceRuleAtlasRunId": 33755743472,
+    "sealedEvidenceArtifact": "mark-source-rule-atlas-v1-sealed-evidence",
+    "frozenAtlasArtifact": "mark-source-rule-atlas-v1-frozen",
+    "sourceRuleAtlasSha256": "dcb704b540d8c25030627fafddb82e4b1ba9104bd553a77ecf03d50cdd5b7e75",
+    "sourceBlindInputSha256": "4b64315a037b6ff6dfca3d99bade96e4c9c453f589e4beb0aa3dd5e0c2b92786",
+    "physicalLedgerMerkleRoot": "d8e1b813f4cdf9a2fda43c1e52ce8c6c193fdf5d430f3512c5b402b9802ef025",
+    "observations": 23161,
+    "sources": 714
+  },
+  "maskedSlot": {
+    "direction": "smallest strictly larger wholly-containing observation defines the slot parent",
+    "targetRemovedFromContext": true,
+    "ancestorTopologyExcluded": true,
+    "allowedContext": [
+      "parent proposal scale and anonymous proposal kind",
+      "target bounding-box position and contraction inside parent",
+      "target bounding-box aspect relation to parent",
+      "immediate sibling count",
+      "physical archetypes of immediate siblings"
+    ],
+    "explicitlyExcluded": [
+      "target topology",
+      "parent or ancestor topology that contains target pixels",
+      "local State 1/2/3 labels",
+      "state-transition outcomes",
+      "institution",
+      "catalog metadata",
+      "culture",
+      "language",
+      "object type",
+      "chronology"
+    ]
+  },
+  "occupantFingerprint": {
+    "trainingLaneOnly": true,
+    "minimumTrainObservationSupport": 25,
+    "maximumFeatures": 8,
+    "featureSelection": "largest train-only variance among normalized anonymous topology features",
+    "standardization": "train mean and standard deviation only",
+    "quantileBins": 3,
+    "minimumArchetypeOccurrences": 10,
+    "minimumArchetypeSources": 3,
+    "rareAndTransferAssignment": "nearest recurring train archetype by quantized physical Hamming distance with deterministic tie break"
+  },
+  "maskedContext": {
+    "geometryQuantileBins": 3,
+    "siblingCountCap": 4,
+    "maximumSiblingTokensInExactKey": 0,
+    "exactContextKey": "parent scale + train-frozen geometry bins + capped immediate-sibling count",
+    "distributionalContext": "exact slot atoms plus anonymous parent kind and immediate sibling physical-archetype atoms",
+    "targetPhysicalFeaturesForbidden": true
+  },
+  "substitutability": {
+    "minimumTokenSlotOccurrences": 8,
+    "minimumSharedExactContexts": 2,
+    "minimumContextCosine": 0.6,
+    "reciprocalTopPartners": 3,
+    "pairScore": "context cosine multiplied by log(1 + independently supported shared exact contexts)",
+    "familyConstruction": "connected components of reciprocal top-partner edges after thresholds",
+    "crossFormEvidence": "report physical Hamming distance separately so visually/topologically distant occupants can be identified inside the same functional family"
+  },
+  "transfer": {
+    "trainingLaneDefinesPhysicalArchetypesAndFamilies": true,
+    "evaluationLanes": [
+      "holdout",
+      "control"
+    ],
+    "noRefit": true,
+    "primaryMeasures": [
+      "mean within-family masked-context cosine",
+      "same-family cross-token recurrence in the same exact masked context",
+      "within-family similarity of immediate-child physical-program distributions"
+    ],
+    "downstreamUsedOnlyAfterFamilyFreeze": true
+  },
+  "nullModel": {
+    "iterations": 128,
+    "method": "permute frozen token-to-family membership while preserving each token's complete physical identity, lane-specific context distribution, downstream distribution, and the discovered family-size inventory",
+    "preserves": [
+      "all observations",
+      "all physical occupant tokens",
+      "all masked contexts",
+      "all immediate-child programs",
+      "lane",
+      "family sizes"
+    ]
+  },
+  "falsifiers": {
+    "noSubstitutionFamilies": "If recurring physical occupants do not share masked contexts strongly enough to form reciprocal train families, functional interchangeability is not supported at this resolution.",
+    "noTransfer": "If train-discovered families lose context coherence in holdout/control or do not exceed the frozen-family null, the apparent substitutions are Cleveland-specific structure.",
+    "noDownstreamPreservation": "If family members share slots but not downstream child programs, they may be context alternatives rather than equivalent operations."
+  },
+  "custody": {
+    "reproduceExactSealedPhysicalLedger": true,
+    "verifyLedgerMerkleBeforeProjection": true,
+    "discoverAndFreezeBeforeProvenance": true,
+    "freezeFamilyDefinitionBeforeTransferStatistics": true,
+    "freezeFinalShaBeforeContextDownload": true,
+    "provenanceCannotAlterArchetypesContextsFamiliesOrStatistics": true
+  }
+}

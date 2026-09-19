@@ -1,0 +1,176 @@
+name: Mark Masked Slot Substitutability v1
+
+on:
+  pull_request:
+    paths:
+      - "crates/mark-sparse-compiler/src/bin/mark-observation-topology-atlas.rs"
+      - "scripts/discover-mark-masked-slot-families.py"
+      - "scripts/evaluate-mark-masked-slot-substitutability.py"
+      - "scripts/rejoin-mark-masked-slot-substitutability.py"
+      - "research/mark/discovery-experiments/masked-slot-substitutability-v1.protocol.json"
+      - ".github/workflows/mark-masked-slot-substitutability-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MARK_PARENT_ATLAS_RUN_ID: 33755743472
+  MARK_MASKED_SLOT_PROTOCOL: research/mark/discovery-experiments/masked-slot-substitutability-v1.protocol.json
+  MARK_V7_MAX_RSS_KB: 524288
+
+jobs:
+  blind-masked-slot-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate masked-slot protocol and analysis
+        run: |
+          python3 -m json.tool "$MARK_MASKED_SLOT_PROTOCOL" >/dev/null
+          python3 -m py_compile scripts/discover-mark-masked-slot-families.py scripts/evaluate-mark-masked-slot-substitutability.py scripts/rejoin-mark-masked-slot-substitutability.py
+      - name: Download exact sealed compiler evidence only
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-sealed-evidence
+          path: artifact-staging/blind-evidence
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Download frozen structural parent without provenance
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-frozen
+          path: artifact-staging/frozen-parent
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Test and build frozen v7 plus topology projector
+        run: |
+          cargo test --manifest-path crates/mark-sparse-compiler/Cargo.toml --bin mark-observation-topology-atlas
+          cargo build --release --manifest-path crates/mark-sparse-compiler/Cargo.toml --bins
+      - name: Reproduce exact sealed physical event world under 512 MB
+        shell: bash
+        env:
+          MARK_V7_COMPILER_INPUT: artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json
+          MARK_V7_OUT: artifacts/mark-masked-slot-compiler-v1
+        run: |
+          set -euo pipefail
+          mkdir -p "$MARK_V7_OUT"
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-sparse-compiler compile \
+              --input "$MARK_V7_COMPILER_INPUT" \
+              --out "$MARK_V7_OUT" \
+              --tile 512 --overlap 32 --null-iterations 16 --min-sources 3
+          ) 2> >(tee "$MARK_V7_OUT/runtime.txt" >&2)
+      - name: Verify replay custody against frozen parent
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          frozen=json.load(open('artifact-staging/frozen-parent/source-rule-atlas/summary.json'))
+          custody=json.load(open('artifacts/mark-masked-slot-compiler-v1/custody.json'))
+          if custody['physicalLedger']['merkleRoot'] != frozen['physicalLedgerMerkleRoot']:
+              raise SystemExit('replayed physical ledger Merkle differs from frozen parent')
+          if custody['sourceBlindInputSha256'] != frozen['sourceBlindInputSha256']:
+              raise SystemExit('replayed blind-input hash differs from frozen parent')
+          if frozen['atlasSha256'] != 'dcb704b540d8c25030627fafddb82e4b1ba9104bd553a77ecf03d50cdd5b7e75':
+              raise SystemExit('wrong frozen source-rule atlas parent')
+          PY
+      - name: Project raw anonymous topology for full blind world
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_merkle="$(python3 - <<'PY'
+          import json
+          print(json.load(open('artifact-staging/frozen-parent/source-rule-atlas/summary.json'))['physicalLedgerMerkleRoot'])
+          PY
+          )"
+          mkdir -p artifacts/mark-observation-topology-atlas-v1
+          (
+            ulimit -v "$MARK_V7_MAX_RSS_KB"
+            /usr/bin/time -v crates/mark-sparse-compiler/target/release/mark-observation-topology-atlas \
+              --events artifacts/mark-masked-slot-compiler-v1/events.jsonl \
+              --custody artifacts/mark-masked-slot-compiler-v1/custody.json \
+              --input artifact-staging/blind-evidence/mark-conveyor-input-v1/mark-observable-input-blind-v1.compiler.json \
+              --expected-merkle "$expected_merkle" \
+              --out artifacts/mark-observation-topology-atlas-v1
+          ) 2> >(tee artifacts/mark-observation-topology-atlas-v1/runtime.txt >&2)
+      - name: Freeze train-only masked-slot substitution families
+        env:
+          MARK_TOPOLOGY_ATLAS: artifacts/mark-observation-topology-atlas-v1
+          MARK_MASKED_SLOT_OUT: artifacts/mark-masked-slot-family-freeze-v1
+        run: python3 scripts/discover-mark-masked-slot-families.py
+      - name: Evaluate frozen families in holdout and control without refitting
+        env:
+          MARK_TOPOLOGY_ATLAS: artifacts/mark-observation-topology-atlas-v1
+          MARK_MASKED_SLOT_FAMILY_DIR: artifacts/mark-masked-slot-family-freeze-v1
+          MARK_MASKED_SLOT_OUT: artifacts/mark-masked-slot-substitutability-v1
+        run: python3 scripts/evaluate-mark-masked-slot-substitutability.py
+      - name: Free bulky physical ledgers after family freeze
+        run: rm -f artifacts/mark-masked-slot-compiler-v1/events.jsonl artifacts/mark-masked-slot-compiler-v1/grammar-contributions.jsonl
+      - name: Stage frozen blind substitution packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact-staging/masked-slot/topology-atlas artifact-staging/masked-slot/compiler-custody artifact-staging/masked-slot/train-freeze
+          cp -a artifacts/mark-masked-slot-substitutability-v1/. artifact-staging/masked-slot/
+          cp -a artifacts/mark-masked-slot-family-freeze-v1/. artifact-staging/masked-slot/train-freeze/
+          cp -a artifacts/mark-observation-topology-atlas-v1/. artifact-staging/masked-slot/topology-atlas/
+          cp artifacts/mark-masked-slot-compiler-v1/custody.json artifact-staging/masked-slot/compiler-custody/
+      - name: Publish blind masked-slot summary
+        shell: bash
+        run: |
+          echo '### Mark masked-slot substitutability v1 — provenance still sealed' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-masked-slot-substitutability-v1/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frozen blind substitution packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-masked-slot-substitutability-v1-frozen
+          path: artifact-staging/masked-slot/**
+          if-no-files-found: error
+          retention-days: 30
+
+  context-rejoin:
+    needs: blind-masked-slot-discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen substitution packet first
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-masked-slot-substitutability-v1-frozen
+          path: artifact-staging/masked-slot
+      - name: Download source provenance only after final SHA exists
+        uses: actions/download-artifact@v4
+        with:
+          name: mark-source-rule-atlas-v1-context-rejoin
+          path: artifact-staging/context
+          repository: optical-lift/write-now
+          run-id: ${{ env.MARK_PARENT_ATLAS_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Rejoin provenance without changing archetypes families or statistics
+        env:
+          MARK_MASKED_SLOT_PACKET: artifact-staging/masked-slot
+          MARK_SOURCE_CONTEXT: artifact-staging/context
+          MARK_MASKED_SLOT_REJOIN_OUT: artifacts/mark-masked-slot-substitutability-v1-context
+        run: python3 scripts/rejoin-mark-masked-slot-substitutability.py
+      - name: Publish contextual substitution summary
+        shell: bash
+        run: |
+          echo '### Mark masked-slot substitutability v1 — provenance rejoined after freeze' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/mark-masked-slot-substitutability-v1-context/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload contextual substitution rejoin separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-masked-slot-substitutability-v1-context-rejoin
+          path: artifacts/mark-masked-slot-substitutability-v1-context/**
+          if-no-files-found: error
+          retention-days: 30
